@@ -1,6 +1,16 @@
-const app = require('./app');
+require('dotenv').config()
 
-// our localhost dev server will listen on port 8000
-app.listen(8000, () => {
-  console.log('Felix is assisting on port 8000');
-});
+const knex = require('knex')
+const app = require('./app')
+const { PORT, DB_URL } = require('./config')
+
+const db = knex({
+  client: 'pg',
+  connection: DB_URL,
+})
+
+app.set('db', db)
+
+app.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`)
+})
