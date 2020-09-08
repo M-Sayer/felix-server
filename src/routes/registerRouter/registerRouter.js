@@ -7,7 +7,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
-} = require('./registerRouterServies.js')
+} = require('./registerRouterService.js')
 
 router
   .route('/') // Supports GET, POST

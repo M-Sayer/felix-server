@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const registerRouterServices = {
+const registerRouterService = {
   getUsers(req, res) {
     console.log('user got')
     return {
@@ -9,21 +9,20 @@ const registerRouterServices = {
     }
   },
   createUser(req, res) {
-    console.log('user created')
+    console.log('createUser ran')
     //do some knex stuff with db
   },
   getUser(req, res) {
-    console.log('user created')
+    console.log('getUser ran')
     //do some knex stuff with db
   },
   updateUser(req, res) {
-    console.log('user created')
+    console.log('updateUser ran')
     //do some knex stuff with db
   },
   deleteUser(req, res) {
-    console.log('user created')
+    console.log('deleteUser ran')
     //do some knex stuff with db
   },
 }
-
-export default registerRouterServices
+module.exports = registerRouterService
