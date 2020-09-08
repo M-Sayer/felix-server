@@ -2,11 +2,7 @@
 const userRouterService = {
   getUsers(req, res) {
     console.log('user got')
-    return {
-      username: 'username',
-      password: 'password',
-      email: 'email@email.com',
-    }
+    //do some knex stuff with db
   },
   createUser(req, res) {
     console.log('createUser ran')
@@ -14,6 +10,11 @@ const userRouterService = {
   },
   getUser(req, res) {
     console.log('getUser ran')
+    return {
+      username: 'username',
+      password: 'password',
+      email: 'email@email.com',
+    }
     //do some knex stuff with db
   },
   updateUser(req, res) {

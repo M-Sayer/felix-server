@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const jsonBodyParser = express.json()
 
 const {
   getUsers,
@@ -11,8 +12,16 @@ const {
 
 router
   .route('/register') // Supports POST
-  .post((req, res) => {
+  .post(jsonBodyParser, async (req, res) => {
     createUser(req, res)
+    const { password, username, email } = req.body
+
+    for (const field of ['name', 'username', 'password'])
+      if (!req.body[field])
+        return res.status(400).json({
+          error: `Missing '${field}' in request body`,
+        })
+    res.status(200).json({ response: 'user created' })
   })
 
 router
