@@ -1,6 +1,8 @@
 BEGIN;
 
-TRUNCATE "users";
+TRUNCATE 
+    "goals",
+    "users";
 
 INSERT INTO "users" ("first_name", "last_name", "username", "email", "password", "allowance", "balance")
 VALUES
@@ -15,8 +17,17 @@ VALUES
         1000.50 
     );
 
+INSERT INTO "goals" ("user_id","goal_amount","end_date","current_amount")
+VALUES 
+    (
+        1,
+        49.99,
+        '2020-10-05',
+        10.45
+    );
 -- because we explicitly set the id fields
 -- update the sequencer for future automatic id setting
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
+SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
 
 COMMIT;
