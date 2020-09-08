@@ -1,24 +1,24 @@
 const express = require('express')
+const path = require('path')
+
 const router = express.Router()
 const jsonBodyParser = express.json()
 
 const {
   getUsers,
-  createUser,
+  insertUser,
   getUser,
   updateUser,
   deleteUser,
   validatePassword,
   hasUserWithUserName,
   hashPassword,
-  insertUser,
   serializeUser,
 } = require('./user-service.js')
 
 router
   .route('/register') // Supports POST
-  .post(jsonBodyParser, async (req, res) => {
-    createUser(req, res)
+  .post(jsonBodyParser, async (req, res, next) => {
     const { username, password, email } = req.body
 
     for (const field of ['username', 'password', 'email'])
@@ -32,12 +32,12 @@ router
 
       if (passwordError) return res.status(400).json({ error: passwordError })
 
-      const hasUserWithUserName = await hasUserWithUserName(
-        req.app.get('db'),
+      const hasUser = await hasUserWithUserName(
+        // req.app.get('db'),
         username
       )
 
-      if (hasUserWithUserName)
+      if (hasUser)
         return res.status(400).json({ error: `Username already taken` })
 
       const hashedPassword = await hashPassword(password)
@@ -45,14 +45,14 @@ router
       const newUser = {
         username,
         password: hashedPassword,
-        name,
+        email,
       }
 
-      const user = await insertUser(req.app.get('db'), newUser)
+      const user = await insertUser(/*req.app.get('db'),*/ newUser)
 
       res
-        .status(201)
-        .location(path.posix.join(req.originalUrl, `/${user.id}`))
+        .status(200)
+        // .location(path.posix.join(req.originalUrl, `/${user.id}`))
         .json(serializeUser(user))
     } catch (error) {
       next(error)

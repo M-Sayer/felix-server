@@ -1,11 +1,17 @@
 /* eslint-disable no-console */
+const bcrypt = require('bcrypt')
+
+const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
+
 const userService = {
-  hasUserWithUserName(db, username) {
-    return db('user')
-      .where({ username })
-      .first()
-      .then((user) => !!user)
+  hasUserWithUserName(/*db,*/ username) {
+    return false //returning false is for testing only, this tells user-router that username is available
+    // return db('user')
+    //   .where({ username })
+    //   .first()
+    //   .then((user) => !!user)
   },
+
   validatePassword(password) {
     if (password.length < 8) {
       return 'Password be longer than 8 characters'
@@ -21,27 +27,34 @@ const userService = {
     }
     return null
   },
+
   getUsers(req, res) {
     console.log('user got')
     //do some knex stuff with db
   },
-  insertUser(db, newUser) {
-    return db
-      .insert(newUser)
-      .into('user')
-      .returning('*')
-      .then(([user]) => user)
+
+  insertUser(/*db,*/ newUser) {
+    console.log(`insertUser ran with ${newUser}`)
+    return newUser
+    // return db
+    //   .insert(newUser)
+    //   .into('user')
+    //   .returning('*')
+    //   .then(([user]) => user)
   },
+
   serializeUser(user) {
     return {
-      id: user.id,
-      name: user.name,
       username: user.username,
+      password: user.password,
+      email: user.email,
     }
   },
+
   hashPassword(password) {
     return bcrypt.hash(password, 12)
   },
+
   getUser(req, res) {
     console.log('getUser ran')
     return {
@@ -51,10 +64,12 @@ const userService = {
     }
     //do some knex stuff with db
   },
+
   updateUser(req, res) {
     console.log('updateUser ran')
     //do some knex stuff with db
   },
+
   deleteUser(req, res) {
     console.log('deleteUser ran')
     //do some knex stuff with db
