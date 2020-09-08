@@ -7,27 +7,24 @@ const {
   getUser,
   updateUser,
   deleteUser,
-} = require('./registerRouterService.js')
+} = require('./userRouterService.js')
 
 router
-  .route('/') // Supports GET, POST
-  .get((req, res) => {
-    getUsers(req, res)
-  })
+  .route('/register') // Supports POST
   .post((req, res) => {
     createUser(req, res)
   })
 
 router
-  .route('/:id') // Supports GET, PATCH, DELETE
+  .route('/login') // Supports POST
   .get((req, res) => {
     getUser(req, res)
   })
-  .patch((req, res) => {
-    updateUser(req, res)
-  })
-  .delete((req, res) => {
-    deleteUser(req, res)
+
+router
+  .route('/:id') // Support GET
+  .get((req, res) => {
+    getUser(req, res)
   })
 
 module.exports = router

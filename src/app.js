@@ -4,8 +4,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 
-const registerRouter = require('./routes/registerRouter/registerRouter')
-const loginRouter = require('./routes/loginRouter/loginRouter')
+const userRouter = require('./routes/userRouter/userRouter')
 
 const app = express()
 
@@ -31,7 +30,6 @@ app.use(function errorHandler(error, req, res, _next) {
   res.status(500).json(response)
 })
 
-app.use('/users/register', registerRouter)
-app.use('/users/login', loginRouter)
+app.use('/user', userRouter)
 
 module.exports = app
