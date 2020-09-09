@@ -12,5 +12,5 @@ CREATE TABLE IF EXISTS "expenses"(
         REFERENCES "users"(id) ON DELETE CASCADE NOT NULL,
     "expense_amount" NUMERIC(12,2) CHECK (income_amount >= 0) DEFAULT 0 NOT NULL,\
     "expense_category" expense_type NOT NULL,
-    "date_created" TIMESTAMP DEFAULT now() NOT NULL
+    "date_created" DATE DEFAULT CURRENT_DATE NOT NULL
 );

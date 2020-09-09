@@ -25,9 +25,33 @@ VALUES
         '2020-10-05',
         10.45
     );
+
+INSERT INTO "income"("user_id","income_amount","transaction_category","date_created")
+VALUES  
+    (
+        1,
+        249.67,
+        'fulltime_job',
+        '2020-08-27'
+    ),
+    (
+        1,
+        113.88,
+        'other',
+        '2020-08-29'
+    );
+
+INSERT INTO ""("user_id","expenses_amount","expense_category")
+VALUES  
+    (
+
+    );
+
 -- because we explicitly set the id fields
 -- update the sequencer for future automatic id setting
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
 SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
+SELECT setval('income_id_seq', (SELECT MAX(id) FROM income));
+SELECT setval('', (SELECT MAX(id) FROM __));
 
 COMMIT;
