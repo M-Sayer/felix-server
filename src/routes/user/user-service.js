@@ -4,20 +4,21 @@ const bcrypt = require('bcrypt')
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
 const userService = {
-  hasUserWithUserName(/*db,*/ username) {
-    return false //returning false is for testing only, this tells user-router that username is available
-    // return db('user')
-    //   .where({ username })
-    //   .first()
-    //   .then((user) => !!user)
+  getUserWithUserName(db, username) {
+    return db('user')
+      .where({ username })
+      .first()
+      .catch(function (error) {
+        return error
+      })
   },
 
   validatePassword(password) {
     if (password.length < 8) {
       return 'Password must be longer than 8 characters'
     }
-    if (password.length > 72) {
-      return 'Password must be less than 72 characters'
+    if (password.length > 20) {
+      return 'Password must be less than 20 characters'
     }
     if (password.startsWith(' ') || password.endsWith(' ')) {
       return 'Password must not start or end with empty spaces'
@@ -28,7 +29,7 @@ const userService = {
     return null
   },
 
-  insertUser(/*db,*/ newUser) {
+  createUser(/*db,*/ newUser) {
     console.log(`insertUser ran`)
     return newUser
     // return db
@@ -42,7 +43,7 @@ const userService = {
     return bcrypt.hash(password, 12)
   },
 
-  getUser(req, res) {
+  getUser(db) {
     console.log('getUser ran')
     return true //returns true for testing purposes, set to false to emulate no user found or wrong password
     // return db('user')

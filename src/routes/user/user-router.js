@@ -5,16 +5,17 @@ const router = express.Router()
 const jsonBodyParser = express.json()
 
 const {
-  insertUser,
+  createUser,
   getUser,
   validatePassword,
-  hasUserWithUserName,
+  getUserWithUserName,
   hashPassword,
 } = require('./user-service.js')
 
 router
   .route('/register') // Supports POST
   .post(jsonBodyParser, async (req, res, next) => {
+    const db = req.app.get('db')
     const { username, password, email } = req.body
 
     //Check that fields exist
@@ -32,14 +33,11 @@ router
       if (passwordError) return res.status(400).json({ error: passwordError })
 
       //checks if username already exists in db
-      const hasUser = await hasUserWithUserName(
-        // req.app.get('db'),
-        username
-      )
+      const hasUser = await getUserWithUserName(db, username)
 
       //if username is taken return error
       if (hasUser)
-        return res.status(400).json({ error: `Username already taken` })
+        return res.status(400).json({ error: `Username unavailable` })
 
       //hash the user's password
       const hashedPassword = await hashPassword(password)
@@ -52,7 +50,7 @@ router
       }
 
       //insert new user object into database
-      const user = await insertUser(/*req.app.get('db'),*/ newUser)
+      const user = await createUser(db, newUser)
 
       //respond with a JWT
       res.status(200).json({ authToken: 'JWTString' })
