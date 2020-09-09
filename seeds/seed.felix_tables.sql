@@ -1,8 +1,11 @@
 BEGIN;
 
 TRUNCATE 
+    "expenses",
+    "income",
     "goals",
-    "users";
+    "users"
+    RESTART IDENTITY CASCADE; 
 
 INSERT INTO "users" ("first_name", "last_name", "username", "email", "password", "allowance", "balance")
 VALUES
@@ -31,7 +34,7 @@ VALUES
     (
         1,
         249.67,
-        'fulltime_job',
+        'paycheck',
         '2020-08-27'
     ),
     (
@@ -41,12 +44,12 @@ VALUES
         '2020-08-29'
     );
 
-INSERT INTO "expenses"("user_id","expenses_amount","expense_category","date_created")
+INSERT INTO "expenses"("user_id","expense_amount","expense_category","date_created")
 VALUES  
     (
         1,
         400,
-        "bill",
+        'bills',
         '2020-08-30'
     );
 
