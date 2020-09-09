@@ -14,10 +14,10 @@ const userService = {
 
   validatePassword(password) {
     if (password.length < 8) {
-      return 'Password be longer than 8 characters'
+      return 'Password must be longer than 8 characters'
     }
     if (password.length > 72) {
-      return 'Password be less than 72 characters'
+      return 'Password must be less than 72 characters'
     }
     if (password.startsWith(' ') || password.endsWith(' ')) {
       return 'Password must not start or end with empty spaces'
@@ -28,13 +28,8 @@ const userService = {
     return null
   },
 
-  getUsers(req, res) {
-    console.log('user got')
-    //do some knex stuff with db
-  },
-
   insertUser(/*db,*/ newUser) {
-    console.log(`insertUser ran with ${newUser}`)
+    console.log(`insertUser ran`)
     return newUser
     // return db
     //   .insert(newUser)
@@ -43,36 +38,16 @@ const userService = {
     //   .then(([user]) => user)
   },
 
-  serializeUser(user) {
-    return {
-      username: user.username,
-      password: user.password,
-      email: user.email,
-    }
-  },
-
   hashPassword(password) {
     return bcrypt.hash(password, 12)
   },
 
   getUser(req, res) {
     console.log('getUser ran')
-    return {
-      username: 'username',
-      password: 'password',
-      email: 'email@email.com',
-    }
-    //do some knex stuff with db
-  },
-
-  updateUser(req, res) {
-    console.log('updateUser ran')
-    //do some knex stuff with db
-  },
-
-  deleteUser(req, res) {
-    console.log('deleteUser ran')
-    //do some knex stuff with db
+    return true //returns true for testing purposes, set to false to emulate no user found or wrong password
+    // return db('user')
+    //   .where({ username, password })
+    //   .first()
   },
 }
 module.exports = userService
