@@ -1,67 +1,38 @@
 const express = require('express');
 
-const TransactionRouter = express.Router();
+const transactionRouter = express.Router();
 
 const TransactionServices = require('./TransactionServices');
 
+
+transactionRouter
 /**
- * expects something like [
- *         {
- *          income:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- *          }, 
- *          {
- *          income:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- *          }, 
- *          {
- *          expense:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- *          },
- *           {
- *          income:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- *          },
- *           {
- *          expense:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- *          },
- *           {
- *          expense:{
- *               name : 'foo',
- *               val : 123456,
- *               type: 'bar'
- *               date_created : '2020:06:15 : 12:45:51'
- *              } 
- * }....]
+ * needs to get a single transaction based on it's id
+ * 
+ * 1 : found out wether it's trying to quarry ether income or expenses table
+ * 
+ * 2: us the quarry value (id of _____) to quarry need table WHERE id=${quarry_value}
  */
+  .get('/:transactionType/:id',(req,res,next) =>{
+    
+    const {transactionType, id} = req.params;
 
-TransactionRouter
-.get('/',(req,res,next) =>{
+    for(const [key,prop] of Object.entries({transactionType, id})){
+      if(!prop){
+        return res.status(400).json({error : `${key} seems to be missing from quarry params`});
+      }
+    }
 
-});
+    const transaction = TransactionServices.getSingleTransaction(
+      req.app.get('db'),
+      transactionType,
+      id,
+    );
+
+    res.status(200).json(transaction);
+  });
 
 
 
 
-module.exports = TransactionRouter;
+module.exports = transactionRouter;
