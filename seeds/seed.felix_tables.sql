@@ -41,10 +41,13 @@ VALUES
         '2020-08-29'
     );
 
-INSERT INTO ""("user_id","expenses_amount","expense_category")
+INSERT INTO "expenses"("user_id","expenses_amount","expense_category","date_created")
 VALUES  
     (
-
+        1,
+        400,
+        "bill",
+        '2020-08-30'
     );
 
 -- because we explicitly set the id fields
@@ -52,6 +55,6 @@ VALUES
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
 SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
 SELECT setval('income_id_seq', (SELECT MAX(id) FROM income));
-SELECT setval('', (SELECT MAX(id) FROM __));
+SELECT setval('expenses_id_seq', (SELECT MAX(id) FROM expenses));
 
 COMMIT;
