@@ -15,6 +15,11 @@ const makeKnexInstance = () =>{
   });
 };
 
+
+const makeTestUsers = () => {
+
+};
+
 const makeIncomeAndExpensesArray = () => {
   const income = [
     {
@@ -113,8 +118,8 @@ const makeIncomeAndExpensesArray = () => {
 };
 
 const seedIncomeAndExpensesTables = () =>{
-    
-}
+
+};
 
 
 

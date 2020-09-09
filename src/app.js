@@ -2,7 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const { NODE_ENV } = require('../config');
+const { NODE_ENV } = require('./config');
+const transactionRouter = require('./routes/transactions/TransactionRouter');
 
 const app = express();
 
@@ -31,5 +32,8 @@ app.use(function errorHandler(error, req, res, _next) {
   }
   res.status(500).json(response);
 });
+
+
+app.use('/api/transaction' , transactionRouter );
 
 module.exports = app;
