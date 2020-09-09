@@ -7,7 +7,9 @@ const db = knex({
   connection : DATABASE_URL,
 });
 
+app.set('db',db);
+
 // our localhost dev server will listen on port 8000
-app.listen(8000, () => {
+app.listen(PORT, () => {
   console.log(`Felix is assisting on port ${PORT}`);
 });

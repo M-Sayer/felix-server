@@ -48,7 +48,7 @@ INSERT INTO "expenses"("user_id","expense_amount","expense_category","date_creat
 VALUES  
     (
         1,
-        400,
+        -400,
         'bills',
         '2020-08-30'
     );
