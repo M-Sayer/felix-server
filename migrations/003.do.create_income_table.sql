@@ -1,8 +1,7 @@
 CREATE TYPE IF NOT EXISTS income_type AS ENUM (
-    'investment_return',
-    'fulltime_job',
-    'part_time_job',
-    'inheritance',
+    'paycheck',
+    'freelance',
+    'side_gig',
     'other'
 );
 

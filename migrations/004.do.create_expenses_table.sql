@@ -1,9 +1,8 @@
 CREATE TYPE IF NOT EXISTS expense_type AS ENUM (
-    'bill',
-    'eating_out',
-    'grocery',
-    'medical',
-    'basic_necessities',
+    'bills',
+    'transportation',
+    'food',
+    'entertainment',
     'other'
 );
 
