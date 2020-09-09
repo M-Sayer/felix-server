@@ -9,6 +9,7 @@ const {
   getUser,
   validatePassword,
   getUserWithUserName,
+  getUserWithEmail,
   hashPassword,
 } = require('./user-service.js')
 
@@ -16,7 +17,7 @@ router
   .route('/register') // Supports POST
   .post(jsonBodyParser, async (req, res, next) => {
     const db = req.app.get('db')
-    const { username, password, email } = req.body
+    const { first_name, last_name, username, password, email } = req.body
 
     //Check that fields exist
     for (const field of ['username', 'password', 'email'])
@@ -33,17 +34,26 @@ router
       if (passwordError) return res.status(400).json({ error: passwordError })
 
       //checks if username already exists in db
-      const hasUser = await getUserWithUserName(db, username)
+      const hasUsername = await getUserWithUserName(db, username)
 
       //if username is taken return error
-      if (hasUser)
+      if (hasUsername)
         return res.status(400).json({ error: `Username unavailable` })
+
+      //checks if email already exists in db
+      const hasEmail = await getUserWithEmail(db, email)
+
+      //if email is taken return error
+      if (hasEmail)
+        return res.status(400).json({ error: `Email already in use` })
 
       //hash the user's password
       const hashedPassword = await hashPassword(password)
 
       //build new user object
       const newUser = {
+        first_name,
+        last_name,
         username,
         password: hashedPassword,
         email,
@@ -61,7 +71,7 @@ router
 
 router
   .route('/login') // Supports POST
-  .get(jsonBodyParser, async (req, res) => {
+  .post(jsonBodyParser, async (req, res) => {
     const { username, password } = await req.body
 
     //Check that fields exist

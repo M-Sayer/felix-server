@@ -5,8 +5,17 @@ const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*
 
 const userService = {
   getUserWithUserName(db, username) {
-    return db('user')
+    return db('users')
       .where({ username })
+      .first()
+      .catch(function (error) {
+        return error
+      })
+  },
+
+  getUserWithEmail(db, email) {
+    return db('users')
+      .where({ email })
       .first()
       .catch(function (error) {
         return error
@@ -29,14 +38,13 @@ const userService = {
     return null
   },
 
-  createUser(/*db,*/ newUser) {
-    console.log(`insertUser ran`)
-    return newUser
-    // return db
-    //   .insert(newUser)
-    //   .into('user')
-    //   .returning('*')
-    //   .then(([user]) => user)
+  createUser(db, newUser) {
+    console.log(`createUser ran`)
+    return db
+      .insert(newUser)
+      .into('users')
+      .returning('*')
+      .then(([user]) => user)
   },
 
   hashPassword(password) {
@@ -46,7 +54,7 @@ const userService = {
   getUser(db) {
     console.log('getUser ran')
     return true //returns true for testing purposes, set to false to emulate no user found or wrong password
-    // return db('user')
+    // return db('users')
     //   .where({ username, password })
     //   .first()
   },
