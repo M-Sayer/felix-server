@@ -46,15 +46,15 @@ VALUES
 
 INSERT INTO "expenses" ("user_id", "expense_amount", "expense_category", "date_created")
 VALUES  
-  (
-    1,
-    -400,
-    'bills',
-    '2020-08-30'
-  );
+    (
+        1,
+        -400,
+        'bills',
+        '2020-08-30'
+    );
 
--- because we explicitly set the id fields
--- update the sequencer for future automatic id setting
+-- Because we explicitly set the id fields
+-- Update the sequencer for future automatic id setting
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
 SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
 SELECT setval('income_id_seq', (SELECT MAX(id) FROM income));
