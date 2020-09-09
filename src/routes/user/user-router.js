@@ -8,9 +8,10 @@ const {
   createUser,
   getUser,
   validatePassword,
-  getUserWithUserName,
+  getUserWithUsername,
   getUserWithEmail,
   hashPassword,
+  unhashPassword,
 } = require('./user-service.js')
 
 router
@@ -20,7 +21,13 @@ router
     const { first_name, last_name, username, password, email } = req.body
 
     //Check that fields exist
-    for (const field of ['username', 'password', 'email'])
+    for (const field of [
+      'first_name',
+      'last_name',
+      'username',
+      'password',
+      'email',
+    ])
       if (!req.body[field])
         return res.status(400).json({
           error: `Missing '${field}' in request body`,
@@ -34,16 +41,16 @@ router
       if (passwordError) return res.status(400).json({ error: passwordError })
 
       //checks if username already exists in db
-      const hasUsername = await getUserWithUserName(db, username)
+      const hasUsername = await getUserWithUsername(db, username)
 
-      //if username is taken return error
+      //if username is already taken return error
       if (hasUsername)
         return res.status(400).json({ error: `Username unavailable` })
 
       //checks if email already exists in db
       const hasEmail = await getUserWithEmail(db, email)
 
-      //if email is taken return error
+      //if email is already taken return error
       if (hasEmail)
         return res.status(400).json({ error: `Email already in use` })
 
@@ -71,8 +78,9 @@ router
 
 router
   .route('/login') // Supports POST
-  .post(jsonBodyParser, async (req, res) => {
+  .post(jsonBodyParser, async (req, res, next) => {
     const { username, password } = await req.body
+    const db = req.app.get('db')
 
     //Check that fields exist
     for (const field of ['username', 'password'])
@@ -82,11 +90,16 @@ router
         })
 
     try {
-      //check that username OR password exist in db
-      const userOrPasswordCorrect = await getUser(username, password)
+      //get user object to check against POSTed username and password
+      const hasUser = await getUserWithUsername(db, username)
 
-      //if either is wrong return error DON'T tell user which was incorrect
-      if (!userOrPasswordCorrect) {
+      //if hasUser is undefined (username does not exist in db) return error
+      if (!hasUser) {
+        return res.status(401).json({ error: `invalid credentials` })
+      }
+
+      //if password is wrong return error
+      if ((await unhashPassword(password, hasUser.password)) === false) {
         return res.status(401).json({ error: `invalid credentials` })
       }
 
