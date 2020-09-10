@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
+const UserService = require('./user-service.js');
 
 const router = express.Router();
 const jsonBodyParser = express.json();
 
 const {
   createUser,
-  getUser,
   validatePassword,
   getUserWithUsername,
   getUserWithEmail,
@@ -69,8 +69,14 @@ router
       //insert new user object into database
       const user = await createUser(db, newUser);
 
-      //respond with a JWT
-      res.status(200).json({ authToken: 'JWTString' });
+      //get user id and username from db to creaet jwt token
+      const sub = user.username;
+      const payload = { user_id: user.id };
+
+      //create and send jwt token
+      res.status(200).json({
+        authToken: UserService.createJwt(sub, payload),
+      });
     } catch (error) {
       next(error);
     }
@@ -78,7 +84,7 @@ router
 
 router
   .route('/login') // Supports POST
-  .post(jsonBodyParser, async (req, res, next) => {
+  .post(async (req, res, next) => {
     const { username, password } = await req.body;
     const db = req.app.get('db');
 
@@ -99,12 +105,18 @@ router
       }
 
       //if password is wrong return error
-      if ((await unhashPassword(password, hasUser.password)) === false) {
+      if (!(await unhashPassword(password, hasUser.password))) {
         return res.status(401).json({ error: `invalid credentials` });
       }
 
-      //respond with a JWT
-      res.status(200).json({ authToken: 'JWTString' });
+      //get user id and username from db to creaet jwt token
+      const sub = hasUser.username;
+      const payload = { user_id: hasUser.id };
+
+      //create and send jwt token
+      res.status(200).json({
+        authToken: UserService.createJwt(sub, payload),
+      });
     } catch (error) {
       next(error);
     }
