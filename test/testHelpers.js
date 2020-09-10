@@ -1,4 +1,5 @@
 /* eslint-disable quotes */
+require('dotenv').config();
 const knex = require('knex');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -12,7 +13,7 @@ const jwt = require('jsonwebtoken');
 const makeKnexInstance = () =>{
   return knex({
     client : 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: process.env.TEST_DATABASE_URL,
   });
 };
 
