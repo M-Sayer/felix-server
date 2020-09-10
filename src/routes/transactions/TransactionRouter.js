@@ -20,7 +20,7 @@ transactionRouter
       }
     }
     try{
-      const  transaction = await TransactionServices.getSingleTransaction(
+      const transaction = await TransactionServices.getSingleTransaction(
         req.app.get('db'),
         transactionType,
         id,
@@ -30,7 +30,25 @@ transactionRouter
         return res.status(400).json({error : 'invalid transaction id'});
       }
 
-      res.status(200).json(transaction);
+      const transactionDetails =
+        transactionType === 'income' 
+          ? {
+            id : transaction.id,
+            name : transaction.name,
+            date_created : transaction.date_created,
+            amount : transaction.income_amount,
+            subType : transaction.transaction_category
+          }
+          :{
+            id : transaction.id,
+            name : transaction.name,
+            date_created : transaction.date_created,
+            amount : transaction.expense_amount,
+            subType : transaction.expense_category
+          }
+          ;
+          
+      res.status(200).json(transactionDetails);
     }catch(e){
       next(e);
     }
