@@ -20,10 +20,11 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 app.use(express.json()); // accept json requests
-app.use(errorHandler);
 
 app.use('/user', userRouter); //register, login, and get user by id
 
 app.use('/api/transaction' , transactionRouter );
+
+app.use(errorHandler);
 
 module.exports = app;
