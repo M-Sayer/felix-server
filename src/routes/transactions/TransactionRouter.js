@@ -26,6 +26,10 @@ transactionRouter
         id,
       );
 
+      if(!transaction){
+        return res.status(400).json({error : 'invalid transaction id'});
+      }
+
       res.status(200).json(transaction);
     }catch(e){
       next(e);
