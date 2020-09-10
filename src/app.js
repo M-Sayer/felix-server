@@ -3,8 +3,10 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
+const transactionRouter = require('./routes/transactions/TransactionRouter');
 const userRouter = require('./routes/user/user-router');
 const errorHandler = require('./middleware/error-handler');
+
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use(cors());
 app.use(express.json()); // accept json requests
 
 app.use('/user', userRouter); //register, login, and get user by id
+
+app.use('/api/transaction' , transactionRouter );
 
 app.use(errorHandler);
 
