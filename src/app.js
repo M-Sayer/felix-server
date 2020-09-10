@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('../config');
+const timeRouter = require('./routes/timeRouter/timeRouter');
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 app.use(express.json()); // accept json requests
+
+app.use('/time', timeRouter);
 
 app.use(function errorHandler(error, req, res, _next) {
   let response;
