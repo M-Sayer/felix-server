@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const AuthService = require('../../middleware/auth-service.js');
 
 const router = express.Router();
 const jsonBodyParser = express.json();
@@ -104,7 +105,9 @@ router
       }
 
       //respond with a JWT
-      res.status(200).json({ authToken: 'JWTString' });
+      res.status(200).json({
+        authToken: AuthService.createJwt(sub, payload),
+      });
     } catch (error) {
       next(error);
     }
