@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const config = require('../config');
+const config = require('../../config');
 
 const AuthService = {
   createJwt(subject, payload) {
@@ -14,9 +14,8 @@ const AuthService = {
       algorithms: ['HS256'],
     });
   },
-  parseBasicToken(token) {
-    return Buffer.from(token, 'base64').toString().split(':');
-  },
 };
 
 module.exports = AuthService;
+
+//Not using this file, leaving for now in case we want to go back
