@@ -29,29 +29,32 @@ VALUES
     10.45
   );
 
-INSERT INTO "income"("user_id", "income_amount", "transaction_category", "date_created")
+INSERT INTO "income"( "user_id", "income_amount", "name", "transaction_category", "date_created")
 VALUES  
-  (
-    1,
-    249.67,
-    'paycheck',
-    '2020-08-27'
-  ),
-  (
-    1,
-    113.88,
-    'other',
-    '2020-08-29'
-  );
+    (
+        1,
+        249.67,
+        'clucking bell paycheck',
+        'paycheck',
+        '2020-08-27'
+    ),
+    (
+        1,
+        113.88,
+        'helping out dave move things',
+        'other',
+        '2020-08-29'
+    );
 
-INSERT INTO "expenses" ("user_id", "expense_amount", "expense_category", "date_created")
+INSERT INTO "expenses"( "user_id", "expense_amount", "name", "expense_category", "date_created" )
 VALUES  
-  (
-    1,
-    -400,
-    'bills',
-    '2020-08-30'
-  );
+    (
+        1,
+        -400,
+        'rent',
+        'bills',
+        '2020-08-30'
+    );
 
 -- because we explicitly set the id fields
 -- update the sequencer for future automatic id setting
