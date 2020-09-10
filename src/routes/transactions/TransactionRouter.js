@@ -6,14 +6,7 @@ const TransactionServices = require('./TransactionServices');
 
 
 transactionRouter
-/**
- * needs to get a single transaction based on it's id
- * 
- * 1 : found out wether it's trying to quarry ether income or expenses table
- * 
- * 2: us the quarry value (id of _____) to quarry need table WHERE id=${quarry_value}
- */
-  .get('/:transactionType/:id', async  (req,res,next) => {
+  .get('/:transactionType/:id', async (req,res,next) => {
     
     const {transactionType, id} = req.params;
 
@@ -37,8 +30,6 @@ transactionRouter
     }catch(e){
       next(e);
     }
-
-
   });
 
 
