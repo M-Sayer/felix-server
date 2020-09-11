@@ -15,7 +15,7 @@ describe('User router', () => {
 
   context('POST to /login', () => {
     before;
-    it('POST to /login', () => {
+    it('returns mising username error if username is missing', () => {
       return supertest(app)
         .post('/login')
         .expect(200, { 'error': "Missing 'username' in request body" });
