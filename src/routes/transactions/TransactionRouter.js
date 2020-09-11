@@ -4,6 +4,42 @@ const transactionRouter = express.Router();
 
 const TransactionServices = require('./TransactionServices');
 
+/**
+ * @note might need a POST endpoint later
+ *        if added the .route('/') is needed 
+ */
+transactionRouter
+  .get('/',async(req, res, next) => {
+    // const user_id = req.user.user_id;
+    const user_id = 1; // Temp
+    
+    try {
+      const income = await TransactionServices.getUserIncome(req.app.get('db'), user_id); // Array of income objects
+      const expenses = await TransactionServices.getUserExpense(req.app.get('db'), user_id); // Array of expense objects
+      // No need to sort, already in chronological order
+      console.log({income, expenses});
+      res.json({income, expenses});
+    }
+    catch(error) {
+      next(error);
+    }
+  });
+
+
+transactionRouter
+  .get('/user/:id' , async(req, res, next) => {
+    // const user_id = req.user.user_id;
+    const user_id = 1; // Temp
+
+    try {
+      const user = await TransactionServices.getUserDetails(req.app.get('db'), user_id); // Returns an array of user details obj
+
+      return res.json(...user); // Returns a user obj
+    }
+    catch(error) {
+      next(error);
+    }
+  });
 
 transactionRouter
   .get('/:transactionType/:id', async (req,res,next) => {

@@ -1,4 +1,3 @@
-
 CREATE TYPE income_type AS ENUM (
     'paycheck',
     'freelance',

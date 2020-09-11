@@ -1,9 +1,9 @@
 CREATE TYPE expense_type AS ENUM (
-    'bills',
-    'transportation',
-    'food',
-    'entertainment',
-    'other'
+  'bills',
+  'transportation',
+  'food',
+  'entertainment',
+  'other'
 );
 
 CREATE TABLE IF NOT EXISTS "expenses"(

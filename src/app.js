@@ -1,10 +1,13 @@
 const express = require('express');
+
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
+
 const { NODE_ENV } = require('./config');
 const transactionRouter = require('./routes/transactions/TransactionRouter');
 const userRouter = require('./routes/user/user-router');
+
 const publicRoute = require('./routes/test-router/test-publicRoute');
 const privateRoute = require('./routes/test-router/test-privateRoute');
 const { requireAuth } = require('./middleware/jwt-auth');
@@ -21,7 +24,7 @@ app.get('/', (req, res) => {
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
-app.use(express.json()); // accept json requests
+app.use(express.json());
 
 app.use('/api/user', userRouter); //register, login, and get user by id
 
