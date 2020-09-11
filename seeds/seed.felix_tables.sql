@@ -29,7 +29,7 @@ VALUES
     10.45
   );
 
-INSERT INTO "income"( "user_id", "income_amount", "name", "transaction_category", "date_created")
+INSERT INTO "income" ( "user_id", "income_amount", "name", "transaction_category", "date_created")
 VALUES  
     (
         1,
@@ -46,7 +46,7 @@ VALUES
         '2020-08-29'
     );
 
-INSERT INTO "expenses"( "user_id", "expense_amount", "name", "expense_category", "date_created" )
+INSERT INTO "expenses" ( "user_id", "expense_amount", "name", "expense_category", "date_created" )
 VALUES  
     (
         1,
@@ -56,8 +56,8 @@ VALUES
         '2020-08-30'
     );
 
--- because we explicitly set the id fields
--- update the sequencer for future automatic id setting
+-- Because we explicitly set the id fields
+-- Update the sequencer for future automatic id setting
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
 SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
 SELECT setval('income_id_seq', (SELECT MAX(id) FROM income));
