@@ -4,6 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const userRouter = require('./routes/user/user-router');
+const publicRoute = require('./routes/test-router/publicroute');
+const privateRoute = require('./routes/test-router/privateroute');
+const { requireAuth } = require('./middleware/jwt-auth');
 const errorHandler = require('./middleware/error-handler');
 
 const app = express();
@@ -20,6 +23,10 @@ app.use(cors());
 app.use(express.json()); // accept json requests
 
 app.use('/user', userRouter); //register, login, and get user by id
+
+app.use('/public', publicRoute); //test for unprotected endpoint
+app.use(requireAuth); // every route below this line is protected
+app.use('/private', privateRoute); //test for protected endpoint
 
 app.use(errorHandler);
 

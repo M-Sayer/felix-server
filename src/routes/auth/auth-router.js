@@ -1,8 +1,10 @@
-const UserService = require('../routes/user/user-service');
+const express = require('express');
+const UserService = require('../user/user-service.js');
+const router = express.Router();
 
-async function requireAuth(req, res, next) {
-  const authToken = req.get('Authorization') || '';
+router.route('/auth').post(async (req, res, next) => {
   const db = req.app.get('db');
+  const authToken = req.get('Authorization') || '';
 
   let bearerToken;
   if (!authToken.toLowerCase().startsWith('bearer ')) {
@@ -15,12 +17,8 @@ async function requireAuth(req, res, next) {
     const payload = UserService.verifyJwt(bearerToken);
     const user = await UserService.getUserWithUsername(db, payload.sub);
     req.user = user;
-    next();
   } catch (error) {
     res.status(401).json({ error: 'Unauthorized request' });
   }
-}
-
-module.exports = {
-  requireAuth,
-};
+  res.status(200).json('passed auth');
+});
