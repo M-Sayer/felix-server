@@ -13,28 +13,44 @@ const db = knex({
 app.set('db',db);
 
 var moment = require('moment-timezone');
-var time = moment;
-console.log(time())
-console.log('not PST: ',time().format('z'));
-time.tz.setDefault('America/Los_Angeles');
-console.log('PST: ',time().format(''));
+const format = 'HH:mm:ss ddd MMM Do, YYYY z';
+//server time = moment in UTC
+var serverTime = moment.utc();
+// it's better to set by explicit region name than EST/EDT
+// EST won't account for DST
+// Does EDT account for !DST?
+const EST = moment.tz('America/New_York');
+const PST = moment.tz('America/Los_Angeles');
 
-// console.log(Date.now());
-// var then = moment();
 
-// function checkTime() {
+console.log('server time: ', serverTime.format(format));
+console.log('East: ', EST.format(format));
+console.log('DST? :', EST.isDST());
+console.log('west: ', PST.format(format));
 
-//   var now = moment();
-//   console.log('the time was then: ', then.format());
-//   console.log('the time is now: ', now.format());
-//   console.log('now is after then? ',now.isAfter(then));
-//   console.log('today is: ', moment().format());
-//   moment().set('year', 2013);
-//   console.log('today is: ', moment().format());
-// }
+const oldTime = moment().format(format);
 
-// setInterval(checkTime, 5000);
-console.log(moment().format('z'));
+function checkTime() {
+  const old = serverTime;
+
+  var newTime = moment().format(format);
+  const newTimeEst = moment.tz('America/New_York').format(format);
+
+  console.log('----------')
+  console.log('the server time was: ', serverTime.format(format));
+
+  serverTime = moment.utc()
+  const isAfter = moment(serverTime).isAfter(old);
+
+  console.log('the server time is: ', serverTime.format(format));
+  console.log('current server time is after old server time? ', isAfter);
+
+  console.log('----------');
+
+}
+
+setInterval(checkTime, 10000);
+
 
 // cron.schedule('* * * * *', () => {
 //   console.log('running a test every minute');
