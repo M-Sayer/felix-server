@@ -4,7 +4,7 @@ const UsersRouter = express.Router();
 const UsersRouterService = require('./usersRouterService');
 
 UsersRouter
-  .route('/:id')
+  .route('/user/:id')
   .get(async(req, res, next) => {
     // const user_id = req.user.user_id;
     const user_id = 1; // Temp
