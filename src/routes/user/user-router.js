@@ -2,8 +2,8 @@ const express = require('express');
 const path = require('path');
 const UserService = require('./user-service.js');
 
-const router = express.Router();
-const jsonBodyParser = express.json();
+// AuthRouter
+const UserRouter = express.Router();
 
 const {
   createUser,
@@ -14,13 +14,13 @@ const {
   unhashPassword,
 } = require('./user-service.js');
 
-router
-  .route('/register') // Supports POST
-  .post(jsonBodyParser, async (req, res, next) => {
+// AuthRouter
+UserRouter
+  .post( '/register', async (req, res, next) => {
     const db = req.app.get('db');
     const { first_name, last_name, username, password, email } = req.body;
 
-    //Check that fields exist
+    // Check that fields exist
     for (const field of [
       'first_name',
       'last_name',
@@ -34,30 +34,31 @@ router
         });
 
     try {
-      //check that password matches requirements
+      // Check that password matches requirements
       const passwordError = validatePassword(password);
 
-      //if password does not meet requirements return error
-      if (passwordError) return res.status(400).json({ error: passwordError });
+      // If password does not meet requirements return error
+      if (passwordError)
+        return res.status(400).json({ error: passwordError });
 
-      //checks if username already exists in db
+      // Check if username already exists in db
       const hasUsername = await getUserWithUsername(db, username);
 
-      //if username is already taken return error
+      // If username is already taken return error
       if (hasUsername)
-        return res.status(400).json({ error: `Username unavailable` });
+        return res.status(400).json({ error: 'Username unavailable' });
 
-      //checks if email already exists in db
+      // Check if email already exists in db
       const hasEmail = await getUserWithEmail(db, email);
 
-      //if email is already taken return error
+      // If email is already taken return error
       if (hasEmail)
-        return res.status(400).json({ error: `Email already in use` });
+        return res.status(400).json({ error: 'Email already in use' });
 
-      //hash the user's password
+      // Hash the user's password
       const hashedPassword = await hashPassword(password);
 
-      //build new user object
+      // Build new user object
       const newUser = {
         first_name,
         last_name,
@@ -66,8 +67,8 @@ router
         email,
       };
 
-      //insert new user object into database
-      const user = await createUser(db, newUser);
+      // Insert new user object into database
+      const user = await createUser(db, newUser); // Do we need this variable if we're not using it??
 
       //get user id and username from db to creaet jwt token
       const sub = user.username;
@@ -82,13 +83,12 @@ router
     }
   });
 
-router
-  .route('/login') // Supports POST
-  .post(async (req, res, next) => {
-    const { username, password } = await req.body;
+UserRouter
+  .post('/login', async (req, res, next) => {
     const db = req.app.get('db');
+    const { username, password } = req.body; // Removed await
 
-    //Check that fields exist
+    // Check that fields exist
     for (const field of ['username', 'password'])
       if (!req.body[field])
         return res.status(400).json({
@@ -96,17 +96,17 @@ router
         });
 
     try {
-      //get user object to check against POSTed username and password
+      // Get user object to check against POSTed username and password
       const hasUser = await getUserWithUsername(db, username);
 
-      //if hasUser is undefined (username does not exist in db) return error
+      // If hasUser is undefined (username does not exist in db), return error
       if (!hasUser) {
-        return res.status(401).json({ error: `invalid credentials` });
+        return res.status(401).json({ error: 'Invalid credentials' });
       }
 
       //if password is wrong return error
       if (!(await unhashPassword(password, hasUser.password))) {
-        return res.status(401).json({ error: `invalid credentials` });
+        return res.status(401).json({ error: 'invalid credentials' });
       }
 
       //get user id and username from db to creaet jwt token
@@ -122,4 +122,4 @@ router
     }
   });
 
-module.exports = router;
+module.exports = UserRouter;
