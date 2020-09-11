@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
+const transactionRouter = require('./routes/transactions/TransactionRouter');
 const userRouter = require('./routes/user/user-router');
 const publicRoute = require('./routes/test-router/test-publicRoute');
 const privateRoute = require('./routes/test-router/test-privateRoute');
@@ -27,6 +28,8 @@ app.use('/api/user', userRouter); //register, login, and get user by id
 app.use('/api/public', publicRoute); //test for unprotected endpoint
 app.use(requireAuth); // every route below this line is protected
 app.use('/api/private', privateRoute); //test for protected endpoint
+
+app.use('/api/transaction', transactionRouter);
 
 app.use(errorHandler);
 
