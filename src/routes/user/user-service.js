@@ -1,24 +1,33 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
 const userService = {
+  createJwt(subject, payload) {
+    return jwt.sign(payload, config.JWT_SECRET, {
+      subject,
+      algorithm: 'HS256',
+    });
+  },
+  verifyJwt(token) {
+    return jwt.verify(token, config.JWT_SECRET, {
+      algorithms: ['HS256'],
+    });
+  },
   getUserWithUsername(db, username) {
     return db('users')
       .where({ username })
       .first()
-      .catch(function (error) {
-        return error;
-      });
+      .catch((error) => error);
   },
 
   getUserWithEmail(db, email) {
     return db('users')
       .where({ email })
       .first()
-      .catch(function (error) {
-        return error;
-      });
+      .catch((error) => error);
   },
 
   validatePassword(password) {
@@ -52,14 +61,6 @@ const userService = {
 
   unhashPassword(password, hash) {
     return bcrypt.compare(password, hash);
-  },
-
-  getUser(db) {
-    console.log('getUser ran');
-    return true; //returns true for testing purposes, set to false to emulate no user found or wrong password
-    // return db('users')
-    //   .where({ username, password })
-    //   .first()
   },
 };
 module.exports = userService;

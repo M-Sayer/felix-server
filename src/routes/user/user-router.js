@@ -1,13 +1,12 @@
 const express = require('express');
 const path = require('path');
+const UserService = require('./user-service.js');
 
 // AuthRouter
-const router = express.Router();
-const jsonBodyParser = express.json(); // May be redundant, check app
+const UserRouter = express.Router();
 
 const {
   createUser,
-  getUser, // ??
   validatePassword,
   getUserWithUsername,
   getUserWithEmail,
@@ -16,9 +15,8 @@ const {
 } = require('./user-service.js');
 
 // AuthRouter
-router
-  .route('/register') // Supports POST
-  .post(jsonBodyParser, async (req, res, next) => {
+UserRouter
+  .post( '/register', async (req, res, next) => {
     const db = req.app.get('db');
     const { first_name, last_name, username, password, email } = req.body;
 
@@ -48,14 +46,14 @@ router
 
       // If username is already taken return error
       if (hasUsername)
-        return res.status(400).json({ error: `Username unavailable` });
+        return res.status(400).json({ error: 'Username unavailable' });
 
       // Check if email already exists in db
       const hasEmail = await getUserWithEmail(db, email);
 
       // If email is already taken return error
       if (hasEmail)
-        return res.status(400).json({ error: `Email already in use` });
+        return res.status(400).json({ error: 'Email already in use' });
 
       // Hash the user's password
       const hashedPassword = await hashPassword(password);
@@ -72,16 +70,21 @@ router
       // Insert new user object into database
       const user = await createUser(db, newUser); // Do we need this variable if we're not using it??
 
-      // Respond with a JWT
-      res.status(200).json({ authToken: 'JWTString' });
+      //get user id and username from db to creaet jwt token
+      const sub = user.username;
+      const payload = { user_id: user.id };
+
+      //create and send jwt token
+      res.status(200).json({
+        authToken: UserService.createJwt(sub, payload),
+      });
     } catch (error) {
-        next(error);
+      next(error);
     }
   });
 
-router
-  .route('/login') // Supports POST
-  .post(jsonBodyParser, async (req, res, next) => {
+UserRouter
+  .post('/login', async (req, res, next) => {
     const db = req.app.get('db');
     const { username, password } = req.body; // Removed await
 
@@ -98,19 +101,25 @@ router
 
       // If hasUser is undefined (username does not exist in db), return error
       if (!hasUser) {
-        return res.status(401).json({ error: `Invalid credentials` });
+        return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // If password is wrong return error
-      if ((await unhashPassword(password, hasUser.password)) === false) {
-        return res.status(401).json({ error: `Invalid credentials` });
+      //if password is wrong return error
+      if (!(await unhashPassword(password, hasUser.password))) {
+        return res.status(401).json({ error: 'invalid credentials' });
       }
 
-      // Respond with a JWT
-      res.status(200).json({ authToken: 'JWTString' });
+      //get user id and username from db to creaet jwt token
+      const sub = hasUser.username;
+      const payload = { user_id: hasUser.id };
+
+      //create and send jwt token
+      res.status(200).json({
+        authToken: UserService.createJwt(sub, payload),
+      });
     } catch (error) {
-        next(error);
+      next(error);
     }
   });
 
-module.exports = router;
+module.exports = UserRouter;
