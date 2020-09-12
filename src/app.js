@@ -3,14 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-
 const { NODE_ENV } = require('./config');
-const transactionRouter = require('./routes/transactions/TransactionRouter');
-const userRouter = require('./routes/user/user-router');
-const usersRouter = require('./routes/usersRouter/usersRouter');
-
-const errorHandler = require('./middleware/error-handler');
-
 const app = express();
 
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
