@@ -1,7 +1,5 @@
 const xss = require('xss');
-const Knex = require('knex');
-
-
+const knex = require('knex');
 
 const TransactionServices ={
   getUserDetails(db, id) {

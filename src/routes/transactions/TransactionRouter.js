@@ -33,8 +33,9 @@ transactionRouter
 
     try {
       const user = await TransactionServices.getUserDetails(req.app.get('db'), user_id); // Returns an array of user details obj
+      console.log(user)
 
-      return res.json(...user); // Returns a user obj
+      return res.json(user); // Returns a user obj
     }
     catch(error) {
       next(error);
