@@ -9,11 +9,11 @@ const { NODE_ENV } = require('./config');
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 // Middleware
-const errorHandler = require('../src/middleware/error-handler');
+const errorHandler = require('./middleware/errorHandler');
 
 // Routers
-const usersRouter = require('../src/routes/users/users-router');
-const transactionRouter = require('../src/routes/transactions/TransactionRouter');
+const usersRouter = require('./routes/users/usersRouter');
+const transactionsRouter = require('./routes/transactions/transactionsRouter');
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/users', usersRouter);
-app.use('/api/transaction', transactionRouter);
+app.use('/api/transactions', transactionsRouter);
 
 app.use(errorHandler);
 

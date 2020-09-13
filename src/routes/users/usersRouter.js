@@ -1,18 +1,18 @@
 const express = require('express');
 const path = require('path');
-const UsersService = require('./users-service.js');
 
 // Strictly for authentication and registration only
 const UsersRouter = express.Router();
 
 const {
+  createJwt,
   getUserWithUsername,
   getUserWithEmail,
   validatePassword,
   createUser,
   hashPassword,
   unhashPassword,
-} = require('./users-service.js');
+} = require('./usersService.js');
 
 UsersRouter
   .post( '/register', async(req, res, next) => {
@@ -50,7 +50,11 @@ UsersRouter
 
       // If password does not meet requirements, return error
       if (passwordError) {
-        return res.status(400).json({ error: passwordError });
+        return res
+          .status(400)
+          .json({ 
+            error: passwordError
+          });
       }
 
       // Check if username already exists in db
@@ -58,7 +62,11 @@ UsersRouter
 
       // If username is already taken return error
       if (hasUsername) {
-        return res.status(400).json({ error: 'Username unavailable' });
+        return res
+          .status(400)
+          .json({ 
+            error: 'Username unavailable'
+          });
       }
 
       // Check if email already exists in db
@@ -66,7 +74,11 @@ UsersRouter
 
       // If email is already taken return error
       if (hasEmail) {
-        return res.status(400).json({ error: 'Email already in use' });
+        return res
+          .status(400)
+          .json({
+            error: 'Email already in use' 
+          });
       }
 
       // Hash the user's password
@@ -92,7 +104,7 @@ UsersRouter
       res
         .status(200)
         .json({
-        authToken: UserService.createJwt(sub, payload),
+          authToken: createJwt(sub, payload),
         });
 
     } catch (error) {
@@ -125,12 +137,20 @@ UsersRouter
 
       // If hasUser is undefined (username does not exist in db), return error
       if (!hasUser) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        return res
+          .status(401)
+          .json({ 
+            error: 'Invalid credentials' 
+          });
       }
 
       // If password is wrong return error
       if (!(await unhashPassword(password, hasUser.password))) {
-        return res.status(401).json({ error: 'invalid credentials' });
+        return res
+          .status(401)
+          .json({ 
+            error: 'invalid credentials' 
+          });
       }
 
       // Get user id and username from db to create jwt token
@@ -141,7 +161,7 @@ UsersRouter
       res
         .status(200)
         .json({
-          authToken: UserService.createJwt(sub, payload),
+          authToken: createJwt(sub, payload),
         });
     } catch (error) {
       next(error);
