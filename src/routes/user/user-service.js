@@ -11,11 +11,13 @@ const userService = {
       algorithm: 'HS256',
     });
   },
+
   verifyJwt(token) {
     return jwt.verify(token, config.JWT_SECRET, {
       algorithms: ['HS256'],
     });
   },
+
   getUserWithUsername(db, username) {
     return db('users')
       .where({ username })
@@ -26,6 +28,13 @@ const userService = {
   getUserWithEmail(db, email) {
     return db('users')
       .where({ email })
+      .first()
+      .catch((error) => error);
+  },
+
+  getUserWithId(db, id) {
+    return db('users')
+      .where({ id })
       .first()
       .catch((error) => error);
   },
@@ -47,7 +56,6 @@ const userService = {
   },
 
   createUser(db, newUser) {
-    console.log(`createUser ran`);
     return db
       .insert(newUser)
       .into('users')

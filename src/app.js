@@ -24,13 +24,11 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/user', userRouter); //register, login, and get user by id
+app.use('/api/users', userRouter); //register, login, and get user by id
 
-app.use('/api/public', publicRoute); //test for unprotected endpoint
 app.use(requireAuth); // every route below this line is protected
-app.use('/api/private', privateRoute); //test for protected endpoint
 
-app.use('/api/transaction', transactionRouter);
+app.use('/api/transactions', transactionRouter);
 
 app.use(errorHandler);
 
