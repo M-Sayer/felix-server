@@ -30,6 +30,13 @@ const UsersService = {
       .catch((error) => error);
   },
 
+  getUserWithId(db, id) {
+    return db('users')
+      .where({ id })
+      .first()
+      .catch((error) => error);
+  },
+
   validatePassword(password) {
     if (password.length < 8) {
       return 'Password must be longer than 8 characters';

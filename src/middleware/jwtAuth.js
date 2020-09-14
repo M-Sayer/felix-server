@@ -14,7 +14,7 @@ async function requireAuth(req, res, next) {
   try {
     const payload = UsersService.verifyJwt(bearerToken);
     const user = await UsersService.getUserWithUsername(db, payload.sub);
-    req.user = user;
+    req.userId = user.id;
     next();
   } catch (error) {
     res.status(401).json({ error: 'Unauthorized request' });
