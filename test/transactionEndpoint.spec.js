@@ -15,7 +15,6 @@ describe('Transactions Endpoint', ()=> {
     db = helper.makeKnexInstance();
     app.set('db', db);
   });
-<<<<<<< HEAD
 
   after('disconnect from db', () => db.destroy());
 
@@ -93,6 +92,4 @@ describe('Transactions Endpoint', ()=> {
 
 
 
-=======
->>>>>>> master
 });

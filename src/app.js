@@ -8,7 +8,7 @@ const app = express();
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 // Middleware
-const errorHandler = require('./middleware/error-handler');
+const errorHandler = require('./middleware/errorHandler');
 // Routers
 const usersRouter = require('./routes/users/usersRouter');
 const transactionsRouter = require('./routes/transactions/transactionsRouter');

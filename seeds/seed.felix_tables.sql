@@ -1,13 +1,13 @@
 BEGIN;
 
 TRUNCATE 
-  'alerts',
-  'expenses',
-  'income',
-  'goals',
-  'users';
+  "alerts",
+  "expenses",
+  "income",
+  "goals",
+  "users";
 
-INSERT INTO 'users' ('id', 'first_name', 'last_name', 'username', 'email', 'password', 'allowance', 'balance')
+INSERT INTO "users" ("id", "first_name", "last_name", "username", "email", "password", "allowance", "balance")
 VALUES
   (
     1,
@@ -55,7 +55,7 @@ VALUES
   ),
   (
     5,
-    'Gage',
+    '-----',
     'M',
     'sumDude',
     'notarealemail@notrealmail.com',
@@ -87,7 +87,7 @@ VALUES
     29.27 
   );
 
-INSERT INTO 'goals' ('id', 'user_id', 'goal_amount', 'contribution_amount', 'current_amount', 'end_date')
+INSERT INTO "goals" ("id", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")
 VALUES 
   (
     1,
@@ -146,7 +146,7 @@ VALUES
     '2020-10-05'
   );
 
-INSERT INTO 'income' ('id', 'user_id', 'name', 'income_amount', 'income_category', 'date_created')
+INSERT INTO "income" ("id", "user_id", "name", "income_amount", "income_category", "date_created")
 VALUES  
   (
     1,
@@ -165,7 +165,7 @@ VALUES
     '2020-08-29'
   );
 
-INSERT INTO 'expenses' ('id', 'user_id', 'name', 'expense_amount', 'expense_category', 'date_created')
+INSERT INTO "expenses" ("id", "user_id", "name", "expense_amount", "expense_category", "date_created")
 VALUES  
   (
     1,
