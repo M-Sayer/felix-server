@@ -45,7 +45,7 @@ describe('Transaction Endpoint', ()=> {
 
         return supertest(app)
           .get(`/api/transaction/${type}/${id}`)
-          .expect(200, expectedIncome)
+          .expect(200, expectedIncome);
           
       });
 
