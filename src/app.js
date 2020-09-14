@@ -11,6 +11,7 @@ const errorHandler = require('./middleware/errorHandler');
 // Routers
 const usersRouter = require('./routes/users/usersRouter');
 const transactionsRouter = require('./routes/transactions/transactionsRouter');
+
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
 });

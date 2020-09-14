@@ -29,41 +29,44 @@ transactionsRouter.get('/', async (req, res, next) => {
   }
 });
 
-transactionsRouter.get('/transactions/:type/:id', async (req, res, next) => {
-  const { type, id } = req.params;
+transactionsRouter
+  .route('/:type/:id')
+  .get( async (req, res, next) => {
+    const { type, id } = req.params;
 
-  if (!['income', 'expenses'].includes(type)) {
-    return res.status(400).json({
-      error: 'Invalid transaction type',
-    });
-  }
-
-  for (const [key, prop] of Object.entries({ type, id })) {
-    if (!prop) {
+    if (!['income', 'expenses'].includes(type)) {
       return res.status(400).json({
-        error: `${key} seems to be missing from query params`,
-      });
-    }
-  }
-
-  try {
-    const transaction = await getSingleTransaction(
-      req.app.get('db'),
-      type,
-      id
-    );
-
-    if (!transaction) {
-      return res.status(400).json({
-        error: 'Invalid transaction id',
+        error: 'Invalid transaction type',
       });
     }
 
-    const transactionDetails =
+    for (const [key, prop] of Object.entries({ type, id })) {
+      if (!prop) {
+        return res.status(400).json({
+          error: `${key} seems to be missing from query params`,
+        });
+      }
+    }
+
+    try {
+      const transaction = await getSingleTransaction(
+        req.app.get('db'),
+        type,
+        id
+      );
+
+      if (!transaction) {
+        return res.status(400).json({
+          error: 'Invalid transaction id',
+        });
+      }
+
+      const transactionDetails =
       type === 'income'
         ? {
           id: transaction.id,
           name: transaction.name,
+          description : transaction.description,
           date_created: transaction.date_created,
           amount: transaction.income_amount,
           subType: transaction.transaction_category,
@@ -71,17 +74,18 @@ transactionsRouter.get('/transactions/:type/:id', async (req, res, next) => {
         : {
           id: transaction.id,
           name: transaction.name,
+          description : transaction.description,
           date_created: transaction.date_created,
           amount: transaction.expense_amount,
           subType: transaction.expense_category,
         };
-    return res
-      .status(200)
-      .json(transactionDetails);
-  } catch (e) {
-    next(e);
-  }
-})
+      return res
+        .status(200)
+        .json(transactionDetails);
+    } catch (e) {
+      next(e);
+    }
+  })
   .patch((req,res,next) => {
     const { type, id } = req.params;
 
