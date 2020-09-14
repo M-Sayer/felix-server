@@ -1,21 +1,21 @@
 const express = require('express');
 
-const transactionRouter = express.Router();
+const transactionsRouter = express.Router();
 
-const TransactionServices = require('./TransactionServices');
+const TransactionsService = require('./TransactionsService');
 
 /**
  * @note might need a POST endpoint later
  *        if added the .route('/') is needed 
  */
-transactionRouter
-  .get('/',async(req, res, next) => {
+transactionsRouter
+  .get('/', async(req, res, next) => {
     // const user_id = req.user.user_id;
     const user_id = 1; // Temp
     
     try {
-      const income = await TransactionServices.getUserIncome(req.app.get('db'), user_id); // Array of income objects
-      const expenses = await TransactionServices.getUserExpense(req.app.get('db'), user_id); // Array of expense objects
+      const income = await TransactionsService.getUserIncome(req.app.get('db'), user_id); // Array of income objects
+      const expenses = await TransactionsService.getUserExpense(req.app.get('db'), user_id); // Array of expense objects
       // No need to sort, already in chronological order
       console.log({income, expenses});
       res.json({income, expenses});
@@ -25,24 +25,8 @@ transactionRouter
     }
   });
 
-
-transactionRouter
-  .get('/user/:id' , async(req, res, next) => {
-    // const user_id = req.user.user_id;
-    const user_id = 1; // Temp
-
-    try {
-      const user = await TransactionServices.getUserDetails(req.app.get('db'), user_id); // Returns an array of user details obj
-
-      return res.json(...user); // Returns a user obj
-    }
-    catch(error) {
-      next(error);
-    }
-  });
-
-transactionRouter
-  .get('/:transactionType/:id', async (req,res,next) => {
+transactionsRouter
+  .get('/transactions/:type/:id', async (req,res,next) => {
     
     const {transactionType, id} = req.params;
 
@@ -56,7 +40,7 @@ transactionRouter
       }
     }
     try{
-      const transaction = await TransactionServices.getSingleTransaction(
+      const transaction = await TransactionsService.getSingleTransaction(
         req.app.get('db'),
         transactionType,
         id,
@@ -93,4 +77,4 @@ transactionRouter
 
 
 
-module.exports = transactionRouter;
+module.exports = transactionsRouter;

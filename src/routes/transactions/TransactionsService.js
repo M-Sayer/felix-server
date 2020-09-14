@@ -3,7 +3,7 @@ const Knex = require('knex');
 
 
 
-const TransactionServices ={
+const TransactionsService ={
   getUserDetails(db, id) {
     return db('users')
       .select('*')
@@ -38,4 +38,4 @@ const TransactionServices ={
 };
     
 
-module.exports = TransactionServices; 
+module.exports = TransactionsService; 

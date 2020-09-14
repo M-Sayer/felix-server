@@ -1,4 +1,4 @@
-const UserService = require('./routes/user/user-service');
+const UsersService = require('../routes/users/UsersService');
 
 async function requireAuth(req, res, next) {
   const authToken = req.get('Authorization') || '';
@@ -12,8 +12,8 @@ async function requireAuth(req, res, next) {
   }
 
   try {
-    const payload = UserService.verifyJwt(bearerToken);
-    const user = await UserService.getUserWithUsername(db, payload.sub);
+    const payload = UsersService.verifyJwt(bearerToken);
+    const user = await UsersService.getUserWithUsername(db, payload.sub);
     req.user = user;
     next();
   } catch (error) {

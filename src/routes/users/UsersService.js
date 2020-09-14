@@ -4,7 +4,7 @@ const config = require('../../config');
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
-const userService = {
+const UsersService = {
   createJwt(subject, payload) {
     return jwt.sign(payload, config.JWT_SECRET, {
       subject,
@@ -63,4 +63,4 @@ const userService = {
     return bcrypt.compare(password, hash);
   },
 };
-module.exports = userService;
+module.exports = UsersService;

@@ -1,9 +1,8 @@
 const express = require('express');
 const path = require('path');
-const UserService = require('./user-service.js');
+const UsersService = require('./UsersService.js');
 
-// AuthRouter
-const UserRouter = express.Router();
+const usersRouter = express.Router();
 
 const {
   createUser,
@@ -12,10 +11,9 @@ const {
   getUserWithEmail,
   hashPassword,
   unhashPassword,
-} = require('./user-service.js');
+} = require('./user-service.js.js');
 
-// AuthRouter
-UserRouter
+usersRouter
   .post( '/register', async (req, res, next) => {
     const db = req.app.get('db');
     const { first_name, last_name, username, password, email } = req.body;
@@ -76,14 +74,14 @@ UserRouter
 
       //create and send jwt token
       res.status(200).json({
-        authToken: UserService.createJwt(sub, payload),
+        authToken: UsersService.createJwt(sub, payload),
       });
     } catch (error) {
       next(error);
     }
   });
 
-UserRouter
+usersRouter
   .post('/login', async (req, res, next) => {
     const db = req.app.get('db');
     const { username, password } = req.body; // Removed await
@@ -115,11 +113,11 @@ UserRouter
 
       //create and send jwt token
       res.status(200).json({
-        authToken: UserService.createJwt(sub, payload),
+        authToken: UsersService.createJwt(sub, payload),
       });
     } catch (error) {
       next(error);
     }
   });
 
-module.exports = UserRouter;
+module.exports = usersRouter;
