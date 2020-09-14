@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /**
- * make a knex instance for postgres
- * @returns { db }
+ * Make a knex instance for PostgreSQL
+ * @returns {db}
  */
 
 const makeKnexInstance = () => {
@@ -25,8 +25,9 @@ const makeAuthHeader = (user, secret = process.env.JWT_SECRET) => {
 };
 
 /**
- * @todo "needs to be made with __auth__ in mind"
+ * @todo 'needs to be made with __auth__ in mind'
  */
+
 const makeTestUsersArray = () => {
   return [
     {
@@ -135,6 +136,7 @@ const makeIncomeAndExpensesArray = () => {
       dateCreated :  '2029-01-22T16:28:32.615Z'  
     }
   ];
+  
   const expenses = [
     {
       id: 1,
@@ -192,15 +194,19 @@ const makeIncomeAndExpensesArray = () => {
 
 
 /**
- * @todo needs to be made taking content generated from makeTestUsersArray()
- *        and seed knex instance.
+ * @todo needs to be made taking content 
+ * generated from makeTestUsersArray() 
+ * and seed knex instance.
  */
 
 const seedUsersTable = (db, users) => {
+<<<<<<< HEAD
   const testUsersArray = makeTestUsersArray();
   return db.transaction(async (trx) => {
     await trx.into('users').insert(testUsersArray);
   });
+=======
+>>>>>>> master
 };
 
 /**
