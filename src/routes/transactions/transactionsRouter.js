@@ -49,7 +49,8 @@ TransactionsRouter
   });
 
 TransactionsRouter
-  .get('/:transactionType/:id', async (req,res,next) => {
+  .route('/:transactionType/:id')
+  .get( async (req,res,next) => {
     
     const { transactionType, id } = req.params;
 
@@ -114,6 +115,50 @@ TransactionsRouter
     }catch(e){
       next(e);
     }
+  })
+  .patch(,(req,res,next) => {
+    const { transactionType, id } = req.params;
+
+    const {name, amount, category} = req.body; 
+
+    if(!['income','expenses'].includes(transactionType)) {
+      return res
+        .status(400)
+        .json({
+          error : 'Invalid transaction type'
+        });
+    }
+    for(const [key, prop] of Object.entries({transactionType, id})) {
+      if(!prop) {
+        return res
+          .status(400)
+          .json({
+            error : `${key} seems to be missing from query params`
+          });
+      }
+    }
+    if(!name && !amount && !category){
+      res.status(400).json({error : 'no content to be updated'});
+    }
+
+    const transObject  = transactionType === 'income'
+      ? {
+        name,
+        income_amount : amount,
+        income_category : category
+      }
+      :{
+        name, 
+        expense_amount : amount,
+        expense_category : category
+      }
+      ;
+
+      
+      
+  
+
+
   });
 
 

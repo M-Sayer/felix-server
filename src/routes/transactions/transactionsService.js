@@ -34,6 +34,9 @@ const TransactionsService ={
       .where({id})
       .first();
   },
+  patchSingleTransaction(db,type,id,content){
+    
+  },
 };
     
 
