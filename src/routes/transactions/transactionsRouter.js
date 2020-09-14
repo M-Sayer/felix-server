@@ -31,6 +31,7 @@ transactionsRouter.get('/', async (req, res, next) => {
 
 transactionsRouter
   .route('/:type/:id')
+  .all(checkIfTransactionExists)
   .get( async (req, res, next) => {
     const { type, id } = req.params;
 
@@ -116,14 +117,15 @@ transactionsRouter
      *  update the balance along with it.
      */
 
-    const transObject  = type === 'income'
+    const transObject  = 
+    type === 'income'
       ? {
         name,
         description,
         income_amount : amount,
         income_category : category
       }
-      :{
+      : {
         name,
         description, 
         expense_amount : amount,
@@ -138,12 +140,25 @@ transactionsRouter
     )
       .then(() => res.status(204).end())
       .catch(next);
-      
-
   });
 
-
-
+async function  checkIfTransactionExists(req,res,next) {
+  try {
+    const ExistingTransaction = await getSingleTransaction(
+      req.app.get('db'),
+      req.params.type,
+      req.params.id
+    );
+    if(!ExistingTransaction){
+      return res.status(400).json(
+        {error : 'the id of the transaction doesn\'t exist'}
+      );
+    }
+    next();
+  }catch(error){
+    next(error);
+  }
+}
 
 module.exports = transactionsRouter;
 
