@@ -9,6 +9,7 @@ const AuthService = {
       algorithm: 'HS256',
     });
   },
+
   verifyJwt(token) {
     return jwt.verify(token, config.JWT_SECRET, {
       algorithms: ['HS256'],
@@ -18,4 +19,5 @@ const AuthService = {
 
 module.exports = AuthService;
 
-//Not using this file, leaving for now in case we want to go back
+// Not using this file
+// Leaving for now in case we want to have a separate auth service obj

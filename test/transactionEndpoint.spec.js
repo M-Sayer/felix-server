@@ -3,8 +3,7 @@ const app = require('../src/app');
 const helper = require('./testHelpers');
 const supertest = require('supertest');
 
-
-describe('Transaction Endpoint', ()=> {
+describe('Transactions Endpoint', ()=> {
   let db;
 
   const {
@@ -16,6 +15,7 @@ describe('Transaction Endpoint', ()=> {
     db = helper.makeKnexInstance();
     app.set('db', db);
   });
+<<<<<<< HEAD
 
   after('disconnect from db', () => db.destroy());
 
@@ -93,4 +93,6 @@ describe('Transaction Endpoint', ()=> {
 
 
 
+=======
+>>>>>>> master
 });

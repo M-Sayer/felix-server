@@ -3,13 +3,15 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
-const transactionRouter = require('./routes/transactions/TransactionRouter');
-const userRouter = require('./routes/user/user-router');
-const errorHandler = require('./middleware/error-handler');
-
+// Variables
 const app = express();
-
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
+
+// Middleware
+const errorHandler = require('./middleware/error-handler');
+// Routers
+const usersRouter = require('./routes/users/usersRouter');
+const transactionsRouter = require('./routes/transactions/transactionsRouter');
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
@@ -20,9 +22,8 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/user', userRouter);
-
-app.use('/api/transaction' , transactionRouter );
+app.use('/api/users', usersRouter);
+app.use('/api/transactions', transactionsRouter);
 
 app.use(errorHandler);
 

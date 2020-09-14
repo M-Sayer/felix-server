@@ -4,12 +4,11 @@ const knex = require('knex');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
-
 /**
- * make a knex instance for postgres
- * @returns { db }
+ * Make a knex instance for PostgreSQL
+ * @returns {db}
  */
+
 const makeKnexInstance = () =>{
   return knex({
     client : 'pg',
@@ -18,8 +17,9 @@ const makeKnexInstance = () =>{
 };
 
 /**
- * @todo "needs to be made with __auth__ in mind"
+ * @todo 'needs to be made with __auth__ in mind'
  */
+
 const makeTestUsersArray = () => {
 
 };
@@ -67,6 +67,7 @@ const makeIncomeAndExpensesArray = () => {
       dateCreated :  '2029-01-22T16:28:32.615Z'  
     }
   ];
+  
   const expenses = [
     {
       id: 1,
@@ -123,16 +124,18 @@ const makeIncomeAndExpensesArray = () => {
 
 
 /**
- * @todo needs to be made taking content generated from makeTestUsersArray()
- *        and seed knex instance.
+ * @todo needs to be made taking content 
+ * generated from makeTestUsersArray() 
+ * and seed knex instance.
  */
-const seedUsersTable = (db,users) => {
 
+const seedUsersTable = (db, users) => {
 };
 
 /**
  * @todo needs seedUsersTable() to continue @ -> gage when ready
  */
+
 const  seedIncomeAndExpensesTables = (db, users, income=[] , expenses=[] ) => {
   seedUsersTable(db, users);
 
@@ -162,7 +165,6 @@ const clearTables = (db) => {
     )
       .then(()=> 
         Promise.all([
-
           trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
           trx.raw(`ALTER SEQUENCE income_id_seq minvalue 0 START WITH 1`),
           trx.raw(`ALTER SEQUENCE expenses_id_seq minvalue 0 START WITH 1`),
@@ -175,8 +177,6 @@ const clearTables = (db) => {
       );
   });
 };
-
-
 
 module.exports = {
   makeKnexInstance,
