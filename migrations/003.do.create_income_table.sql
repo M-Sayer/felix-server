@@ -1,8 +1,8 @@
 CREATE TYPE income_type AS ENUM (
-  "paycheck",
-  "freelance",
-  "side_gig",
-  "other"
+  'paycheck',
+  'freelance',
+  'side_gig',
+  'other'
 );
 
 CREATE TABLE IF NOT EXISTS "income" (

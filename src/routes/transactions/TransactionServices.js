@@ -1,7 +1,9 @@
-const knex = require('knex');
 const xss = require('xss');
+const Knex = require('knex');
 
-const TransactionsService ={
+
+
+const TransactionServices ={
   getUserDetails(db, id) {
     return db('users')
       .select('*')
@@ -14,14 +16,13 @@ const TransactionsService ={
       .select('*')
       .where({user_id});
   },
-
   /**
+   * 
    * @param {knex} db 
    * @param {number} user_id
-   * @returns {array} 
-  **/
-
-  getUserExpenses(db, user_id) {
+   * @returns {Array} 
+   */
+  getUserExpense(db, user_id) {
     return db('expenses')
       .select('*')
       .where({user_id});
@@ -37,4 +38,4 @@ const TransactionsService ={
 };
     
 
-module.exports = TransactionsService; 
+module.exports = TransactionServices; 
