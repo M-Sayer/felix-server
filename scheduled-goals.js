@@ -35,7 +35,19 @@ const db = knex({
 async function automateGoals () {
   try {
     const trxResult = await db.transaction(async trx => {
-      const goals = await trx('goals').where('completed', '=', 'false');
+      const goals = await trx('goals')
+        .select(
+          'id',
+          'user_id',
+          'goal_amount',
+          'contribution_amount',
+          'current_amount',
+          'end_date',
+          'completed',
+          
+        )
+        .where('completed', '=', 'false')
+        .join('users', {'goals.user_id': 'users.id'});
       console.log(goals)
     });
     
