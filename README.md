@@ -1,6 +1,6 @@
 ### To get started, clone this repository and run npm install to install project dependencies
 
-### Move the example Environment file to .env that will be ignored by git and read by the express server 
+### Move the example Environment file to .env that will be ignored by git and read by the express server
 
 mv example.env .env
 
@@ -19,7 +19,7 @@ creates and authenticates new user
 
 **DATA PARAMS**:
 
- `{`
+`{`
 
 `"first_name": "firstname",`
 
@@ -31,15 +31,15 @@ creates and authenticates new user
 
 `"email": "email@email.com",`
 
-`}` 
+`}`
 
 **SUCCESS RESPONSE**
 
-code: 200 
+code: 200
 
-content: 
+content:
 
-`{ authToken : 'JWTString' }` 
+`{ authToken : 'JWTString' }`
 
 **ERROR RESPONSE**
 
@@ -47,7 +47,7 @@ content:
 
 code: 400
 
-content:  
+content:
 
 `{ error: Missing {value missing} in request body }`
 
@@ -55,7 +55,7 @@ content:
 
 code: 401
 
-content: 
+content:
 
 `{ error: username unavailable }`
 
@@ -63,7 +63,7 @@ W**hen email is already registered**
 
 code: 401
 
-content: 
+content:
 
 `{ error: email already in use }`
 
@@ -71,7 +71,7 @@ content:
 
 code: 401
 
-content: 
+content:
 
 `{ error: Password must contain one upper case, lower case, number and special character }`
 
@@ -79,7 +79,7 @@ content:
 
 code: 401
 
-content: 
+content:
 
 `{ error: Password must not start or end with empty spaces }`
 
@@ -87,7 +87,7 @@ content:
 
 code: 401
 
-content: 
+content:
 
 `{ error: Password must be less than 20 characters }`
 
@@ -95,7 +95,7 @@ content:
 
 code: 401
 
-content: 
+content:
 
 `{ error: Password must be longer than 8 characters }`
 
@@ -107,33 +107,33 @@ authenticates returning user
 
 **DATA PARAMS:**
 
- `{`
+`{`
 
 `"username": "username123",`
 
 `"password": "password123",`
 
-`}` 
+`}`
 
 **SUCCESS RESPONSE**
 
 code: 200
 
-content: 
+content:
 
-`{ authToken: jwtTokenHere }` 
+`{ authToken: jwtTokenHere }`
 
 **ERROR RESPONSE**
 
 code: 401
 
-content: 
+content:
 
 `{ error: missing credentials }`
 
 code: 401
 
-content: 
+content:
 
 `{ error: invalid credentials }`
 
@@ -153,15 +153,15 @@ Required: id=[integer]
 
 code: 200
 
-content: 
+content:
 
-`{` 
+`{`
 
 `"username": "username123",`
 
 `"balance": 1000,`
 
-`"allowance": 500,` 
+`"allowance": 500,`
 
 `}`
 
@@ -195,7 +195,7 @@ returns all transactions for user
 
 Code: 200
 
-content: 
+content:
 
 `{`
 
@@ -209,9 +209,9 @@ content:
 
 ## /transactions/:type
 
-**URL Params:** 
+**URL Params:**
 
-Required: 
+Required:
 
 type=[string] , 1 of [income, expenses]
 
@@ -243,9 +243,9 @@ code: 204
 
 ## /transactions/:type/:id
 
-**URL Params:** 
+**URL Params:**
 
-Required: 
+Required:
 
 type=[string], 1 of [income, expenses]
 
@@ -261,7 +261,7 @@ returns specified transaction from income or expenses
 
 code: 200
 
-content: 
+content:
 
 `{`
 
@@ -335,7 +335,7 @@ returns all goals for user
 
 Code: 200
 
-content: 
+content:
 
 `{`
 
@@ -349,7 +349,7 @@ content:
 
 creates new goal
 
-**Data Params:** 
+**Data Params:**
 
 `{`
 
