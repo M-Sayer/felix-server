@@ -15,7 +15,7 @@ VALUES
     'smith',
     'js123',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     51.21,
     1000.50 
@@ -26,7 +26,7 @@ VALUES
     'Goodall',
     'realTarzan',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     10000,
     100000 
@@ -37,7 +37,7 @@ VALUES
     'Suwaratana',
     'catLover27',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     78.17,
     234.59 
@@ -48,7 +48,7 @@ VALUES
     'Coffelt',
     'Big Papa',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     562.94,
     600.59 
@@ -59,7 +59,7 @@ VALUES
     'M',
     'sumDude',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     292.78,
     304.27 
@@ -70,7 +70,7 @@ VALUES
     'Francisco',
     'loveToCode',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     847.68,
     902.68 
@@ -81,7 +81,7 @@ VALUES
     'Sayer',
     'broke man',
     'notarealemail@notrealmail.com',
-    --password = 'pass'
+    --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     18.72,
     29.27 

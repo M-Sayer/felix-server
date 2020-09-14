@@ -11,13 +11,11 @@ const UsersService = {
       algorithm: 'HS256',
     });
   },
-
   verifyJwt(token) {
     return jwt.verify(token, config.JWT_SECRET, {
       algorithms: ['HS256'],
     });
   },
-
   getUserWithUsername(db, username) {
     return db('users')
       .where({ username })
@@ -32,23 +30,31 @@ const UsersService = {
       .catch((error) => error);
   },
 
+  getUserWithId(db, id) {
+    return db('users')
+      .where({ id })
+      .first()
+      .catch((error) => error);
+  },
+
   validatePassword(password) {
-    if(password.length < 8) {
+    if (password.length < 8) {
       return 'Password must be longer than 8 characters';
     }
-    if(password.length > 20) {
+    if (password.length > 20) {
       return 'Password must be less than 20 characters';
     }
-    if(password.startsWith(' ') || password.endsWith(' ')) {
+    if (password.startsWith(' ') || password.endsWith(' ')) {
       return 'Password must not start or end with empty spaces';
     }
-    if(!REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)) {
+    if (!REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)) {
       return 'Password must contain one upper case, lower case, number and special character';
     }
     return null;
   },
 
   createUser(db, newUser) {
+    console.log(`createUser ran`);
     return db
       .insert(newUser)
       .into('users')
