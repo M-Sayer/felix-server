@@ -22,6 +22,8 @@
 //  if allowance < contribution amt. -> 
 //    alert user: not enough allowance to fund goal
 
+//check end date
+
 const knex = require("knex");
 
 const { DATABASE_URL } = require('./src/config');
@@ -37,18 +39,29 @@ async function automateGoals () {
     const trxResult = await db.transaction(async trx => {
       const goals = await trx('goals')
         .select(
-          'id',
+          'goals.id',
           'user_id',
           'goal_amount',
           'contribution_amount',
           'current_amount',
           'end_date',
           'completed',
-          
+          'users.allowance',
+          'users.balance',
         )
         .where('completed', '=', 'false')
         .join('users', {'goals.user_id': 'users.id'});
       console.log(goals)
+
+      goals.forEach(goal => {
+        if (goal.allowance > goal.contribution_amount) {
+          if (goal.goal_amount - goal.current_amount > goal.contribution_amount) {
+            goal.allowance -= goal.contribution_amount
+            goal.current_amount += goal.contribution_amount
+            console.log(goal.id, goal.allowance, goal.current_amount)
+          }
+        }
+      })
     });
     
   } catch (error) {
