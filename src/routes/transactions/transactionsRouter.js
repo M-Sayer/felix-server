@@ -141,7 +141,13 @@ transactionsRouter
       .then(() => res.status(204).end())
       .catch(next);
   });
-
+/**
+ * 
+ * @param {type,id} req.params 
+ * @function middleware that is used to check if a transaction is in the 
+ * database, IF being provided params of /:type && /:id
+ *  
+ */
 async function  checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
