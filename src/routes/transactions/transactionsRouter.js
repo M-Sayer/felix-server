@@ -14,6 +14,10 @@ const {
  * if added, .route('/') is needed
  **/
 
+/**
+ * @todo GAGE- might need to add error handling if the said user don't have 
+ * any content to send
+ */
 transactionsRouter.all('/', requireAuth);
 
 transactionsRouter.get('/', async (req, res, next) => {
