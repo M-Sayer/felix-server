@@ -31,6 +31,14 @@ const TransactionsService = {
       .where({ id })
       .first();
   },
+
+  //type is a string of either 'income' or 'expenses'
+  createTransaction(db, type, newTransaction) {
+    return db
+      .insert(newTransaction)
+      .into(type)
+      .catch((error) => error);
+  },
 };
 
 module.exports = TransactionsService;

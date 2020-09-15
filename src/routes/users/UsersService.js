@@ -54,7 +54,6 @@ const UsersService = {
   },
 
   createUser(db, newUser) {
-    console.log(`createUser ran`);
     return db
       .insert(newUser)
       .into('users')

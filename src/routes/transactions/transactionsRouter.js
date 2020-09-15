@@ -6,6 +6,7 @@ const {
   getUserIncome,
   getUserExpenses,
   getSingleTransaction,
+  createTransaction,
 } = require('./TransactionsService');
 
 /**
@@ -81,6 +82,102 @@ transactionsRouter.get('/transactions/:type/:id', async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+});
+
+//Creates new transaction of either income or expenses type
+transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => {
+
+  //Get all body values, type must be a string of either 'income' or 'expenses'.
+  //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
+  const { name, description, amount, category, type } = req.body;
+
+  //Get user id from jwt
+  const user_id = req.userId;
+
+  //Transaction object for inserting
+  let newTransaction = {};
+
+  //Response to client
+  let response = {}
+
+  //If type is income, transaction object has income_amount and income_category properties
+  if (type === 'income') {
+
+    //If the amount if less than or equal to 0 reject it
+    if (amount <= 0) {
+      res.status(400).json({error: 'Income amount must be greater than 0'});
+      next();
+    }
+
+    //If the category type doesn't match income table enums reject it
+    if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
+      res.status(400).json({error: 'category does not exist for income'}).end();
+      next();
+    }
+
+    //Build the response object
+    response = { type: 'income' }
+
+    //Build the new transaction object
+    newTransaction = {
+        user_id: user_id,
+        name,
+        description,
+        income_amount: amount,
+        income_category: category,
+    }
+  }
+
+  //If type is expenses, transaction object has expense_amount and expense_category properties
+  else if (type === 'expenses') {
+
+    //If the amount if greater than or equal to 0 reject it
+    if (amount >= 0) {
+      res.status(400).json({error: 'Expense amount must be less than 0'}).end();
+      next();
+    }
+
+    //If the category type doesn't match expenses table enums reject it
+    if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
+      res.status(400).json({error: 'category does not exist for expenses'}).end();
+      next();
+    }
+
+    //Build the response object
+    response = { type: 'expenses' }
+
+    //Build the new transaction object
+    newTransaction = {
+      user_id: user_id,
+      name,
+      description,
+      expense_amount: amount,
+      expense_category: category,
+    }
+  }
+
+  //If type is neither expenses or income reject it
+  else if (type !== 'income' || type !== 'expenses') {
+      res.status(400).json({error: 'Transaction must be type "income" or "expenses"'}).end();
+      next();
+  }
+
+    //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
+  try {
+    await createTransaction(
+      req.app.get('db'),
+      type,
+      newTransaction)
+    
+    //Respond with object {type: "income"/"expenses"}
+    res.status(201).json(response).end();
+
+  } catch (e) {
+    //If any error is caught respond with that error
+    res.status(400).json({error: e}).end();
+    next(e);
+  }
+
 });
 
 module.exports = transactionsRouter;
