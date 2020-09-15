@@ -5,6 +5,7 @@ const path = require('path');
 const usersRouter = express.Router();
 
 const {
+  createJwt,
   createUser,
   validatePassword,
   getUserWithUsername,
@@ -147,8 +148,6 @@ usersRouter.route('/').get(requireAuth, async (req, res, next) => {
 
   try {
     const user = await getUserWithId(db, user_id); // Returns an array of user details obj
-    console.log(user);
-
     return res.json(user); // Returns a user obj
   } catch (error) {
     next(error);
