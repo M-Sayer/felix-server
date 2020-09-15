@@ -111,7 +111,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
     //If the category type doesn't match income table enums reject it
     if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
-      return res.status(400).json({error: 'category does not exist for income'}).end();
+      return res.status(400).json({error: 'category does not exist for income'});
       next();
     }
 
@@ -133,13 +133,13 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
     //If the amount if greater than or equal to 0 reject it
     if (amount >= 0) {
-      return res.status(400).json({error: 'Expense amount must be less than 0'}).end();
+      return res.status(400).json({error: 'Expense amount must be less than 0'});
       next();
     }
 
     //If the category type doesn't match expenses table enums reject it
     if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
-      return res.status(400).json({error: 'category does not exist for expenses'}).end();
+      return res.status(400).json({error: 'category does not exist for expenses'});
       next();
     }
 
@@ -158,7 +158,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
   //If type is neither expenses or income reject it
   else if (type !== 'income' || type !== 'expenses') {
-      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'}).end();
+      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
       next();
   }
 
@@ -170,11 +170,11 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
       newTransaction)
     
     //Respond with object {type: "income"/"expenses"}
-    return res.status(201).json(response).end();
+    return res.status(201).json(response);
 
   } catch (e) {
     //If any error is caught respond with that error
-    return res.status(400).json({error: e}).end();
+    return res.status(400).json({error: e});
     next(e);
   }
 
