@@ -87,11 +87,30 @@ transactionsRouter
       next(e);
     }
   })
-  .patch((req,res,next) => {
+  .patch(requireAuth, async (req,res,next) => {
+
+    //Get params
     const { type, id } = req.params;
 
-    const {name, amount, category, description} = req.body; 
+    //Get user id from auth header
+    const userId = req.userId;
 
+    //Get body content
+    const {name, amount, category, description} = req.body;
+
+    //Get the transaction we're trying to edit to compare user ids
+    const singleTransaction = await getSingleTransaction(req.app.get('db'), type, id);
+
+    //Checks if user making patch matches user id of the transaction
+    if (singleTransaction.user_id !== userId) {
+      return res
+      .status(401)
+      .json({
+        error : singleTransaction
+      });
+    }
+
+    //Checks if type is either income or expense
     if(!['income','expenses'].includes(type)) {
       return res
         .status(400)
@@ -108,6 +127,7 @@ transactionsRouter
           });
       }
     }
+    //Checks if body content exists
     if(!name && !amount && !category){
       res.status(400).json({error : 'no content to be updated'});
     }
@@ -117,6 +137,7 @@ transactionsRouter
      *  update the balance along with it.
      */
 
+     //Create transaction object
     const transObject  = 
     type === 'income'
       ? {
@@ -132,6 +153,7 @@ transactionsRouter
         expense_category : category
       }
       ;
+    //Insert the new transaction object into db
     patchSingleTransaction(
       res.app.get('db'),
       type,
@@ -142,7 +164,8 @@ transactionsRouter
       .catch(next);
   });
 
-async function  checkIfTransactionExists(req,res,next) {
+  //Checks if transaction exists
+  async function  checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
