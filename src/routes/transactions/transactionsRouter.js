@@ -105,13 +105,13 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
     //If the amount if less than or equal to 0 reject it
     if (amount <= 0) {
-      res.status(400).json({error: 'Income amount must be greater than 0'});
+      return res.status(400).json({error: 'Income amount must be greater than 0'});
       next();
     }
 
     //If the category type doesn't match income table enums reject it
     if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
-      res.status(400).json({error: 'category does not exist for income'}).end();
+      return res.status(400).json({error: 'category does not exist for income'}).end();
       next();
     }
 
@@ -133,13 +133,13 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
     //If the amount if greater than or equal to 0 reject it
     if (amount >= 0) {
-      res.status(400).json({error: 'Expense amount must be less than 0'}).end();
+      return res.status(400).json({error: 'Expense amount must be less than 0'}).end();
       next();
     }
 
     //If the category type doesn't match expenses table enums reject it
     if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
-      res.status(400).json({error: 'category does not exist for expenses'}).end();
+      return res.status(400).json({error: 'category does not exist for expenses'}).end();
       next();
     }
 
@@ -158,7 +158,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
 
   //If type is neither expenses or income reject it
   else if (type !== 'income' || type !== 'expenses') {
-      res.status(400).json({error: 'Transaction must be type "income" or "expenses"'}).end();
+      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'}).end();
       next();
   }
 
@@ -170,11 +170,11 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
       newTransaction)
     
     //Respond with object {type: "income"/"expenses"}
-    res.status(201).json(response).end();
+    return res.status(201).json(response).end();
 
   } catch (e) {
     //If any error is caught respond with that error
-    res.status(400).json({error: e}).end();
+    return res.status(400).json({error: e}).end();
     next(e);
   }
 
