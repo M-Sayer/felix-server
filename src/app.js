@@ -2,15 +2,16 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
+const { NODE_ENV } = require('./config');
 // Variables
 const app = express();
-const { NODE_ENV } = require('./config');
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 // Middleware
 const errorHandler = require('./middleware/errorHandler');
 // Routers
 const usersRouter = require('./routes/users/usersRouter');
 const transactionsRouter = require('./routes/transactions/transactionsRouter');
+
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
 });
