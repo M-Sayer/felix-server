@@ -31,6 +31,11 @@ const TransactionsService = {
       .where({ id })
       .first();
   },
+  patchSingleTransaction(db,type,id,content){
+    return db(type)
+      .where({id})
+      .update(content);
+  },
 };
 
 module.exports = TransactionsService;
