@@ -13,6 +13,12 @@ const db = knex({
   connection: DATABASE_URL,
 });
 
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 const selectGoals = async params => {
   return await db('goals')
     .select(
@@ -32,12 +38,12 @@ const selectGoals = async params => {
 }
 
 const selectUserAllowance = async id => {
-  const result =  await db('users')
+  const result = await db('users')
     .select('allowance')
     .where({ id })
     .first()
 
-    return result.allowance
+  return result.allowance
 }
 
 const selectGoal = async id => {
@@ -66,13 +72,11 @@ const selectUserAlerts = async (user_id) => {
   const alerts = await db('alerts')
     .select()
     .where({ user_id })
-  
-    console.log(alerts)
 }
 
 const moveContribution = async (goal, allowance, adjusted) => {
-  
-  const difference = goal.goal_amount - goal.contribution_amount;
+  //calculate the difference if the contibution amt needs to be adjusted
+  const difference = goal.goal_amount - goal.current_amount;
   
   // subtract contribution amount from allowance
   adjusted
@@ -83,7 +87,7 @@ const moveContribution = async (goal, allowance, adjusted) => {
   adjusted
     ? goal.current_amount += difference //if true, add difference to current amt
     : goal.current_amount += goal.contribution_amount // if false, add contribution amt to current amt
-  
+
   await db.transaction(async trx => {
     // update allowance value on users table
     await trx('users')
@@ -93,16 +97,23 @@ const moveContribution = async (goal, allowance, adjusted) => {
     // update current amount in goals table
     await updateGoal(goal.user_id, { 'current_amount': goal.current_amount })
   });
-  
-  const g = await selectGoal(goal.id) //dev
-  console.log(g.name, g.current_amount, g.completed)
+}
+
+const completeGoal = async (goal, allowance, adjusted,) => {
+  await db.transaction(async trx => {
+    await moveContribution(goal, allowance, adjusted);
+    await updateGoal(goal.id, { 'completed': true });
+    await createAlert(goal.user_id, complete = true, goal.name);
+  })
 }
 
 module.exports = {
+  asyncForEach,
   selectGoals,
   updateGoal,
   selectUserAlerts,
   createAlert,
   selectUserAllowance,
   moveContribution,
+  completeGoal,
 }

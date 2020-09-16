@@ -35,36 +35,41 @@
 //check end date
 
 const {
+  asyncForEach,
   selectGoals,
-  updateGoal,
   createAlert,
   selectUserAllowance,
   moveContribution,
+  completeGoal,
 } = require('./automationHelpers');
 
 async function automatedGoals () {
   try {
+    // select all incomplete goals
     const goals = await selectGoals({ 'completed': 'false' });
 
-    goals.forEach(async goal => {
+    await asyncForEach(goals, async goal => {
+      //get allowance on each iteration to account for potential changes
       const allowance = await selectUserAllowance(goal.user_id);
+      
+      // if there's enough allowance to make a contribution
       if (allowance > goal.contribution_amount) {
+        // if the amount needed to compelete the goal is greater than the contribution
         if (goal.goal_amount - goal.current_amount > goal.contribution_amount) {
           return moveContribution(goal, allowance, adjusted = false);
         }
+        // if the amount needed to complete the goal is equal to the contribution
         if (goal.goal_amount - goal.current_amount === goal.contribution_amount) {
-          moveContribution(goal, allowance, adjusted = false);
-          await updateGoal(goal.id, { 'completed': true });
-          await createAlert(goal.user_id, complete = true, goal.name);
-          return;
+          return completeGoal(goal, allowance, adjusted = false);
         }
+        // if the amount needed to complete the goal is less than the contribution
+        // the contribution amount needs to be adjusted
+        // prevents the current amount from exceeding goal amount
         if (goal.goal_amount - goal.current_amount < goal.contribution_amount) {
-          moveContribution(goal, allowance, adjusted = true);
-          await updateGoal(goal.id, { 'completed': true });
-          await createAlert(goal.user_id, complete = true, goal.name);
-          return;
+          return completeGoal(goal, allowance, adjusted = true);
         }
-      }  
+      } 
+      // if there's not enough allowance to make a contribution 
       if (allowance < goal.contribution_amount) {
         await createAlert(goal.user_id, complete = false, goal.name);
         return;
