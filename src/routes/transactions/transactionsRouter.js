@@ -59,6 +59,7 @@ transactionsRouter
         type,
         id
       );
+      console.log(transaction)
 
       if (!transaction) {
         return res.status(400).json({
@@ -74,7 +75,7 @@ transactionsRouter
           description : transaction.description,
           date_created: transaction.date_created,
           amount: transaction.income_amount,
-          subType: transaction.transaction_category,
+          category: transaction.income_category,
         }
         : {
           id: transaction.id,
@@ -82,7 +83,7 @@ transactionsRouter
           description : transaction.description,
           date_created: transaction.date_created,
           amount: transaction.expense_amount,
-          subType: transaction.expense_category,
+        category: transaction.expense_category,
         };
       return res
         .status(200)
