@@ -38,7 +38,7 @@ const TransactionsService = {
       .insert(newTransaction)
       .into(type)
       .catch((error) => error);
-
+  },
   patchSingleTransaction(db,type,id,content){
     return db(type)
       .where({id})

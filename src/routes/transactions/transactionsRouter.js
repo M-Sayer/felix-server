@@ -60,7 +60,6 @@ transactionsRouter
         type,
         id
       );
-      console.log(transaction)
 
       if (!transaction) {
         return res.status(400).json({
@@ -84,7 +83,7 @@ transactionsRouter
           description : transaction.description,
           date_created: transaction.date_created,
           amount: transaction.expense_amount,
-        category: transaction.expense_category,
+          category: transaction.expense_category,
         };
       return res
         .status(200)
@@ -110,10 +109,10 @@ transactionsRouter
     //Checks if user making patch matches user id of the transaction
     if (singleTransaction.user_id !== userId) {
       return res
-      .status(401)
-      .json({
-        error : singleTransaction
-      });
+        .status(401)
+        .json({
+          error : singleTransaction
+        });
     }
 
     //Checks if type is either income or expense
@@ -143,7 +142,7 @@ transactionsRouter
      *  update the balance along with it.
      */
 
-     //Create transaction object
+    //Create transaction object
     const transObject  = 
     type === 'income'
       ? {
@@ -170,8 +169,8 @@ transactionsRouter
       .catch(next);
   });
 
-  //Checks if transaction exists
-  async function  checkIfTransactionExists(req,res,next) {
+//Checks if transaction exists
+async function  checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
@@ -203,7 +202,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
   let newTransaction = {};
 
   //Response to client
-  let response = {}
+  let response = {};
 
   //If type is income, transaction object has income_amount and income_category properties
   if (type === 'income') {
@@ -219,16 +218,16 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
     }
 
     //Build the response object
-    response = { type: 'income' }
+    response = { type: 'income' };
 
     //Build the new transaction object
     newTransaction = {
-        user_id: user_id,
-        name,
-        description,
-        income_amount: amount,
-        income_category: category,
-    }
+      user_id: user_id,
+      name,
+      description,
+      income_amount: amount,
+      income_category: category,
+    };
   }
 
   //If type is expenses, transaction object has expense_amount and expense_category properties
@@ -245,7 +244,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
     }
 
     //Build the response object
-    response = { type: 'expenses' }
+    response = { type: 'expenses' };
 
     //Build the new transaction object
     newTransaction = {
@@ -254,26 +253,26 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
       description,
       expense_amount: amount,
       expense_category: category,
-    }
+    };
   }
 
   //If type is neither expenses or income reject it
   else if (type !== 'income' || type !== 'expenses') {
-      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
+    return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
   }
 
-    //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
+  //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
   try {
     await createTransaction(
       req.app.get('db'),
       type,
-      newTransaction)
+      newTransaction);
     
     //Respond with object {type: "income"/"expenses"}
     return res.status(201).json({});
 
   } catch (e) {
-    next(e)
+    next(e);
   }
 
 });
