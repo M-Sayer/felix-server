@@ -37,7 +37,6 @@
 const {
   selectGoals,
   updateGoal,
-  selectUserAlerts,
   createAlert,
   selectUserAllowance,
   moveContribution,
@@ -57,20 +56,17 @@ async function automatedGoals () {
           moveContribution(goal, allowance, adjusted = false);
           await updateGoal(goal.id, { 'completed': true });
           await createAlert(goal.user_id, complete = true, goal.name);
-          await selectUserAlerts(goal.user_id); // dev
           return;
         }
         if (goal.goal_amount - goal.current_amount < goal.contribution_amount) {
           moveContribution(goal, allowance, adjusted = true);
           await updateGoal(goal.id, { 'completed': true });
           await createAlert(goal.user_id, complete = true, goal.name);
-          await selectUserAlerts(goal.user_id); // dev
           return;
         }
       }  
       if (allowance < goal.contribution_amount) {
         await createAlert(goal.user_id, complete = false, goal.name);
-        await selectUserAlerts(goal.user_id); // dev
         return;
       }
     });
