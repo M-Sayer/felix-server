@@ -75,7 +75,7 @@ const selectUserAlerts = async (user_id) => {
 }
 
 const moveContribution = async (goal, allowance, adjusted) => {
-  //calculate the difference if the contibution amt needs to be adjusted
+  // calculate the difference if the contibution amt needs to be adjusted
   const difference = goal.goal_amount - goal.current_amount;
   
   // subtract contribution amount from allowance
