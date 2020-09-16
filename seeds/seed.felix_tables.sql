@@ -87,10 +87,11 @@ VALUES
     29.27 
   );
 
-INSERT INTO "goals" ("id", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")
+INSERT INTO "goals" ("id","name", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")
 VALUES 
   (
     1,
+    'car',
     1,
     50,
     25,
@@ -99,6 +100,7 @@ VALUES
   ),
   (
     2,
+    'boat',
     2,
     1000,
     100,
@@ -107,6 +109,7 @@ VALUES
   ),
   (
     3,
+    'house',
     3,
     100,
     50,
@@ -115,6 +118,7 @@ VALUES
   ),
   (
     4,
+    'bike',
     4,
     500,
     50,
@@ -123,6 +127,7 @@ VALUES
   ),
   (
     5,
+    'vacation',
     5,
     250,
     100,
@@ -131,6 +136,7 @@ VALUES
   ),
   (
     6,
+    'computer',
     6,
     1000,
     200,
@@ -139,6 +145,7 @@ VALUES
   ),
   (
     7,
+    'presents',
     7,
     100,
     25,

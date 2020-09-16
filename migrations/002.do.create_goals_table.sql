@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS "goals" (
   "id" SERIAL PRIMARY KEY,
+  "name" TEXT NOT NULL,
   "user_id" INTEGER REFERENCES "users"(id) 
     ON DELETE CASCADE NOT NULL,
   "goal_amount" NUMERIC(12,2) CHECK (goal_amount > 0) 
