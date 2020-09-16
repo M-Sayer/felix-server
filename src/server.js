@@ -1,7 +1,7 @@
 const app = require('./app');
 const knex = require('knex');
 const {PORT , DATABASE_URL} = require('./config');
-const automateGoals = require('../scheduled-goals');
+const automatedGoals = require('../automatedGoals');
 
 // var cron = require('node-cron');
 // const fs = require('fs');
@@ -13,7 +13,7 @@ const db = knex({
 
 app.set('db',db);
 
-setInterval(automateGoals, 2000)
+setInterval(automatedGoals, 2000);
 
 // var moment = require('moment-timezone');
 // const format = 'HH:mm:ss ddd MMM Do, YYYY z';
