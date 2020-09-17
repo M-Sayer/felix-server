@@ -50,7 +50,7 @@ const TransactionsService = {
     const oldAmt = await selectTransactionAmount(db, type, id);
     console.log(oldAmt)
     const difference = getDifference(oldAmt, content.income_amount || content.expense_amount);
-    console.log(difference)
+    
     await db.transaction(async trx => {
       await trx(type).where({ id }).update(content);
       await updateAllowance(db, userId, difference);

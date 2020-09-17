@@ -284,7 +284,6 @@ transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => 
     
     //Respond with object {type: "income"/"expenses"}
     return res.status(201).end();
-
   } catch (e) {
     next(e)
   }
