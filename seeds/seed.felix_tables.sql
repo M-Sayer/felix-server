@@ -17,8 +17,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    51.21,
-    1000.50 
+    5121,
+    100050 
   ),
   (
     2,
@@ -28,8 +28,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    10000,
-    100000 
+    1000000,
+    10000000 
   ),
   (
     3,
@@ -39,8 +39,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    78.17,
-    234.59 
+    7817,
+    23459 
   ),
   (
     4,
@@ -50,8 +50,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    562.94,
-    600.59 
+    56294,
+    60059 
   ),
   (
     5,
@@ -61,8 +61,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    292.78,
-    304.27 
+    29278,
+    30427 
   ),
   (
     6,
@@ -72,8 +72,8 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    847.68,
-    902.68 
+    84768,
+    90268 
   ),
   (
     7,
@@ -83,65 +83,72 @@ VALUES
     'notarealemail@notrealmail.com',
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
-    18.72,
-    29.27 
+    1872,
+    2927 
   );
 
-INSERT INTO "goals" ("id", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")
+INSERT INTO "goals" ("id","name", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")
 VALUES 
   (
     1,
+    'car',
     1,
-    50,
-    25,
-    10.45,
+    5000,
+    2500,
+    1045,
     '2020-10-05'
   ),
   (
     2,
+    'boat',
     2,
-    1000,
-    100,
+    100000,
+    10000,
     0,
     '2020-10-05'
   ),
   (
     3,
+    'house',
     3,
-    100,
-    50,
+    10000,
+    5000,
     0,
     '2020-10-05'
   ),
   (
     4,
+    'bike',
     4,
-    500,
-    50,
-    25,
+    50000,
+    5000,
+    2500,
     '2020-10-05'
   ),
   (
     5,
+    'vacation',
     5,
-    250,
-    100,
+    25000,
+    10000,
     0,
     '2020-10-05'
   ),
   (
     6,
+    'computer',
     6,
-    1000,
-    200,
-    100,
+    100000,
+    20000,
+    10000,
     '2020-10-05'
   ),
   (
     7,
+    'presents',
     7,
-    100,
-    25,
+    10000,
+    2500,
     0,
     '2020-10-05'
   );
@@ -150,17 +157,17 @@ INSERT INTO "income" ("id", "user_id", "name", "income_amount", "income_category
 VALUES  
   (
     1,
-    2,
+    7,
     'job',
-    249.67,
+    24967,
     'paycheck',
     '2020-08-27'
   ),
   (
     2,
-    1,
+    7,
     'parents',
-    113.88,
+    11388,
     'other',
     '2020-08-29'
   );
@@ -169,9 +176,9 @@ INSERT INTO "expenses" ("id", "user_id", "name", "expense_amount", "expense_cate
 VALUES  
   (
     1,
-    2,
+    7,
     'rent',
-    -400,
+    -40000,
     'bills',
     '2020-08-30'
   );
