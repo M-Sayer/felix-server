@@ -9,6 +9,7 @@ const {
   createTransaction,
   patchSingleTransaction,
 } = require('./TransactionsService');
+const TransactionsService = require('./TransactionsService');
 
 /**
  * @note might need a POST endpoint later
@@ -76,7 +77,7 @@ transactionsRouter
         });
       }
 
-      if (transaction.user_id !== req.userId) {
+      if (req.auth_id !== req.userId) {
         return res
           .status(401)
           .json({
@@ -120,7 +121,7 @@ transactionsRouter
     const {name, amount, category, description} = req.body;
 
     //Checks if user making patch matches user id of the transaction
-    if (req.body.user_id !== req.userId) {
+    if (req.auth_id !== req.userId) {
       return res
         .status(401)
         .json({
@@ -182,6 +183,37 @@ transactionsRouter
       .catch(next);
   })
   .delete( (res,req,next) =>{
+    const { type, id } = req.params;
+
+    if (!['income', 'expenses'].includes(type)) {
+      return res.status(400).json({
+        error: 'Invalid transaction type',
+      });
+    }
+
+    for (const [key, prop] of Object.entries({ type, id })) {
+      if (!prop) {
+        return res.status(400).json({
+          error: `${key} seems to be missing from query params`,
+        });
+      }
+    }
+
+    if (req.auth_id !== req.userId) {
+      return res
+        .status(401)
+        .json({
+          error : 'user in unauthorized to view this transaction'
+        });
+    }
+
+    TransactionsService.deleteTransaction(
+      req.app.get('db'),
+      type,
+      id
+    )
+      .then(res.status(204).end())
+      .catch(next);
 
   });
 
@@ -198,6 +230,8 @@ async function  checkIfTransactionExists(req,res,next) {
         {error : 'the id of the transaction doesn\'t exist'}
       );
     }
+    //should be === w/ req.userId from auth
+    req.auth_id = ExistingTransaction.user_id;
     next();
   }catch(error){
     next(error);
