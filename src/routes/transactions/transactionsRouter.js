@@ -19,6 +19,15 @@ const {
  * @todo GAGE- might need to add error handling if the said user don't have 
  * any content to send
  */
+
+/**
+  * 
+  * @note GAGE- getting 400 ERROR on http://...../dashbored of client since it can't call 
+  * "http://...../api/transactions/users"
+  * users is not an endpoint here. 
+  * 
+  * 
+  */
 transactionsRouter.all('/', requireAuth);
 
 transactionsRouter.get('/', async (req, res, next) => {
@@ -36,7 +45,7 @@ transactionsRouter.get('/', async (req, res, next) => {
 
 transactionsRouter
   .route('/:type/:id')
-  .all(checkIfTransactionExists)
+  .all(checkIfTransactionExists, requireAuth)
   .get( async (req, res, next) => {
     const { type, id } = req.params;
 
@@ -67,6 +76,15 @@ transactionsRouter
         });
       }
 
+      if (transaction.user_id !== req.userId) {
+        return res
+          .status(401)
+          .json({
+            error : 'user in unauthorized to view this transaction'
+          });
+      }
+
+
       const transactionDetails =
       type === 'income'
         ? {
@@ -92,26 +110,21 @@ transactionsRouter
       next(e);
     }
   })
-  .patch(requireAuth, async (req,res,next) => {
+  .patch( async (req,res,next) => {
 
     //Get params
     const { type, id } = req.params;
 
-    //Get user id from auth header
-    const userId = req.userId;
 
     //Get body content
     const {name, amount, category, description} = req.body;
 
-    //Get the transaction we're trying to edit to compare user ids
-    const singleTransaction = await getSingleTransaction(req.app.get('db'), type, id);
-
     //Checks if user making patch matches user id of the transaction
-    if (singleTransaction.user_id !== userId) {
+    if (req.body.user_id !== req.userId) {
       return res
         .status(401)
         .json({
-          error : singleTransaction
+          error : 'user in unauthorized to view this transaction'
         });
     }
 
@@ -167,6 +180,9 @@ transactionsRouter
     )
       .then(() => res.status(204).end())
       .catch(next);
+  })
+  .delete( (res,req,next) =>{
+
   });
 
 //Checks if transaction exists
@@ -187,6 +203,10 @@ async function  checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
+
+
+
+
 
 //Creates new transaction of either income or expenses type
 transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => {
