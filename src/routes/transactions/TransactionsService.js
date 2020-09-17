@@ -44,7 +44,7 @@ const TransactionsService = {
       .where({id})
       .update(content);
   },
-  deleteTransaction(db,type,id){
+  deleteTransaction(db, type, id){
     return db(type)
       .where({id})
       .delete();

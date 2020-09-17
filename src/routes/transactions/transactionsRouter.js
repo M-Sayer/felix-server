@@ -81,7 +81,7 @@ transactionsRouter
         return res
           .status(401)
           .json({
-            error : 'user in unauthorized to view this transaction'
+            error : 'user is unauthorized to view this transaction'
           });
       }
 
@@ -125,7 +125,7 @@ transactionsRouter
       return res
         .status(401)
         .json({
-          error : 'user in unauthorized to view this transaction'
+          error : 'user is unauthorized to view this transaction'
         });
     }
 
@@ -183,7 +183,7 @@ transactionsRouter
       .catch(next);
   })
   .delete( (req, res,next) =>{
-    console.log(req.params)
+    console.log(req.params);
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -204,7 +204,7 @@ transactionsRouter
       return res
         .status(401)
         .json({
-          error : 'user in unauthorized to view this transaction'
+          error : 'user is unauthorized to view this transaction'
         });
     }
 
