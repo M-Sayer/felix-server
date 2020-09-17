@@ -48,7 +48,6 @@ const TransactionsService = {
   
   async patchSingleTransaction(db, type, id, userId, content) {
     const oldAmt = await selectTransactionAmount(db, type, id);
-    console.log(oldAmt)
     const difference = getDifference(oldAmt, content.income_amount || content.expense_amount);
     
     await db.transaction(async trx => {
