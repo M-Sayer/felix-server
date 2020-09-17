@@ -182,7 +182,8 @@ transactionsRouter
       .then(() => res.status(204).end())
       .catch(next);
   })
-  .delete( (res,req,next) =>{
+  .delete( (req, res,next) =>{
+    console.log(req.params)
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
