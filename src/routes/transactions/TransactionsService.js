@@ -1,4 +1,5 @@
 const xss = require('xss');
+const { updateAllowance, updateBalance, getDifference, selectTransactionAmount } = require('../../helpers');
 
 const TransactionsService = {
   getUserDetails(db, id) {
@@ -33,21 +34,29 @@ const TransactionsService = {
   },
 
   //type is a string of either 'income' or 'expenses'
-  createTransaction(db, type, newTransaction) {
-    return db
-      .insert(newTransaction)
-      .into(type)
-      .catch((error) => error);
-  },
-<<<<<<< HEAD
-  patchSingleTransaction(db, type, id, content){
-=======
+  async createTransaction(db, type, newTransaction) {
+    await db.transaction(async trx => {
+      await trx(type)
+        .insert(newTransaction)
+        .catch(error => error);
 
-  patchSingleTransaction(db,type,id,content) {
->>>>>>> edd4b7d188d64f6e69ef933a88bb30f317f8b519
-    return db(type)
-      .where({id})
-      .update(content);
+      const t = newTransaction; 
+      await updateAllowance(db, t.user_id, t.income_amount || t.expense_amount);
+      await updateBalance(db, t.user_id, t.income_amount || t.expense_amount);
+    });
+  },
+  
+  async patchSingleTransaction(db, type, id, userId, content) {
+    const oldAmt = await selectTransactionAmount(db, type, id);
+    console.log(oldAmt)
+    const difference = getDifference(oldAmt, content.income_amount || content.expense_amount);
+    
+    await db.transaction(async trx => {
+      await trx(type).where({ id }).update(content);
+      await updateAllowance(db, userId, difference);
+      await updateBalance(db, userId, difference);
+    });
+
   },
   deleteTransaction(db, type, id){
     return db(type)
