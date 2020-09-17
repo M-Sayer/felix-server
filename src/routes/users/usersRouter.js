@@ -14,6 +14,7 @@ const {
   unhashPassword,
   getUserWithId,
 } = require('./UsersService.js');
+const { convertToDollars } = require('../../helpers');
 
 usersRouter.post('/register', async (req, res, next) => {
   const db = req.app.get('db');
@@ -147,6 +148,8 @@ usersRouter.route('/').get(requireAuth, async (req, res, next) => {
 
   try {
     const user = await getUserWithId(db, user_id); // Returns an array of user details obj
+    user.allowance = convertToDollars(user.allowance);
+    user.balance = convertToDollars(user.balance);
     return res.json(user); // Returns a user obj
   } catch (error) {
     next(error);

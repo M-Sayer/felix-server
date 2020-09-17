@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "income" (
     ON DELETE CASCADE NOT NULL,
   "name" TEXT NOT NULL,
   "description" TEXT,
-  "income_amount" NUMERIC(12,2) CHECK (income_amount >= 0) 
+  "income_amount" BIGINT CHECK (income_amount >= 0) 
     DEFAULT 0 NOT NULL,
   "income_category" income_type NOT NULL,
   "date_created" TIMESTAMPTZ DEFAULT now() NOT NULL
