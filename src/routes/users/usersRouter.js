@@ -5,7 +5,6 @@ const path = require('path');
 const usersRouter = express.Router();
 
 const {
-  createJwt,
   createUser,
   validatePassword,
   getUserWithUsername,
