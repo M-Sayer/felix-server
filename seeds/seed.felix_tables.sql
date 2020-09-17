@@ -55,7 +55,7 @@ VALUES
   ),
   (
     5,
-    'Gage',
+    '-----',
     'M',
     'sumDude',
     'notarealemail@notrealmail.com',
@@ -157,7 +157,7 @@ INSERT INTO "income" ("id", "user_id", "name", "income_amount", "income_category
 VALUES  
   (
     1,
-    2,
+    7,
     'job',
     24967,
     'paycheck',
@@ -165,7 +165,7 @@ VALUES
   ),
   (
     2,
-    1,
+    7,
     'parents',
     11388,
     'other',
@@ -176,15 +176,15 @@ INSERT INTO "expenses" ("id", "user_id", "name", "expense_amount", "expense_cate
 VALUES  
   (
     1,
-    2,
+    7,
     'rent',
     -40000,
     'bills',
     '2020-08-30'
   );
 
--- because we explicitly set the id fields
--- update the sequencer for future automatic id setting
+-- Because we explicitly set the id fields
+-- Update the sequencer for future automatic id setting
 SELECT setval('users_id_seq', (SELECT MAX(id) from users));
 SELECT setval('goals_id_seq', (SELECT MAX(id) from goals));
 SELECT setval('income_id_seq', (SELECT MAX(id) FROM income));
