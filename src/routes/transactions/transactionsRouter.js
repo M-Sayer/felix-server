@@ -175,6 +175,7 @@ transactionsRouter
       res.app.get('db'),
       type,
       id,
+      userId,
       transObject
     )
       .then(() => res.status(204).end())
@@ -282,8 +283,7 @@ transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => 
       newTransaction)
     
     //Respond with object {type: "income"/"expenses"}
-    return res.status(201);
-
+    return res.status(201).end();
   } catch (e) {
     next(e)
   }
