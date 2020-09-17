@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "expenses"(
     ON DELETE CASCADE NOT NULL,
   "name" TEXT NOT NULL,
   "description" TEXT, 
-  "expense_amount" NUMERIC(12,2) CHECK (expense_amount <= 0)
+  "expense_amount" BIGINT CHECK (expense_amount <= 0)
     DEFAULT 0 NOT NULL,
   "expense_category" expense_type NOT NULL,
   "date_created" TIMESTAMPTZ DEFAULT now() NOT NULL

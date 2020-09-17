@@ -3,11 +3,11 @@ CREATE TABLE IF NOT EXISTS "goals" (
   "name" TEXT NOT NULL,
   "user_id" INTEGER REFERENCES "users"(id) 
     ON DELETE CASCADE NOT NULL,
-  "goal_amount" NUMERIC(12,2) CHECK (goal_amount > 0) 
+  "goal_amount" BIGINT CHECK (goal_amount > 0) 
     DEFAULT 0 NOT NULL,
-  "contribution_amount" NUMERIC(12,2) CHECK (contribution_amount > 0)
+  "contribution_amount" BIGINT CHECK (contribution_amount > 0)
     DEFAULT 0 NOT NULL,
-  "current_amount" NUMERIC(12,2) CHECK (current_amount >= 0)
+  "current_amount" BIGINT CHECK (current_amount >= 0)
     DEFAULT 0 NOT NULL,
   "end_date" DATE DEFAULT now() NOT NULL,
   "completed" BOOLEAN DEFAULT false NOT NULL,
