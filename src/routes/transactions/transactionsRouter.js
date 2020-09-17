@@ -10,6 +10,8 @@ const {
   patchSingleTransaction,
 } = require('./TransactionsService');
 
+const { convertToCents, convertTransactionsToDollars, convertToDollars } = require('../../helpers');
+
 /**
  * @note might need a POST endpoint later
  * if added, .route('/') is needed
@@ -25,8 +27,13 @@ transactionsRouter.get('/', async (req, res, next) => {
   const user_id = req.userId;
 
   try {
-    const income = await getUserIncome(req.app.get('db'), user_id); // Array of income objects
-    const expenses = await getUserExpenses(req.app.get('db'), user_id); // Array of expense objects
+    let income = await getUserIncome(req.app.get('db'), user_id); // Array of income objects
+    //convert income_amount to dollars
+    income = convertTransactionsToDollars(income, 'income');
+    let expenses = await getUserExpenses(req.app.get('db'), user_id); // Array of expense objects
+    //convert expense_amount to dollars
+    expenses = convertTransactionsToDollars(expenses, 'expense');
+
 
     return res.json({ income, expenses });
   } catch (error) {
@@ -75,7 +82,7 @@ transactionsRouter
           name: transaction.name,
           description : transaction.description,
           date_created: transaction.date_created,
-          amount: transaction.income_amount,
+          amount: convertToDollars(transaction.income_amount),
           category: transaction.income_category,
         }
         : {
@@ -83,9 +90,11 @@ transactionsRouter
           name: transaction.name,
           description : transaction.description,
           date_created: transaction.date_created,
-          amount: transaction.expense_amount,
-        category: transaction.expense_category,
+          amount: convertToDollars(transaction.expense_amount),
+          category: transaction.expense_category,
         };
+
+
       return res
         .status(200)
         .json(transactionDetails);
@@ -102,7 +111,9 @@ transactionsRouter
     const userId = req.userId;
 
     //Get body content
-    const {name, amount, category, description} = req.body;
+    const {name, category, description} = req.body;
+    //convert amount to cents
+    const amount = convertToCents(req.body.amount);
 
     //Get the transaction we're trying to edit to compare user ids
     const singleTransaction = await getSingleTransaction(req.app.get('db'), type, id);
@@ -190,11 +201,12 @@ transactionsRouter
 }
 
 //Creates new transaction of either income or expenses type
-transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => {
+transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {
 
   //Get all body values, type must be a string of either 'income' or 'expenses'.
   //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
-  const { name, description, amount, category, type } = req.body;
+  const { name, description, category, type } = req.body;
+  const amount = convertToCents(req.body.amount);
 
   //Get user id from jwt
   const user_id = req.userId;
@@ -270,7 +282,7 @@ transactionsRouter.route('/create').post(requireAuth ,async (req, res, next) => 
       newTransaction)
     
     //Respond with object {type: "income"/"expenses"}
-    return res.status(201).json({});
+    return res.status(201);
 
   } catch (e) {
     next(e)
