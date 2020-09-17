@@ -13,7 +13,6 @@ const {
   hashPassword,
   unhashPassword,
   getUserWithId,
-  createJwt,
 } = require('./UsersService.js');
 
 usersRouter.post('/register', async (req, res, next) => {
