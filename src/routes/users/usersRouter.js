@@ -12,6 +12,7 @@ const {
   hashPassword,
   unhashPassword,
   getUserWithId,
+  createJwt,
 } = require('./UsersService.js');
 const { convertToDollars } = require('../../helpers');
 
