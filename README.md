@@ -6,162 +6,27 @@ mv example.env .env
 
 # API Architecture
 
-Created: Sep 8, 2020 6:39 AM
-Created By: M Sayer
-
 # /users
 
-## /users/register
+## /users
 
-### POST
-
-creates and authenticates new user
-
-**DATA PARAMS**:
-
-`{`
-
-`"first_name": "firstname",`
-
-`"last_name": "lastname",`
-
-`"username": "username123",`
-
-`"password": "password123",`
-
-`"email": "email@email.com",`
-
-`}`
-
-**SUCCESS RESPONSE**
-
-code: 200
-
-content:
-
-`{ authToken : 'JWTString' }`
-
-**ERROR RESPONSE**
-
-**When missing fields in request body**
-
-code: 400
-
-content:
-
-`{ error: Missing {value missing} in request body }`
-
-**When username is already taken**
-
-code: 401
-
-content:
-
-`{ error: username unavailable }`
-
-W**hen email is already registered**
-
-code: 401
-
-content:
-
-`{ error: email already in use }`
-
-**When password does not fit requirements**
-
-code: 401
-
-content:
-
-`{ error: Password must contain one upper case, lower case, number and special character }`
-
-**When password starts or ends with an empty space**
-
-code: 401
-
-content:
-
-`{ error: Password must not start or end with empty spaces }`
-
-**When password is too long**
-
-code: 401
-
-content:
-
-`{ error: Password must be less than 20 characters }`
-
-**When password is too short**
-
-code: 401
-
-content:
-
-`{ error: Password must be longer than 8 characters }`
-
-## /users/login
-
-### POST
-
-authenticates returning user
-
-**DATA PARAMS:**
-
-`{`
-
-`"username": "username123",`
-
-`"password": "password123",`
-
-`}`
-
-**SUCCESS RESPONSE**
-
-code: 200
-
-content:
-
-`{ authToken: jwtTokenHere }`
-
-**ERROR RESPONSE**
-
-code: 401
-
-content:
-
-`{ error: missing credentials }`
-
-code: 401
-
-content:
-
-`{ error: invalid credentials }`
-
-## /users/:id
-
-returns user object
-
-**URL Params:**
-
-Required: id=[integer]
+returns user object, utilizing user_id in JWT
 
 ### GET
 
-**Data Params:** None
-
 **SUCCESS RESPONSE**
 
 code: 200
 
-content:
+content: 
 
-`{`
+`{` 
 
 `"username": "username123",`
 
 `"balance": 1000,`
 
-`"allowance": 500,`
+`"allowance": 500,` 
 
 `}`
 
@@ -181,6 +46,132 @@ content:
 
 `{ error: "invalid credentials" }`
 
+## /users/register
+
+### POST
+
+creates and authenticates new user
+
+**DATA PARAMS**:
+
+ `{`
+
+`"first_name": "firstname",`
+
+`"last_name": "lastname",`
+
+`"username": "username123",`
+
+`"password": "password123",`
+
+`"email": "email@email.com",`
+
+`}` 
+
+**SUCCESS RESPONSE**
+
+code: 200 
+
+content: 
+
+`{ authToken : 'JWTString' }` 
+
+**ERROR RESPONSE**
+
+**When missing fields in request body**
+
+code: 400
+
+content:  
+
+`{ error: Missing {value missing} in request body }`
+
+**When username is already taken**
+
+code: 401
+
+content: 
+
+`{ error: username unavailable }`
+
+W**hen email is already registered**
+
+code: 401
+
+content: 
+
+`{ error: email already in use }`
+
+**When password does not fit requirements**
+
+code: 401
+
+content: 
+
+`{ error: Password must contain one upper case, lower case, number and special character }`
+
+**When password starts or ends with an empty space**
+
+code: 401
+
+content: 
+
+`{ error: Password must not start or end with empty spaces }`
+
+**When password is too long**
+
+code: 401
+
+content: 
+
+`{ error: Password must be less than 20 characters }`
+
+**When password is too short**
+
+code: 401
+
+content: 
+
+`{ error: Password must be longer than 8 characters }`
+
+## /users/login
+
+### POST
+
+authenticates returning user
+
+**DATA PARAMS:**
+
+ `{`
+
+`"username": "username123",`
+
+`"password": "password123",`
+
+`}` 
+
+**SUCCESS RESPONSE**
+
+code: 200
+
+content: 
+
+`{ authToken: jwtTokenHere }` 
+
+**ERROR RESPONSE**
+
+code: 401
+
+content: 
+
+`{ error: missing credentials }`
+
+code: 401
+
+content: 
+
+`{ error: invalid credentials }`
+
 # /transactions
 
 ## /transactions
@@ -195,7 +186,7 @@ returns all transactions for user
 
 Code: 200
 
-content:
+content: 
 
 `{`
 
@@ -207,14 +198,6 @@ content:
 
 **ERROR RESPONSE**
 
-## /transactions/:type
-
-**URL Params:**
-
-Required:
-
-type=[string] , 1 of [income, expenses]
-
 ### POST
 
 creates new income or expenses transaction
@@ -225,9 +208,11 @@ creates new income or expenses transaction
 
 `"user_id": 1,`
 
+`"type": income, // income or expenses`
+
 `"name": "example name",`
 
-`"description": "example description" // this field optional`
+`"description": "example description", // this field optional`
 
 `"${type}_amount": 1243,`
 
@@ -243,9 +228,9 @@ code: 204
 
 ## /transactions/:type/:id
 
-**URL Params:**
+**URL Params:** 
 
-Required:
+Required: 
 
 type=[string], 1 of [income, expenses]
 
@@ -261,7 +246,7 @@ returns specified transaction from income or expenses
 
 code: 200
 
-content:
+content: 
 
 `{`
 
@@ -335,7 +320,7 @@ returns all goals for user
 
 Code: 200
 
-content:
+content: 
 
 `{`
 
@@ -349,7 +334,7 @@ content:
 
 creates new goal
 
-**Data Params:**
+**Data Params:** 
 
 `{`
 
@@ -450,3 +435,71 @@ Deletes specified goal
 code: 204
 
 **ERROR RESPONSE**
+
+# /alerts
+
+## /alerts
+
+returns list of alert objects for user_id specified in JWT
+
+### GET
+
+**SUCCESS RESPONSE**
+
+code: 200
+
+content:
+
+`[`
+
+`{`
+
+`"id": 1,`
+
+`"title":  "Goal Complete!",`
+
+`"message": "You completed your goal, new car",`
+
+`"read": false`
+
+`},`
+
+`{`
+
+`"id": 2,`
+
+`"title":  "Insufficient Allowance.",`
+
+`"message": "Looks like you don't have enough allowance to fund your goal, bicycle",`
+
+`"read": true`
+
+`}`
+
+`]`
+
+**ERROR RESPONSE**
+
+## /alerts/:id
+
+**URL Params:**
+
+Required:
+
+id=[integer]
+
+### PATCH
+
+Updates alert read status to true or false
+
+**Data Params:**
+
+`{`
+
+`read: true`
+
+`}`
+
+**SUCCESS RESPONSE**
+
+code: 204
