@@ -20,7 +20,7 @@ async function requireAuth(req, res, next) {
         error: 'Unauthorized request'
       });
     }
-    
+ 
     req.userId = user.id;
     next();
   } catch (error) {
