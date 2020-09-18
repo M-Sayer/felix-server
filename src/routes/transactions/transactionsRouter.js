@@ -121,10 +121,8 @@ transactionsRouter
     }
   })
   .patch( async (req,res,next) => {
-
     //Get params
     const { type, id } = req.params;
-
 
     //Get body content
     const {name, category, description} = req.body;
@@ -188,14 +186,13 @@ transactionsRouter
       res.app.get('db'),
       type,
       id,
-      userId,
+      req.userId,
       transObject
     )
       .then(() => res.status(204).end())
       .catch(next);
   })
   .delete( (req, res,next) =>{
-    console.log(req.params);
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -223,7 +220,8 @@ transactionsRouter
     TransactionsService.deleteTransaction(
       req.app.get('db'),
       type,
-      id
+      id,
+      req.userId
     )
       .then(res.status(204).end())
       .catch(next);
