@@ -251,7 +251,7 @@ async function checkIfTransactionExists(req,res,next) {
 }
 
 //Creates new transaction of either income or expenses type
-transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {
+transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
 
   //Get all body values, type must be a string of either 'income' or 'expenses'.
   //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
@@ -333,6 +333,7 @@ transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => 
     
     //Respond with object {type: "income"/"expenses"}
     return res.status(201).end();
+
   } catch (e) {
     next(e);
   }
