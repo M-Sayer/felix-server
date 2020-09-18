@@ -10,8 +10,11 @@ const {
   deleteGoal,
 } = require('./GoalsService');
 
-const { convertToCents, convertTransactionsToDollars, convertToDollars } = require('../../helpers');
-const GoalsService = require('./GoalsService');
+const { 
+  convertToCents,
+  // convertTransactionsToDollars, 
+  convertToDollars } = require('../../helpers');
+const moment = require('moment');
 
 goalsRouter.use(requireAuth);
 goalsRouter
@@ -33,6 +36,7 @@ goalsRouter
           goal_amount: convertToDollars(goal.goal_amount),
           current_amount: convertToDollars(goal.current_amount),
           contribution_amount: convertToDollars(goal.contribution_amount),
+          end_date: moment(goal.end_date).format(),
         }
       ));
 
@@ -95,7 +99,7 @@ goalsRouter
   });
 
 goalsRouter
-  .route('/goal/:id')
+  .route('/:id')
   .get(async(req, res, next) => {
     try {
       /**
@@ -119,6 +123,7 @@ goalsRouter
         goal_amount: convertToDollars(goal.goal_amount),
         current_amount: convertToDollars(goal.current_amount),
         contribution_amount: convertToDollars(goal.contribution_amount),
+        end_date: moment(goal.end_date).format(),
       }
 
       return res.json(goal)
