@@ -228,8 +228,9 @@ transactionsRouter
 
   });
 
+  //this should be moved to middleware
 //Checks if transaction exists
-async function  checkIfTransactionExists(req,res,next) {
+async function checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
@@ -248,10 +249,6 @@ async function  checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
-
-
-
-
 
 //Creates new transaction of either income or expenses type
 transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {
