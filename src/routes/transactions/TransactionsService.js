@@ -56,7 +56,13 @@ const TransactionsService = {
       await updateAllowance(db, userId, difference);
       await updateBalance(db, userId, difference);
     });
+
   },
+  deleteTransaction(db, type, id){
+    return db(type)
+      .where({id})
+      .delete();
+  }
 };
 
 module.exports = TransactionsService;
