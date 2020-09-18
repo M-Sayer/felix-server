@@ -6,6 +6,13 @@ const getUserAlerts = async (db, user_id) => {
     .where({ user_id });
 };
 
+const updateAlert = async (db, id, read) => {
+  return await db('alerts')
+    .where({ id }).update({ read })
+    .returning('read');
+};
+
 module.exports = {
   getUserAlerts,
+  updateAlert
 }
