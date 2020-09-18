@@ -47,8 +47,9 @@ const TransactionsService = {
   },
   
   async patchSingleTransaction(db, type, id, userId, content) {
+    // get transaction amount before patch
     const oldAmt = await selectTransactionAmount(db, type, id);
-    console.log(oldAmt)
+    //add the difference between the amounts to balance/allowance
     const difference = getDifference(oldAmt, content.income_amount || content.expense_amount);
     
     await db.transaction(async trx => {
@@ -58,11 +59,18 @@ const TransactionsService = {
     });
 
   },
-  deleteTransaction(db, type, id){
-    return db(type)
-      .where({id})
-      .delete();
-  }
+  async deleteTransaction(db, type, id, userId){
+    // get transaction amount before delete
+    const amount = await selectTransactionAmount(db, type, id);
+    // add the negative of that amount to balance/allowance
+    const difference = amount * -1
+
+    await db.transaction(async trx => {
+      await trx(type).where({ id }).delete();
+      await updateAllowance(db, userId, difference);
+      await updateBalance(db, userId, difference);
+    })
+  },
 };
 
 module.exports = TransactionsService;
