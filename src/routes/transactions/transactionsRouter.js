@@ -121,10 +121,8 @@ transactionsRouter
     }
   })
   .patch( async (req,res,next) => {
-
     //Get params
     const { type, id } = req.params;
-
 
     //Get body content
     const {name, category, description} = req.body;
@@ -188,14 +186,13 @@ transactionsRouter
       res.app.get('db'),
       type,
       id,
-      userId,
+      req.userId,
       transObject
     )
       .then(() => res.status(204).end())
       .catch(next);
   })
   .delete( (req, res,next) =>{
-    console.log(req.params);
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -223,15 +220,17 @@ transactionsRouter
     TransactionsService.deleteTransaction(
       req.app.get('db'),
       type,
-      id
+      id,
+      req.userId
     )
       .then(res.status(204).end())
       .catch(next);
 
   });
 
+  //this should be moved to middleware
 //Checks if transaction exists
-async function  checkIfTransactionExists(req,res,next) {
+async function checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
@@ -250,10 +249,6 @@ async function  checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
-
-
-
-
 
 //Creates new transaction of either income or expenses type
 transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {
