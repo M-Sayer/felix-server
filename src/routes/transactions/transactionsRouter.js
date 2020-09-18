@@ -9,6 +9,7 @@ const {
   createTransaction,
   patchSingleTransaction,
 } = require('./TransactionsService');
+const TransactionsService = require('./TransactionsService');
 
 const { convertToCents, convertTransactionsToDollars, convertToDollars } = require('../../helpers');
 
@@ -21,6 +22,15 @@ const { convertToCents, convertTransactionsToDollars, convertToDollars } = requi
  * @todo GAGE- might need to add error handling if the said user don't have 
  * any content to send
  */
+
+/**
+  * 
+  * @note GAGE- getting 400 ERROR on http://...../dashbored of client since it can't call 
+  * "http://...../api/transactions/users"
+  * users is not an endpoint here. 
+  * 
+  * 
+  */
 transactionsRouter.all('/', requireAuth);
 
 transactionsRouter.get('/', async (req, res, next) => {
@@ -43,7 +53,7 @@ transactionsRouter.get('/', async (req, res, next) => {
 
 transactionsRouter
   .route('/:type/:id')
-  .all(checkIfTransactionExists)
+  .all(checkIfTransactionExists, requireAuth)
   .get( async (req, res, next) => {
     const { type, id } = req.params;
 
@@ -67,13 +77,21 @@ transactionsRouter
         type,
         id
       );
-      console.log(transaction)
 
       if (!transaction) {
         return res.status(400).json({
           error: 'Invalid transaction id',
         });
       }
+
+      if (req.auth_id !== req.userId) {
+        return res
+          .status(401)
+          .json({
+            error : 'user is unauthorized to view this transaction'
+          });
+      }
+
 
       const transactionDetails =
       type === 'income'
@@ -102,29 +120,22 @@ transactionsRouter
       next(e);
     }
   })
-  .patch(requireAuth, async (req,res,next) => {
-
+  .patch( async (req,res,next) => {
     //Get params
     const { type, id } = req.params;
-
-    //Get user id from auth header
-    const userId = req.userId;
 
     //Get body content
     const {name, category, description} = req.body;
     //convert amount to cents
     const amount = convertToCents(req.body.amount);
 
-    //Get the transaction we're trying to edit to compare user ids
-    const singleTransaction = await getSingleTransaction(req.app.get('db'), type, id);
-
     //Checks if user making patch matches user id of the transaction
-    if (singleTransaction.user_id !== userId) {
+    if (req.auth_id !== req.userId) {
       return res
-      .status(401)
-      .json({
-        error : singleTransaction
-      });
+        .status(401)
+        .json({
+          error : 'user is unauthorized to view this transaction'
+        });
     }
 
     //Checks if type is either income or expense
@@ -154,7 +165,7 @@ transactionsRouter
      *  update the balance along with it.
      */
 
-     //Create transaction object
+    //Create transaction object
     const transObject  = 
     type === 'income'
       ? {
@@ -175,14 +186,51 @@ transactionsRouter
       res.app.get('db'),
       type,
       id,
+      req.userId,
       transObject
     )
       .then(() => res.status(204).end())
       .catch(next);
+  })
+  .delete( (req, res,next) =>{
+    const { type, id } = req.params;
+
+    if (!['income', 'expenses'].includes(type)) {
+      return res.status(400).json({
+        error: 'Invalid transaction type',
+      });
+    }
+
+    for (const [key, prop] of Object.entries({ type, id })) {
+      if (!prop) {
+        return res.status(400).json({
+          error: `${key} seems to be missing from query params`,
+        });
+      }
+    }
+
+    if (req.auth_id !== req.userId) {
+      return res
+        .status(401)
+        .json({
+          error : 'user is unauthorized to view this transaction'
+        });
+    }
+
+    TransactionsService.deleteTransaction(
+      req.app.get('db'),
+      type,
+      id,
+      req.userId
+    )
+      .then(res.status(204).end())
+      .catch(next);
+
   });
 
-  //Checks if transaction exists
-  async function  checkIfTransactionExists(req,res,next) {
+  //this should be moved to middleware
+//Checks if transaction exists
+async function checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
@@ -194,6 +242,8 @@ transactionsRouter
         {error : 'the id of the transaction doesn\'t exist'}
       );
     }
+    //should be === w/ req.userId from auth
+    req.auth_id = ExistingTransaction.user_id;
     next();
   }catch(error){
     next(error);
@@ -215,7 +265,7 @@ transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
   let newTransaction = {};
 
   //Response to client
-  let response = {}
+  let response = {};
 
   //If type is income, transaction object has income_amount and income_category properties
   if (type === 'income') {
@@ -231,16 +281,16 @@ transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
     }
 
     //Build the response object
-    response = { type: 'income' }
+    response = { type: 'income' };
 
     //Build the new transaction object
     newTransaction = {
-        user_id: user_id,
-        name,
-        description,
-        income_amount: amount,
-        income_category: category,
-    }
+      user_id: user_id,
+      name,
+      description,
+      income_amount: amount,
+      income_category: category,
+    };
   }
 
   //If type is expenses, transaction object has expense_amount and expense_category properties
@@ -257,7 +307,7 @@ transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
     }
 
     //Build the response object
-    response = { type: 'expenses' }
+    response = { type: 'expenses' };
 
     //Build the new transaction object
     newTransaction = {
@@ -266,26 +316,26 @@ transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
       description,
       expense_amount: amount,
       expense_category: category,
-    }
+    };
   }
 
   //If type is neither expenses or income reject it
   else if (type !== 'income' || type !== 'expenses') {
-      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
+    return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
   }
 
-    //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
+  //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
   try {
     await createTransaction(
       req.app.get('db'),
       type,
-      newTransaction)
+      newTransaction);
     
     //Respond with object {type: "income"/"expenses"}
     return res.status(201).end();
 
   } catch (e) {
-    next(e)
+    next(e);
   }
 
 });
