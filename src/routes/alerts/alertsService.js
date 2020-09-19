@@ -3,7 +3,7 @@ const getUserAlerts = async (db, user_id) => {
     .select(
       'id', 'title', 'message', 'read', 'date_created'
     )
-    .where({ user_id });
+    .where({ user_id }).orderBy('date_created');
 };
 
 const updateAlert = async (db, id, read) => {
