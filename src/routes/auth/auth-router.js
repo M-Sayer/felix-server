@@ -12,7 +12,6 @@ router.route('/auth').post(async (req, res, next) => {
   } else {
     bearerToken = authToken.slice('bearer '.length, authToken.length);
   }
-
   try {
     const payload = UserService.verifyJwt(bearerToken);
     const user = await UserService.getUserWithUsername(db, payload.sub);

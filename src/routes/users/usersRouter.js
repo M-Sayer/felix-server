@@ -98,6 +98,7 @@ usersRouter.post('/register', async (req, res, next) => {
 });
 
 usersRouter.post('/login', async (req, res, next) => {
+  console.log('something')
   const db = req.app.get('db');
 
   const { username, password } = req.body;

@@ -125,14 +125,14 @@ transactionsRouter
     //Get params
     const { type, id } = req.params;
 
-
+    const {userId} = req; 
     //Get body content
     const {name, category, description} = req.body;
     //convert amount to cents
     const amount = convertToCents(req.body.amount);
 
     //Checks if user making patch matches user id of the transaction
-    if (req.auth_id !== req.userId) {
+    if (req.auth_id !== userId) {
       return res
         .status(401)
         .json({
