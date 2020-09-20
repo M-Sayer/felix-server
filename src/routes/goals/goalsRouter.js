@@ -12,7 +12,6 @@ const {
 
 const { 
   convertToCents,
-  // convertTransactionsToDollars, 
   convertToDollars } = require('../../helpers');
 const moment = require('moment');
 
@@ -30,19 +29,19 @@ goalsRouter
 
     // Convert any amount to dollars before sending it back to client side 
     if(goals.length) {
-      const convertedGoals = goals.map(goal => (
-        goal = {
+      const convertedGoals = goals.map(goal => ({
           ...goal,
           goal_amount: convertToDollars(goal.goal_amount),
           current_amount: convertToDollars(goal.current_amount),
           contribution_amount: convertToDollars(goal.contribution_amount),
           end_date: moment(goal.end_date).format(),
-        }
-      ));
+        })
+      );
 
       return res.json(convertedGoals);
     }
-
+    
+    // return res.json([]);
     return res.json(goals);
   }
   catch(error) {
@@ -55,8 +54,7 @@ goalsRouter
     const { name, goal_amount, contribution_amount, end_date} = req.body;
     
     // Validate inputs
-    // Not a huge fan of this
-    // But why not
+    // req.body only contains the inputs destructured above
     for(const [key, value] of Object.entries(req.body)) {
       if(!value) {
         return res
@@ -73,7 +71,7 @@ goalsRouter
       name,
       goal_amount: convertToCents(goal_amount),
       contribution_amount: convertToCents(contribution_amount),
-      // moment parses PostgreSQL date format correctly
+      // Moment parses PostgreSQL date format correctly
       end_date,
     }
     
@@ -108,7 +106,7 @@ goalsRouter
        * @returns {array} - Array of goal objects
        */
       let goal = await getGoal(req.app.get('db'), req.params.id);
-
+  
       // Convert any amount to dollars before sending it back to client side 
       if(!goal) {
         return res
@@ -126,7 +124,7 @@ goalsRouter
         end_date: moment(goal.end_date).format(),
       }
 
-      return res.json(goal)
+      return res.json(goal);
     }
     catch(error) {
       next(error);
@@ -134,8 +132,9 @@ goalsRouter
   })
   .patch(async(req, res, next) => {
     // Retrieve inputs
-    const { name, goal_amount, contribution_amount, end_date} = req.body;
+    const { name, goal_amount, contribution_amount, end_date } = req.body;
    
+    // const tempObj = {name, goal_amount, contribution_amount, end_date};
     for(const [key, value] of Object.entries(req.body)) {
       if(!value) {
         return res
@@ -163,7 +162,7 @@ goalsRouter
        * @argument {object} - Updated goal object
       */
       const response = await updateGoal(req.app.get('db'), req.params.id, updatedGoal);
-
+      
       if(!response) {
         return res
           .status(400)
