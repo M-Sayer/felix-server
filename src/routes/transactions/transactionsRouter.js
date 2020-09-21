@@ -120,11 +120,13 @@ transactionsRouter
     }
   })
   .patch( async (req,res,next) => {
-
     //Get params
     const { type, id } = req.params;
 
+<<<<<<< HEAD
     const {userId} = req; 
+=======
+>>>>>>> master
     //Get body content
     const {name, category, description} = req.body;
     //convert amount to cents
@@ -187,14 +189,13 @@ transactionsRouter
       res.app.get('db'),
       type,
       id,
-      userId,
+      req.userId,
       transObject
     )
       .then(() => res.status(204).end())
       .catch(next);
   })
   .delete( (req, res,next) =>{
-    console.log(req.params);
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -222,15 +223,17 @@ transactionsRouter
     TransactionsService.deleteTransaction(
       req.app.get('db'),
       type,
-      id
+      id,
+      req.userId
     )
       .then(res.status(204).end())
       .catch(next);
 
   });
 
+  //this should be moved to middleware
 //Checks if transaction exists
-async function  checkIfTransactionExists(req,res,next) {
+async function checkIfTransactionExists(req,res,next) {
   try {
     const ExistingTransaction = await getSingleTransaction(
       req.app.get('db'),
@@ -251,7 +254,7 @@ async function  checkIfTransactionExists(req,res,next) {
 }
 
 //Creates new transaction of either income or expenses type
-transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {
+transactionsRouter.route('/').post(requireAuth, async (req, res, next) => {
 
   //Get all body values, type must be a string of either 'income' or 'expenses'.
   //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
@@ -333,6 +336,7 @@ transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => 
     
     //Respond with object {type: "income"/"expenses"}
     return res.status(201).end();
+
   } catch (e) {
     next(e);
   }
