@@ -123,10 +123,7 @@ transactionsRouter
     //Get params
     const { type, id } = req.params;
 
-<<<<<<< HEAD
     const {userId} = req; 
-=======
->>>>>>> master
     //Get body content
     const {name, category, description} = req.body;
     //convert amount to cents
