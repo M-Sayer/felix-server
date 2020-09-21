@@ -80,97 +80,97 @@ const makeUsersArray = () => {
       balance: 4444.44,
     },
   ];
-};
+}
 
 const makeIncomeAndExpensesArray = () => {
   const income = [
     {
       id: 1,
-      user_id: 1,
-      incomeAmount: 113.88,
       name: 'Test Income 1',
-      transaction_category : 'other',
+      user_id: 1,
+      income_amount: 113.88,
+      income_category : 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 2,
-      user_id: 1,
-      incomeAmount: 20.99,
       name: 'Test Income 2',
-      transaction_category : 'other',
+      user_id: 1,
+      income_amount: 20.99,
+      income_category : 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 3,
-      user_id: 2,
-      incomeAmount: 77.21,
       name: 'Test Income 3',
-      transaction_category: 'other',
+      user_id: 2,
+      income_amount: 77.21,
+      income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 4,
-      user_id: 1,
-      incomeAmount: 654.12,
       name: 'Test Income 4',
-      transaction_category: 'other',
+      user_id: 1,
+      income_amount: 654.12,
+      income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 5,
-      user_id: 3,
-      incomeAmount: .99,
       name: 'Test Income 5',
-      transaction_category: 'other',
+      user_id: 3,
+      income_amount: .99,
+      income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     }
   ];
   const expenses = [
     {
       id: 1,
+      name: 'Test Expense 1',
       user_id: 1,
       expense_amount: -12.12,
-      name: 'Test Expense 1',
       expense_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 2,
+      name: 'Test Expense 2',
       user_id: 1,
       expense_amount: -50.11,
-      name: 'Test Expense 2',
       expense_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 3,
+      name: 'Test Expense 3',
       user_id: 3,
       expense_amount: -.12,
-      name : 'Test Expense 3',
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 4,
+      name: 'Test Expense 4',
       user_id: 2,
       expense_amount: -7541.46,
-      name : 'Test Expense 4',
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 5,
+      name: 'Test Expense 5',
       user_id: 1,
       expense_amount: -708.81,
-      name : 'Test Expense 5',
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
     {
       id: 6,
+      name: 'Test Expense 6',
       user_id: 3,
       expense_amount: -43.74,
-      name : 'Test Expense 6',
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     }
@@ -183,6 +183,7 @@ const makeGoalsArray = () => {
   return [
     {
       id: 1,
+      name: 'Test Goal 1',
       user_id: 1,
       goal_amount: 400.00,
       contribution_amount: 100.00,
@@ -190,8 +191,19 @@ const makeGoalsArray = () => {
       end_date: new Date('2020-10-15T13:26:19.359Z'),
       completed: false,
       date_created: new Date('2020-09-15T13:26:19.359Z'),
-    }
-  ]
+    },
+    {
+      id: 2,
+      name: 'Test Goal 2',
+      user_id: 1,
+      goal_amount: 400.00,
+      contribution_amount: 100.00,
+      current_amount: 100.00,
+      end_date: new Date('2020-10-15T13:26:19.359Z'),
+      completed: false,
+      date_created: new Date('2020-09-15T13:26:19.359Z'),
+    },
+  ];
 }
 
 const makeAllFixtures = () => {
