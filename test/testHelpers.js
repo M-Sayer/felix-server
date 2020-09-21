@@ -26,9 +26,6 @@ const makeAuthHeader = (user, secret = process.env.JWT_SECRET) => {
   return `Bearer ${token}`;
 };
 
-/**
- * @todo "needs to be made with __auth__ in mind"
- */
 const makeTestUsersArray = () => {
   return [
     {
@@ -191,24 +188,13 @@ const makeIncomeAndExpensesArray = () => {
   return {income, expenses};
 };
 
-
-
-/**
- * @todo needs to be made taking content generated from makeTestUsersArray()
- *        and seed knex instance.
- */
-
 const seedUsersTable = (db, users) => {
-  const testUsersArray = makeTestUsersArray();
   return db.transaction(async (trx) => {
-    await trx.into('users').insert(testUsersArray);
+    await trx.into('users').insert(users);
   });
 
 };
 
-/**
- * @todo needs seedUsersTable() to continue @ -> gage when ready
- */
 const  seedIncomeAndExpensesTables = (db, users, income=[] , expenses=[] ) => {
   seedUsersTable(db, users);
 
@@ -255,8 +241,11 @@ const clearTables = (db) => {
 
 
 module.exports = {
+  clearTables,
+  makeAuthHeader,
   makeKnexInstance,
+  makeTestUsersArray,
   makeIncomeAndExpensesArray,
   seedIncomeAndExpensesTables,
-  clearTables,
+  seedUsersTable, 
 };

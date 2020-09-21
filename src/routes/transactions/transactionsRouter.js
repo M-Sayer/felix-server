@@ -32,7 +32,6 @@ const { convertToCents, convertTransactionsToDollars, convertToDollars } = requi
   * 
   */
 transactionsRouter.all('/', requireAuth);
-
 transactionsRouter.get('/', async (req, res, next) => {
   const user_id = req.userId;
 
@@ -250,10 +249,6 @@ async function  checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
-
-
-
-
 
 //Creates new transaction of either income or expenses type
 transactionsRouter.route('/create').post(requireAuth, async (req, res, next) => {

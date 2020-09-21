@@ -10,7 +10,9 @@ describe('Transaction Endpoint', ()=> {
   const {
     testIncome,
     testExpenses
-  } = helper.seedIncomeAndExpensesTables();
+  } = helper.makeIncomeAndExpensesArray();
+
+  const testUsers = helper.makeTestUsersArray();
 
   before('make knex instance', () =>{
     db = helper.makeKnexInstance();
@@ -25,14 +27,14 @@ describe('Transaction Endpoint', ()=> {
 
   describe.only(`GET "/api/transaction/singles" endpoint`, () => {
     
-    // beforeEach('insert transactions into tables', () =>{
-    //   helper.seedIncomeAndExpensesTables(
-    //     db,
-    //     testUsers,
-    //     testIncome,
-    //     testExpenses
-    //   );
-    // });
+    beforeEach('insert transactions into tables', () =>{
+      helper.seedIncomeAndExpensesTables(
+        db,
+        testUsers,
+        testIncome,
+        testExpenses
+      );
+    });
     
     context('if given auth, and a valid id ', ()=> {
 
