@@ -5,7 +5,6 @@ const path = require('path');
 const usersRouter = express.Router();
 
 const {
-  createJwt,
   createUser,
   validatePassword,
   getUserWithUsername,
@@ -13,6 +12,7 @@ const {
   hashPassword,
   unhashPassword,
   getUserWithId,
+  createJwt,
 } = require('./UsersService.js');
 const { convertToDollars } = require('../../helpers');
 
