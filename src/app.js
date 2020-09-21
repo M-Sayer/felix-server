@@ -12,6 +12,7 @@ const errorHandler = require('./middleware/errorHandler');
 const usersRouter = require('./routes/users/usersRouter');
 const goalsRouter = require('./routes/goals/goalsRouter');
 const transactionsRouter = require('./routes/transactions/transactionsRouter');
+const alertsRouter = require('./routes/alerts/alertsRouter');
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
@@ -23,5 +24,6 @@ app.use(express.json());
 app.use('/api/users', usersRouter);
 app.use('/api/goals', goalsRouter);
 app.use('/api/transactions', transactionsRouter);
+app.use('/api/alerts', alertsRouter);
 app.use(errorHandler);
 module.exports = app;

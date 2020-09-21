@@ -41,22 +41,22 @@ const selectUserAllowance = async id => {
   const result = await db('users')
     .select('allowance')
     .where({ id })
-    .first()
+    .first();
 
-  return result.allowance
+  return result.allowance;
 }
 
 const selectGoal = async id => {
   return await db('goals')
     .select()
     .where({ id })
-    .first()
+    .first();
 }
 
 const updateGoal = async (id, params) => {
   return await db('goals')
     .where({ id })
-    .update(params)
+    .update(params);
 }
 
 const createAlert = async (user_id, complete, name) => {
@@ -65,13 +65,7 @@ const createAlert = async (user_id, complete, name) => {
       'user_id': user_id,
       'title': complete ? 'Goal Complete!' : 'Insufficient Allowance.',
       'message': complete ? `You completed your goal, ${name}` : `Looks like you don't have enough allowance to fund your goal, ${name}`,
-    })
-}
-
-const selectUserAlerts = async (user_id) => {
-  const alerts = await db('alerts')
-    .select()
-    .where({ user_id })
+    });
 }
 
 const moveContribution = async (goal, allowance, adjusted) => {
@@ -92,10 +86,10 @@ const moveContribution = async (goal, allowance, adjusted) => {
     // update allowance value on users table
     await trx('users')
       .where({ 'id': goal.user_id})
-      .update({ allowance: allowance })
+      .update({ allowance: allowance });
     
     // update current amount in goals table
-    await updateGoal(goal.user_id, { 'current_amount': goal.current_amount })
+    await updateGoal(goal.user_id, { 'current_amount': goal.current_amount });
   });
 }
 
@@ -104,14 +98,13 @@ const completeGoal = async (goal, allowance, adjusted,) => {
     await moveContribution(goal, allowance, adjusted);
     await updateGoal(goal.id, { 'completed': true });
     await createAlert(goal.user_id, complete = true, goal.name);
-  })
+  });
 }
 
 module.exports = {
   asyncForEach,
   selectGoals,
   updateGoal,
-  selectUserAlerts,
   createAlert,
   selectUserAllowance,
   moveContribution,
