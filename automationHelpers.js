@@ -68,14 +68,6 @@ const createAlert = async (user_id, complete, name) => {
     });
 }
 
-const selectUserAlerts = async (user_id) => {
-  const alerts = await db('alerts')
-    .select()
-    .where({ user_id });
-
-  return alerts;
-}
-
 const moveContribution = async (goal, allowance, adjusted) => {
   // calculate the difference if the contibution amt needs to be adjusted
   const difference = goal.goal_amount - goal.current_amount;
@@ -113,7 +105,6 @@ module.exports = {
   asyncForEach,
   selectGoals,
   updateGoal,
-  selectUserAlerts,
   createAlert,
   selectUserAllowance,
   moveContribution,
