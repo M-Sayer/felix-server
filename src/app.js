@@ -10,6 +10,7 @@ const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 const errorHandler = require('./middleware/errorHandler');
 // Routers
 const usersRouter = require('./routes/users/usersRouter');
+const goalsRouter = require('./routes/goals/goalsRouter');
 const transactionsRouter = require('./routes/transactions/transactionsRouter');
 const alertsRouter = require('./routes/alerts/alertsRouter');
 
@@ -21,6 +22,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use('/api/users', usersRouter);
+app.use('/api/goals', goalsRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/alerts', alertsRouter);
 app.use(errorHandler);

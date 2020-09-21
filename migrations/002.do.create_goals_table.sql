@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "goals" (
     DEFAULT 0 NOT NULL,
   "current_amount" BIGINT CHECK (current_amount >= 0)
     DEFAULT 0 NOT NULL,
-  "end_date" DATE DEFAULT now() NOT NULL,
+  "end_date" TIMESTAMPTZ DEFAULT now() NOT NULL,
   "completed" BOOLEAN DEFAULT false NOT NULL,
   "date_created" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
