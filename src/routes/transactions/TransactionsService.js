@@ -26,7 +26,7 @@ const TransactionsService = {
       .where({ user_id });
   },
 
-  getTransaction(db, type, id) {
+  getSingleTransaction(db, type, id) {
     return db.select()
       .from(type)
       .where({ id })
