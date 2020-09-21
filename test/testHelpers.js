@@ -237,7 +237,7 @@ const seedUsersTable = async (db, users) => {
 
 const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) => {
   return db.transaction(async trx => {
-    await trx.into('users').insert(insert);
+    await trx.into('users').insert(users);
     await trx.into('income').insert(income);
     await trx.into('expenses').insert(expenses);
     
@@ -303,7 +303,8 @@ const clearAllTables = (db) => {
           users,
           income,
           expenses,
-          goals;`
+          goals;
+          `
     )
       .then(() => 
         Promise
@@ -322,14 +323,15 @@ const clearAllTables = (db) => {
 }
 
 module.exports = {
+  clearAllTables,
+  makeAuthHeader,
+  makeAllFixtures,
+  makeIncomeAndExpensesArray,
   makeKnexInstance,
   makeUsersArray,
-  makeIncomeAndExpensesArray,
   makeGoalsArray,
-  makeAllFixtures,
   seedUsersTable,
   seedIncomeAndExpensesTables,
   seedGoalsTable,
   seedAllTables,
-  clearAllTables,
 };

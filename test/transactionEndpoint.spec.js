@@ -25,6 +25,22 @@ describe('Transaction Endpoint', ()=> {
 
   afterEach('cleanup', () => helper.clearTables(db));
 
+
+  describe(`GET '/' endpoint` , () =>{
+    context(`if do`, ()=>{
+      it(`then this should`, () => {
+
+      });
+    });
+  });
+  describe(`POST '/' endpoint` , () =>{
+    context(`if do`, ()=>{
+      it(`then this should`, () => {
+
+      });
+    });
+  });
+
   describe.only(`GET "/api/transaction/singles" endpoint`, () => {
     
     beforeEach('insert transactions into tables', () =>{
@@ -36,30 +52,19 @@ describe('Transaction Endpoint', ()=> {
       );
     });
     
-    context('if given auth, and a valid id ', ()=> {
+    context('if given auth, and a valid id', ()=> {
 
-      const id = 2;
+      const transaction_id = 2;
 
       it('should give a 200, and send back income info',()=>{
         const type = 'income';
 
-        const expectedIncome = testIncome[ id - 1 ];
+        const expectedIncome = testIncome[ transaction_id - 1 ];
 
         return supertest(app)
-          .get(`/api/transaction/${type}/${id}`)
-          .expect(200, expectedIncome);
-          
-      });
-
-      it('should give a 200, and send back expenses info',()=>{
-        const type = 'expenses';
-
-        const expectedExpenses = testExpenses[ id - 1 ];
-
-        return supertest(app)
-          .get(`/api/transaction/${type}/${id}`)
-          .expect(200, expectedExpenses);
-          
+          .get(`/api/transaction/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedIncome); 
       });
 
     } );

@@ -98,7 +98,6 @@ usersRouter.post('/register', async (req, res, next) => {
 });
 
 usersRouter.post('/login', async (req, res, next) => {
-  console.log('something')
   const db = req.app.get('db');
 
   const { username, password } = req.body;
@@ -115,9 +114,11 @@ usersRouter.post('/login', async (req, res, next) => {
   try {
     // Get user object to check against POSTed username and password
     const hasUser = await getUserWithUsername(db, username);
+    console.log(hasUser);
 
     // If hasUser is undefined (username does not exist in db), return error
     if (!hasUser) {
+      console.log('###########################')
       return res.status(401).json({
         error: 'Invalid credentials',
       });
