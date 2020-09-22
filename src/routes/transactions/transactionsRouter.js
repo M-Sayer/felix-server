@@ -141,7 +141,6 @@ transactionsRouter
 
   });
 
-
 transactionsRouter
   .route('/:type/:id')
   .all(checkIfTransactionExists, requireAuth)
@@ -344,9 +343,6 @@ async function checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
-
-//Creates new transaction of either income or expenses type
-transactionsRouter.route('/');
 
 module.exports = transactionsRouter;
 

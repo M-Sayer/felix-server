@@ -14,7 +14,7 @@ const {
   convertTestGoals,
 } = require('./testHelpers');
 
-describe.only('Goals Endpoints', () => {
+describe('Goals Endpoints', () => {
   let db;
 
   const {

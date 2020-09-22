@@ -356,6 +356,77 @@ const convertTestGoal = (goal) => ({
   date_created: new Date().toLocaleString(),
 });
 
+const makeExpectedIncomeExpensesArray = (inc, exp, match_id) =>{
+  
+  let income = [];
+  let expenses = [];
+
+  /*
+
+
+  FOUND THE ERROR!!  forgot to check for user id.... 
+
+
+  expected = {
+      id: 1,
+      user_id: 1,
+      name: 'Test Income 1',
+      description: 'test',
+      income_amount: 111.13,
+      income_category: 'other',
+      date_created: '2029-01-22T16:28:32.615Z'
+    },
+
+    got = {
+      id: 1,
+      user_id: 1,
+      name: 'Test Income 1',
+      description: 'test',
+      income_amount: 111.13,
+      income_category: 'other',
+      date_created: '2029-01-22T16:28:32.615Z'
+    },
+  
+  
+  */
+
+    for(let i = 0 ; i < inc.length ; i++){
+      if(inc[i].user_id === match_id){
+        income.push(
+          {
+            id: inc[i].id,
+            user_id: inc[i].user_id,
+            name: inc[i].name,
+            description: inc[i].description,
+            income_amount: (inc[i].income_amount / 100),/*all...this shit just to fix THIS*/
+            income_category: inc[i].income_category,
+            date_created: inc[i].date_created
+          }
+        )
+      }
+    }
+
+    for(let i = 0 ; i < exp.length ; i++){
+      if(exp[i].user_id === match_id){
+            expenses.push(
+          {
+            id: exp[i].id,
+            user_id: exp[i].user_id,
+            name: exp[i].name,
+            description: exp[i].description,
+            expense_amount: (exp[i].expense_amount / 100),/*all...this shit just to fix THIS*/
+            expense_category: exp[i].expense_category,
+            date_created: exp[i].date_created
+          }
+        )
+      }
+    }
+
+
+
+    return {income, expenses}
+};
+
 const convertTestGoals = (goals) =>
   goals.map(goal => convertTestGoal(goal));
 
@@ -363,6 +434,7 @@ module.exports = {
   clearAllTables,
   makeAuthHeader,
   makeAllFixtures,
+  makeExpectedIncomeExpensesArray,
   makeIncomeAndExpensesArray,
   makeKnexInstance,
   makeTransactionReply,
