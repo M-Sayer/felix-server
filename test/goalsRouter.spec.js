@@ -6,7 +6,6 @@ const moment = require('moment');
 const {
   makeKnexInstance,
   makeAuthHeader,
-  makeGoalsArray,
   makeAllFixtures,
   seedUsersTable,
   seedGoalsTable,
@@ -61,7 +60,7 @@ describe.only('Goals Endpoints', () => {
             response.body.forEach(goal => {
               goal.date_created = new Date(goal.date_created).toLocaleString();
             });
-            expect(response.body).to.eql(convertTestGoals(testGoals));
+            expect(response.body).to.eql(convertedTestGoals);
           });
       });
 
