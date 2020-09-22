@@ -54,6 +54,9 @@ transactionsRouter
   .route('/:type/:id')
   .all(checkIfTransactionExists, requireAuth)
   .get( async (req, res, next) => {
+
+    console.log('C A L L E D')
+
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {

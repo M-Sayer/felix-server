@@ -185,6 +185,28 @@ const makeIncomeAndExpensesArray = () => {
   return {testIncome, testExpenses}; 
 }
 
+const makeTransactionReply = (type, tran) => {
+    tran.description = !tran.description ? null : tran.description ; 
+    
+    return type === 'income' 
+    ? {
+      id: tran.id,
+      name: tran.name,
+      description : tran.description,
+      date_created: tran.date_created,
+      amount: (tran.income_amount / 100),
+      category: tran.income_category,
+    }
+    : {
+      id: tran.id,
+      name: tran.name,
+      description : tran.description,
+      date_created: tran.date_created,
+      amount: (tran.expense_amount / 100),
+      category: tran.expense_category,
+    };
+}
+
 const makeGoalsArray = () => {
   return [
     {
@@ -225,20 +247,19 @@ const makeAllFixtures = () => {
   }
 }
 
-const seedUsersTable = async (db, users) => {
+const seedUsersTable =(db, users) => {
   const preppedUsers = users.map(user => ({
     ...user,
     password: bcrypt.hashSync(user.password, 1),
   }));
 
-  await db('users')
-    .insert(preppedUsers);
-
-  await db
-    .raw(
-      `SELECT setval('users_id_seq', ?)`,
-      users[users.length-1].user_id
-    );
+  return db.into('users').insert(preppedUsers)
+  .then(()=>
+    db.raw(
+     `SELECT setval('users_id_seq', ?)`,
+     [users[users.length - 1].id],
+   )
+  );
 }
 
 const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) => {
@@ -304,26 +325,28 @@ const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
 
 const clearAllTables = (db) => {
   return db.transaction(trx => {
-    return trx.raw(
-      `TRUNCATE
-      income,
-      expenses,
-      goals,
-      users
-      RESTART IDENTITY CASCADE;
-          `
+     return trx.raw(
+      `TRUNCATE 
+      "alerts",
+      "expenses",
+      "income",
+      "goals",
+      "users"
+      RESTART IDENTITY CASCADE`
     )
       .then(() => 
         Promise
           .all([
-            trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
             trx.raw(`ALTER SEQUENCE income_id_seq minvalue 0 START WITH 1`),
             trx.raw(`ALTER SEQUENCE expenses_id_seq minvalue 0 START WITH 1`),
+            trx.raw(`ALTER SEQUENCE alerts_id_seq minvalue 0 START WITH 1`),
             trx.raw(`ALTER SEQUENCE goals_id_seq minvalue 0 START WITH 1`),
-            trx.raw(`SELECT setval('users_id_seq', 0)`),
+            trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
             trx.raw(`SELECT setval('income_id_seq', 0)`),
+            trx.raw(`SELECT setval('alerts_id_seq', 0)`),
             trx.raw(`SELECT setval('expenses_id_seq', 0)`),
             trx.raw(`SELECT setval('goals_id_seq', 0)`),
+            trx.raw(`SELECT setval('users_id_seq', 0)`),
         ])
       );
   });
@@ -335,6 +358,7 @@ module.exports = {
   makeAllFixtures,
   makeIncomeAndExpensesArray,
   makeKnexInstance,
+  makeTransactionReply,
   makeUsersArray,
   makeGoalsArray,
   seedUsersTable,

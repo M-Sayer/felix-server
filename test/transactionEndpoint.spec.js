@@ -52,19 +52,54 @@ describe('Transaction Endpoint', ()=> {
       );
     });
     
-    context('if given auth, and a valid id', ()=> {
+    context('if given a vailed auth, and a valid id, and a type of "income"', ()=> {
 
       const transaction_id = 2;
+      const type = 'income';
 
-      it('should give a 200, and send back income info',()=>{
-        const type = 'income';
+      beforeEach('insert transactions into tables', () =>{
+        helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
 
-        const expectedIncome = testIncome[ transaction_id - 1 ];
+      it('should give a 200, and send back _income_ info',()=>{
+
+        const expectedIncome = helper.makeTransactionReply( type ,testIncome[ transaction_id - 1 ]);
 
         return supertest(app)
           .get(`/api/transactions/${type}/${transaction_id}`)
           .set('Authorization', helper.makeAuthHeader(testUsers[0]))
           .expect(200, expectedIncome); 
+      });
+
+    });
+
+    context('if given a vialed auth, and a valid id, and a type of "expenses"', ()=> {
+
+      const transaction_id = 2;
+      const type = 'expenses';
+
+      beforeEach('insert transactions into tables', () =>{
+        helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      it('should give a 200, and send back _expenses_ info',()=>{
+        
+        const expectedExpense = helper.makeTransactionReply( type ,testExpenses[ transaction_id - 1 ]);
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedExpense); 
       });
 
     } );
