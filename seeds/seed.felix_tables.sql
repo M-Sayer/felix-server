@@ -7,7 +7,7 @@ TRUNCATE
   "goals",
   "users";
 
-INSERT INTO "users" ("id", "first_name", "last_name", "username", "email", "password", "allowance", "balance")
+INSERT INTO "users" ("id", "first_name", "last_name", "username", "email", "password", "allowance", "balance", "total_saved")
 VALUES
   (
     1,
@@ -18,7 +18,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     5121,
-    100050 
+    100050,
+    1045
   ),
   (
     2,
@@ -29,7 +30,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     1000000,
-    10000000 
+    10000000,
+    0 
   ),
   (
     3,
@@ -40,7 +42,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     7817,
-    23459 
+    23459,
+    0 
   ),
   (
     4,
@@ -51,7 +54,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     56294,
-    60059 
+    60059,
+    2500
   ),
   (
     5,
@@ -62,7 +66,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     29278,
-    30427 
+    30427,
+    0
   ),
   (
     6,
@@ -73,7 +78,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     84768,
-    90268 
+    90268,
+    10000
   ),
   (
     7,
@@ -84,7 +90,8 @@ VALUES
     --password = "pass"
     '$2a$10$fCWkaGbt7ZErxaxclioLteLUgg4Q3Rp09WW0s/wSLxDKYsaGYUpjG',
     1872,
-    2927 
+    2927,
+    0
   );
 
 INSERT INTO "goals" ("id","name", "user_id", "goal_amount", "contribution_amount", "current_amount", "end_date")

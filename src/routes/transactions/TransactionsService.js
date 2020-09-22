@@ -41,8 +41,8 @@ const TransactionsService = {
         .catch(error => error);
 
       const t = newTransaction; 
-      await updateAllowance(db, t.user_id, t.income_amount || t.expense_amount);
-      await updateBalance(db, t.user_id, t.income_amount || t.expense_amount);
+      await updateAllowance(trx, t.user_id, t.income_amount || t.expense_amount);
+      await updateBalance(trx, t.user_id, t.income_amount || t.expense_amount);
     });
   },
   
@@ -67,8 +67,8 @@ const TransactionsService = {
 
     await db.transaction(async trx => {
       await trx(type).where({ id }).delete();
-      await updateAllowance(db, userId, difference);
-      await updateBalance(db, userId, difference);
+      await updateAllowance(trx, userId, difference);
+      await updateBalance(trx, userId, difference);
     })
   },
 };

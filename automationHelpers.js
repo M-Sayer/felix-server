@@ -1,5 +1,6 @@
 const knex = require("knex");
 const { DATABASE_URL } = require('./src/config');
+const { importTotalSaved } = require('./src/helpers');
 
 //  pg returns numeric values as strings
 //  this converts all numeric types to floats (decimal)
@@ -54,10 +55,10 @@ const selectGoal = async id => {
 }
 
 const updateGoal = async (id, params) => {
-  return await db('goals')
+  await db('goals')
     .where({ id })
     .update(params);
-}
+};
 
 const createAlert = async (user_id, complete, name) => {
   return await db('alerts')
@@ -71,22 +72,26 @@ const createAlert = async (user_id, complete, name) => {
 const moveContribution = async (goal, allowance, adjusted) => {
   // calculate the difference if the contibution amt needs to be adjusted
   const difference = goal.goal_amount - goal.current_amount;
-  
+  let amount = goal.contribution_amount;
   // subtract contribution amount from allowance
   adjusted
     ? allowance -= difference // if true, subtract difference from allowance 
-    : allowance -= goal.contribution_amount  //if false, subtract contribution amount from allowance
+    : allowance -= goal.contribution_amount;  //if false, subtract contribution amount from allowance
 
   // add contribution amount to goal's current amount
   adjusted
     ? goal.current_amount += difference //if true, add difference to current amt
-    : goal.current_amount += goal.contribution_amount // if false, add contribution amt to current amt
+    : goal.current_amount += goal.contribution_amount; // if false, add contribution amt to current amt
+
+  if (adjusted) amount = difference;
 
   await db.transaction(async trx => {
     // update allowance value on users table
     await trx('users')
       .where({ 'id': goal.user_id})
       .update({ allowance: allowance });
+
+    await updateTotalSaved(trx, goal.user_id, amount);
     
     // update current amount in goals table
     await updateGoal(goal.user_id, { 'current_amount': goal.current_amount });

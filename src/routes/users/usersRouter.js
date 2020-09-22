@@ -150,6 +150,7 @@ usersRouter.route('/').get(requireAuth, async (req, res, next) => {
     const user = await getUserWithId(db, user_id); // Returns an array of user details obj
     user.allowance = convertToDollars(user.allowance);
     user.balance = convertToDollars(user.balance);
+    user.total_saved = convertToDollars(user.total_saved);
     return res.json(user); // Returns a user obj
   } catch (error) {
     next(error);
