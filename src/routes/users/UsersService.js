@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
+const REGEX_UPPER_LOWER_NUMBER_DASH_HYPHEN = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_])[\S]+/;
 
 const UsersService = {
   createJwt(subject, payload) {
@@ -54,11 +55,10 @@ const UsersService = {
   },
 
   validateUsername(username) {
-    const regex = /[*|\":<>[\]{}`\\';@&$%!#^(\)=+?]/;
-    if (username.match(regex)) {
-      return true
+    if (!REGEX_UPPER_LOWER_NUMBER_DASH_HYPHEN.test(username)) {
+      return 'Username cannot contain special characters except - and _'
     };
-    return false
+    return null;
   },
 
   createUser(db, newUser) {

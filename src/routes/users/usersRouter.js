@@ -56,7 +56,7 @@ usersRouter.post('/register', async (req, res, next) => {
       // If username does not meet requirements, return error
       if (usernameError) {
         return res.status(400).json({
-          error: 'Username cannot contain special characters except - and _',
+          error: usernameError,
         });
       }
 
