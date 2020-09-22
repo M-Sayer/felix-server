@@ -1,6 +1,9 @@
 /* eslint-disable quotes */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const knex = require('knex');
+const moment = require ('moment');
+const { convertToDollars } = require('../src/helpers');
 
 const makeKnexInstance = () => {
   return knex({
@@ -21,63 +24,69 @@ const makeUsersArray = () => {
   return [
     {
       id: 1,
-      user_name: 'test-user-1',
+      username: 'test-user-1',
       first_name: 'Test First Name 1',
       last_name: 'Test Last Name 1',
+      email: 'test-user-email-1@email.com',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
-      allowance: 3333.33,
-      balance: 9999.99,
+      allowance: 3333,
+      balance: 9999,
     },
     {
       id: 2,
-      user_name: 'test-user-2',
+      username: 'test-user-2',
       first_name: 'Test First Name 2',
       last_name: 'Test Last Name 2',
+      email: 'test-user-email-2@email.com',
       password: 'password',
       date_created: new Date('2029-02-22T16:28:32.615Z'),
-      allowance: 4444.44,
-      balance: 8888.88,
+      allowance: 4444,
+      balance: 8888,
     },
     {
       id: 3,
-      user_name: 'test-user-3',
+      username: 'test-user-3',
       first_name: 'Test First Name 3',
       last_name: 'Test Last Name 3',
+      email: 'test-user-email-3@email.com',
       password: 'password',
       date_created: new Date('2029-03-22T16:28:32.615Z'),
-      allowance: 5555.55,
-      balance: 7777.77,
+      allowance: 5555,
+      balance: 7777,
     },
     {
       id: 4,
-      user_name: 'test-user-4',
+      username: 'test-user-4',
       first_name: 'Test First Name 4',
       last_name: 'Test Last Name 4',
+      email: 'test-user-email-4@email.com',
       password: 'password',
       date_created: new Date('2029-04-22T16:28:32.615Z'),
-      allowance: 6666.66,
-      balance: 6666.66,
+      allowance: 6666,
+      balance: 6666,
     },
     {
       id: 5,
-      user_name: 'test-user-5',
+      username: 'test-user-5',
       first_name: 'Test First Name 5',
       last_name: 'Test Last Name 5',
+      email: 'test-user-email-5@email.com',
       password: 'password',
       date_created: new Date('2029-05-22T16:28:32.615Z'),
-      allowance: 7777.77,
-      balance: 5555.55,
+      allowance: 7777,
+      balance: 5555,
     },
     {
       id: 6,
-      user_name: 'test-user-6',
+      username: 'test-user-6',
       first_name: 'Test First Name 6',
       last_name: 'Test Last Name 6',
+      email: 'test-user-email-6@email.com',
       password: 'password',
       date_created: new Date('2029-06-22T16:28:32.615Z'),
-      allowance: 8888.88,
-      balance: 4444.44,
+      allowance: 8888,
+      balance: 4444,
     },
   ];
 }
@@ -185,23 +194,21 @@ const makeGoalsArray = () => {
       id: 1,
       name: 'Test Goal 1',
       user_id: 1,
-      goal_amount: 400.00,
-      contribution_amount: 100.00,
-      current_amount: 100.00,
-      end_date: new Date('2020-10-15T13:26:19.359Z'),
+      goal_amount: 40000, // In cents
+      contribution_amount: 10000,
+      current_amount: 10000,
+      end_date: moment(new Date('2020-10-15T13:26:19.359Z')),
       completed: false,
-      date_created: new Date('2020-09-15T13:26:19.359Z'),
     },
     {
       id: 2,
       name: 'Test Goal 2',
       user_id: 1,
-      goal_amount: 400.00,
-      contribution_amount: 100.00,
-      current_amount: 100.00,
-      end_date: new Date('2020-10-15T13:26:19.359Z'),
+      goal_amount: 40000, // In cents
+      contribution_amount: 10000,
+      current_amount: 10000,
+      end_date: moment(new Date('2020-10-15T13:26:19.359Z')),
       completed: false,
-      date_created: new Date('2020-09-15T13:26:19.359Z'),
     },
   ];
 }
@@ -231,7 +238,7 @@ const seedUsersTable = async (db, users) => {
   await db
     .raw(
       `SELECT setval('users_id_seq', ?)`,
-      users[users.length-1].user_id
+      users[users.length-1].id
     );
 }
 
@@ -255,9 +262,8 @@ const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) =>
   });
 }
 
-const seedGoalsTable = (db, users, goals = []) => {
+const seedGoalsTable = (db, goals = []) => {
   return db.transaction(async trx => {
-    await trx('users').insert(users);
     await trx('goals').insert(goals);
   });
 }
@@ -297,32 +303,33 @@ const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
 }
 
 const clearAllTables = (db) => {
-  return db.transaction(trx => {
+  return db.transaction(trx =>
     trx.raw(
       `TRUNCATE
-          users,
+          goals,
           income,
           expenses,
-          goals;`
+          users
+          RESTART IDENTITY CASCADE;`
     )
-      .then(() => 
-        Promise
-          .all([
-            trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
-            trx.raw(`ALTER SEQUENCE income_id_seq minvalue 0 START WITH 1`),
-            trx.raw(`ALTER SEQUENCE expenses_id_seq minvalue 0 START WITH 1`),
-            trx.raw(`ALTER SEQUENCE goals_id_seq minvalue 0 START WITH 1`),
-            trx.raw(`SELECT setval('users_id_seq', 0)`),
-            trx.raw(`SELECT setval('income_id_seq', 0)`),
-            trx.raw(`SELECT setval('expenses_id_seq', 0)`),
-            trx.raw(`SELECT setval('goals_id_seq', 0)`),
-        ])
-      );
-  });
+  );
 }
+
+const convertTestGoal = (goal) => ({
+  ...goal,
+  goal_amount: convertToDollars(goal.goal_amount),
+  current_amount: convertToDollars(goal.current_amount),
+  contribution_amount: convertToDollars(goal.contribution_amount),
+  end_date: moment(goal.end_date).format(),
+  date_created: new Date().toLocaleString(),
+});
+
+const convertTestGoals = (goals) =>
+  goals.map(goal => convertTestGoal(goal));
 
 module.exports = {
   makeKnexInstance,
+  makeAuthHeader,
   makeUsersArray,
   makeIncomeAndExpensesArray,
   makeGoalsArray,
@@ -332,4 +339,6 @@ module.exports = {
   seedGoalsTable,
   seedAllTables,
   clearAllTables,
+  convertTestGoal,
+  convertTestGoals,
 };
