@@ -100,39 +100,10 @@ describe('Transaction Endpoint', ()=> {
           .get(`/api/transactions/${type}/${transaction_id}`)
           .set('Authorization', helper.makeAuthHeader(testUsers[0]))
           .expect(200, expectedExpense); 
-      });
+      }); 
+    });
 
-    } );
-
-    // context('if NOT given auth, and a valid id ', ()=> {
-
-    //   it('should give a 400,and send back error message, from income',()=>{
-
-    //   });
-
-    //   it('should give a 400,and send back error message, from expenses',()=>{
-
-    //   });
-
-    // } );
-
-    // context('if given auth, and a IN-valid id ', ()=> {
-
-    //   it('should give a 400,and an error message from income request',()=>{
-
-    //   });
-
-    //   it('should give a 400,and an error message from expenses request',()=>{
-
-    //   });
-
-    // } );
-  } );
-
-
-  
-
-
-
+    
+  });
 
 });
