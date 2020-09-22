@@ -7,6 +7,7 @@ const usersRouter = express.Router();
 const {
   createUser,
   validatePassword,
+  validateUsername,
   getUserWithUsername,
   getUserWithEmail,
   hashPassword,
@@ -48,6 +49,16 @@ usersRouter.post('/register', async (req, res, next) => {
         error: passwordError,
       });
     }
+
+      // Check that username matches requirements
+      const usernameError = validateUsername(username);
+  
+      // If username does not meet requirements, return error
+      if (usernameError) {
+        return res.status(400).json({
+          error: 'Username cannot contain special characters except - and _',
+        });
+      }
 
     // Check if username already exists in db
     const hasUsername = await getUserWithUsername(db, username);

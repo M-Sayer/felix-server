@@ -53,6 +53,14 @@ const UsersService = {
     return null;
   },
 
+  validateUsername(username) {
+    const regex = /[*|\":<>[\]{}`\\';@&$%!#^(\)=+?]/;
+    if (username.match(regex)) {
+      return true
+    };
+    return false
+  },
+
   createUser(db, newUser) {
     return db
       .insert(newUser)
