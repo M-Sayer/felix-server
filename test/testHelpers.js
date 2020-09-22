@@ -1,6 +1,7 @@
 /* eslint-disable quotes */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const knex = require('knex');
 
 const makeKnexInstance = () => {
   return knex({
@@ -21,74 +22,80 @@ const makeUsersArray = () => {
   return [
     {
       id: 1,
-      user_name: 'test-user-1',
+      username: 'test-user-1',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 1',
       last_name: 'Test Last Name 1',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
-      allowance: 3333.33,
-      balance: 9999.99,
+      allowance: 3333,
+      balance: 9999,
     },
     {
       id: 2,
-      user_name: 'test-user-2',
+      username: 'test-user-2',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 2',
       last_name: 'Test Last Name 2',
       password: 'password',
       date_created: new Date('2029-02-22T16:28:32.615Z'),
-      allowance: 4444.44,
-      balance: 8888.88,
+      allowance: 4444,
+      balance: 8888,
     },
     {
       id: 3,
-      user_name: 'test-user-3',
+      username: 'test-user-3',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 3',
       last_name: 'Test Last Name 3',
       password: 'password',
       date_created: new Date('2029-03-22T16:28:32.615Z'),
-      allowance: 5555.55,
-      balance: 7777.77,
+      allowance: 5555,
+      balance: 7777,
     },
     {
       id: 4,
-      user_name: 'test-user-4',
+      username: 'test-user-4',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 4',
       last_name: 'Test Last Name 4',
       password: 'password',
       date_created: new Date('2029-04-22T16:28:32.615Z'),
-      allowance: 6666.66,
-      balance: 6666.66,
+      allowance: 6666,
+      balance: 6666,
     },
     {
       id: 5,
-      user_name: 'test-user-5',
+      username: 'test-user-5',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 5',
       last_name: 'Test Last Name 5',
       password: 'password',
       date_created: new Date('2029-05-22T16:28:32.615Z'),
-      allowance: 7777.77,
-      balance: 5555.55,
+      allowance: 7777,
+      balance: 5555,
     },
     {
       id: 6,
-      user_name: 'test-user-6',
+      username: 'test-user-6',
+      email: 'testmail@test.test',
       first_name: 'Test First Name 6',
       last_name: 'Test Last Name 6',
       password: 'password',
       date_created: new Date('2029-06-22T16:28:32.615Z'),
-      allowance: 8888.88,
-      balance: 4444.44,
+      allowance: 8888,
+      balance: 4444,
     },
   ];
 }
 
 const makeIncomeAndExpensesArray = () => {
-  const income = [
+  const testIncome = [
     {
       id: 1,
       name: 'Test Income 1',
       user_id: 1,
-      income_amount: 113.88,
+      income_amount: 11113,
       income_category : 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -96,7 +103,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 2,
       name: 'Test Income 2',
       user_id: 1,
-      income_amount: 20.99,
+      income_amount: 2000,
       income_category : 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -104,7 +111,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 3,
       name: 'Test Income 3',
       user_id: 2,
-      income_amount: 77.21,
+      income_amount: 7777,
       income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -112,7 +119,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 4,
       name: 'Test Income 4',
       user_id: 1,
-      income_amount: 654.12,
+      income_amount: 65412,
       income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -120,17 +127,17 @@ const makeIncomeAndExpensesArray = () => {
       id: 5,
       name: 'Test Income 5',
       user_id: 3,
-      income_amount: .99,
+      income_amount: 99,
       income_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     }
   ];
-  const expenses = [
+  const testExpenses = [
     {
       id: 1,
       name: 'Test Expense 1',
       user_id: 1,
-      expense_amount: -12.12,
+      expense_amount: -1212,
       expense_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -138,7 +145,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 2,
       name: 'Test Expense 2',
       user_id: 1,
-      expense_amount: -50.11,
+      expense_amount: -5011,
       expense_category: 'other',
       date_created: '2029-01-22T16:28:32.615Z'  
     },
@@ -146,7 +153,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 3,
       name: 'Test Expense 3',
       user_id: 3,
-      expense_amount: -.12,
+      expense_amount: -12,
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
@@ -154,7 +161,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 4,
       name: 'Test Expense 4',
       user_id: 2,
-      expense_amount: -7541.46,
+      expense_amount: -754146,
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
@@ -162,7 +169,7 @@ const makeIncomeAndExpensesArray = () => {
       id: 5,
       name: 'Test Expense 5',
       user_id: 1,
-      expense_amount: -708.81,
+      expense_amount: -70881,
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     },
@@ -170,13 +177,12 @@ const makeIncomeAndExpensesArray = () => {
       id: 6,
       name: 'Test Expense 6',
       user_id: 3,
-      expense_amount: -43.74,
+      expense_amount: -4374,
       expense_category : 'other',
       date_created : '2029-01-22T16:28:32.615Z'  
     }
   ];
-
-  return {income, expenses};
+  return {testIncome, testExpenses}; 
 }
 
 const makeGoalsArray = () => {
@@ -298,12 +304,13 @@ const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
 
 const clearAllTables = (db) => {
   return db.transaction(trx => {
-    trx.raw(
+    return trx.raw(
       `TRUNCATE
-          users,
-          income,
-          expenses,
-          goals;
+      income,
+      expenses,
+      goals,
+      users
+      RESTART IDENTITY CASCADE;
           `
     )
       .then(() => 

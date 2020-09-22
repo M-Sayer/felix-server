@@ -12,7 +12,7 @@ describe('Transaction Endpoint', ()=> {
     testExpenses
   } = helper.makeIncomeAndExpensesArray();
 
-  const testUsers = helper.makeTestUsersArray();
+  const testUsers = helper.makeUsersArray();
 
   before('make knex instance', () =>{
     db = helper.makeKnexInstance();
@@ -21,9 +21,9 @@ describe('Transaction Endpoint', ()=> {
 
   after('disconnect from db', () => db.destroy());
 
-  before('cleanup', () => helper.clearTables(db));
+  before('cleanup', () => helper.clearAllTables(db));
 
-  afterEach('cleanup', () => helper.clearTables(db));
+  afterEach('cleanup', () => helper.clearAllTables(db));
 
 
   describe(`GET '/' endpoint` , () =>{
@@ -62,7 +62,7 @@ describe('Transaction Endpoint', ()=> {
         const expectedIncome = testIncome[ transaction_id - 1 ];
 
         return supertest(app)
-          .get(`/api/transaction/${type}/${transaction_id}`)
+          .get(`/api/transactions/${type}/${transaction_id}`)
           .set('Authorization', helper.makeAuthHeader(testUsers[0]))
           .expect(200, expectedIncome); 
       });

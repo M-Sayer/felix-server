@@ -1,7 +1,7 @@
-const app = require('../src/routes/user/users-router');
-const helpers = require('./helpers');
+const app = require('../src/app');
+const helpers = require('./testHelpers');
 
-describe('Users Endpoints', () => {
+describe.skip('Users Endpoints', () => {
   let db;
 
   const {
@@ -22,6 +22,8 @@ describe('Users Endpoints', () => {
 
   afterEach('Clean up tables', () => helpers.clearTables(db));
 
-  describe('POST /login endpoint')
+  describe('POST /login endpoint', () =>{
+
+  });
  
 });

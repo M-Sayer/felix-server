@@ -24,9 +24,7 @@ const UsersService = {
   },
 
   getUserWithEmail(db, email) {
-    return db
-      .select()
-      .from('users')
+    return db('users')
       .where({ email })
       .first()
       .catch((error) => error);
