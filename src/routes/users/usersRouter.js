@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../../middleware/jwtAuth');
 const path = require('path');
+const xss = require('xss');
 
 const usersRouter = express.Router();
 
@@ -74,11 +75,11 @@ usersRouter.post('/register', async (req, res, next) => {
 
     // Build new user object
     const newUser = {
-      first_name,
-      last_name,
-      username,
+      first_name: xss(first_name),
+      last_name: xss(last_name),
+      username: xss(username),
       password: hashedPassword,
-      email,
+      email: xss(email),
     };
 
     // Insert new user object into database
