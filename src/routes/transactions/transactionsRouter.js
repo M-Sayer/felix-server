@@ -98,6 +98,8 @@ transactionsRouter
     //If the category type doesn't match expenses table enums reject it
     if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
       return res.status(400).json({error: 'Category does not exist for expenses'});
+    }
+    
       //Build the response object
       response = { type: 'expenses' };
 
