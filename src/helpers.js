@@ -96,7 +96,7 @@ const deallocateGoals = async (trx, user_id, amount) => {
     
     goals.forEach(goal => {
       const ratio = new Fraction(goal.current_amount / totalSaved);
-      ratios.push(ratio.n); //numerator of fraction
+      ratios.push(ratio.n); // numerator of fraction
     });
 
     const deallocateAmt = allocate(ratios, amount);
