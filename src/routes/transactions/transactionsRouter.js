@@ -51,15 +51,13 @@ transactionsRouter
     //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
     const { name, description, category, type } = req.body;
     const amount = convertToCents(req.body.amount);
+    console.log('req amount: ', amount)
     
     //Get user id from jwt
     const user_id = req.userId;
 
     //Transaction object for inserting
     let newTransaction = {};
-
-    //Response to client
-    let response = {};
 
     //If type is income, transaction object has income_amount and income_category properties
     if (type === 'income') {
@@ -73,9 +71,6 @@ transactionsRouter
       if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
         return res.status(400).json({error: 'category does not exist for income'});
       }
-
-      //Build the response object
-      response = { type: 'income' };
 
       //Build the new transaction object
       newTransaction = {
@@ -100,9 +95,6 @@ transactionsRouter
         return res.status(400).json({error: 'category does not exist for expenses'});
       }
 
-      //Build the response object
-      response = { type: 'expenses' };
-
       //Build the new transaction object
       newTransaction = {
         user_id: user_id,
@@ -123,7 +115,7 @@ transactionsRouter
       await createTransaction(
         req.app.get('db'),
         type,
-        serializeIncoming(newTransaction, type));
+        newTransaction, type);
     
       //Respond with object {type: "income"/"expenses"}
       return res.status(201).end();
@@ -271,7 +263,7 @@ transactionsRouter
       type,
       id,
       req.userId,
-      serializePatch(transObject, type)
+      transObject, type
     )
       .then(() => res.status(204).end())
       .catch(next);
