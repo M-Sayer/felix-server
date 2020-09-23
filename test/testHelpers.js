@@ -295,9 +295,7 @@ const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) =>
 }
 
 const seedGoalsTable = (db, goals = []) => {
-  return db.transaction(async trx => {
-    await trx('goals').insert(goals);
-  });
+  return db('goals').insert(goals);
 }
 
 const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
