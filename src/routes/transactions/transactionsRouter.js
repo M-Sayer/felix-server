@@ -8,6 +8,10 @@ const {
   getSingleTransaction,
   createTransaction,
   patchSingleTransaction,
+  serializeIncoming,
+  serializeOutgoingTransaction,
+  serializeAllPackage,
+  serializePatch
 } = require('./TransactionsService');
 const TransactionsService = require('./TransactionsService');
 
@@ -18,84 +22,73 @@ const { convertToCents, convertTransactionsToDollars, convertToDollars } = requi
  * if added, .route('/') is needed
  **/
 
-/**
- * @todo GAGE- might need to add error handling if the said user don't have 
- * any content to send
- */
-
-/**
-  * 
-  * @note GAGE- getting 400 ERROR on http://...../dashbored of client since it can't call 
-  * "http://...../api/transactions/users"
-  * users is not an endpoint here. 
-  * 
-  * 
-  */
-
 transactionsRouter
-.route('/')
-.all( requireAuth)
-.get( async (req, res, next) => {
-  const user_id = req.userId;
+  .route('/')
+  .all( requireAuth)
+  .get( async (req, res, next) => {
+    const user_id = req.userId;
 
-  try {
-    let income = await getUserIncome(req.app.get('db'), user_id); // Array of income objects
-    //convert income_amount to dollars
-    income = convertTransactionsToDollars(income, 'income');
-    let expenses = await getUserExpenses(req.app.get('db'), user_id); // Array of expense objects
-    //convert expense_amount to dollars
-    expenses = convertTransactionsToDollars(expenses, 'expense');
+    try {
+      let income = await getUserIncome(req.app.get('db'), user_id); // Array of income objects
+      //convert income_amount to dollars
+      income = convertTransactionsToDollars(income, 'income');
+      let expenses = await getUserExpenses(req.app.get('db'), user_id); // Array of expense objects
+      //convert expense_amount to dollars
+      expenses = convertTransactionsToDollars(expenses, 'expense');
+
+      
 
 
-    return res.json({ income, expenses });
-  } catch (error) {
-    next(error);
-  }
-})
-.post( async (req, res, next) => {
+      return res.json(serializeAllPackage(income,expenses));
+    } catch (error) {
+      next(error);
+    }
+  })
+  .post( async (req, res, next) => {
     
-  //Get all body values, type must be a string of either 'income' or 'expenses'.
-  //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
-  const { name, description, category, type } = req.body;
-  const amount = convertToCents(req.body.amount);
+    
+    //Get all body values, type must be a string of either 'income' or 'expenses'.
+    //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
+    const { name, description, category, type } = req.body;
+    const amount = convertToCents(req.body.amount);
+    
+    //Get user id from jwt
+    const user_id = req.userId;
 
-  //Get user id from jwt
-  const user_id = req.userId;
+    //Transaction object for inserting
+    let newTransaction = {};
 
-  //Transaction object for inserting
-  let newTransaction = {};
+    //Response to client
+    let response = {};
 
-  //Response to client
-  let response = {};
+    //If type is income, transaction object has income_amount and income_category properties
+    if (type === 'income') {
 
-  //If type is income, transaction object has income_amount and income_category properties
-  if (type === 'income') {
+      //If the amount if less than or equal to 0 reject it
+      if (amount <= 0) {
+        return res.status(400).json({error: 'Income amount must be greater than 0'});
+      }
 
-    //If the amount if less than or equal to 0 reject it
-    if (amount <= 0) {
-      return res.status(400).json({error: 'Income amount must be greater than 0'});
+      //If the category type doesn't match income table enums reject it
+      if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
+        return res.status(400).json({error: 'category does not exist for income'});
+      }
+
+      //Build the response object
+      response = { type: 'income' };
+
+      //Build the new transaction object
+      newTransaction = {
+        user_id: user_id,
+        name,
+        description,
+        income_amount: amount,
+        income_category: category,
+      };
     }
 
-    //If the category type doesn't match income table enums reject it
-    if (category !== 'paycheck' && category !== 'freelance' && category !== 'side_gig' && category !== 'other') {
-      return res.status(400).json({error: 'category does not exist for income'});
-    }
-
-    //Build the response object
-    response = { type: 'income' };
-
-    //Build the new transaction object
-    newTransaction = {
-      user_id: user_id,
-      name,
-      description,
-      income_amount: amount,
-      income_category: category,
-    };
-  }
-
-  //If type is expenses, transaction object has expense_amount and expense_category properties
-  else if (type === 'expenses') {
+    //If type is expenses, transaction object has expense_amount and expense_category properties
+    else if (type === 'expenses') {
 
     //If the expense amount is 0 respond with error. If the amount is above 0 the client will coerce it to a negative number before POSTing
     if (amount === 0) {
@@ -105,42 +98,39 @@ transactionsRouter
     //If the category type doesn't match expenses table enums reject it
     if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
       return res.status(400).json({error: 'Category does not exist for expenses'});
+      //Build the response object
+      response = { type: 'expenses' };
+
+      //Build the new transaction object
+      newTransaction = {
+        user_id: user_id,
+        name,
+        description,
+        expense_amount: amount,
+        expense_category: category,
+      };
     }
 
-    //Build the response object
-    response = { type: 'expenses' };
+    //If type is neither expenses or income reject it
+    else if (type !== 'income' || type !== 'expenses') {
+      return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
+    }
 
-    //Build the new transaction object
-    newTransaction = {
-      user_id: user_id,
-      name,
-      description,
-      expense_amount: amount,
-      expense_category: category,
-    };
-  }
-
-  //If type is neither expenses or income reject it
-  else if (type !== 'income' || type !== 'expenses') {
-    return res.status(400).json({error: 'Transaction must be type "income" or "expenses"'});
-  }
-
-  //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
-  try {
-    await createTransaction(
-      req.app.get('db'),
-      type,
-      newTransaction);
+    //Create the transaction and insert it into the db, the 'type' parameter informs knex which db table to insert into
+    try {
+      await createTransaction(
+        req.app.get('db'),
+        type,
+        serializeIncoming(newTransaction, type));
     
-    //Respond with object {type: "income"/"expenses"}
-    return res.status(201).end();
+      //Respond with object {type: "income"/"expenses"}
+      return res.status(201).end();
 
-  } catch (e) {
-    next(e);
-  }
+    } catch (e) {
+      next(e);
+    }
 
-});
-
+  });
 
 transactionsRouter
   .route('/:type/:id')
@@ -206,7 +196,7 @@ transactionsRouter
 
       return res
         .status(200)
-        .json(transactionDetails);
+        .json(serializeOutgoingTransaction(transactionDetails));
     } catch (e) {
       next(e);
     }
@@ -215,13 +205,14 @@ transactionsRouter
     //Get params
     const { type, id } = req.params;
 
+    const {userId} = req; 
     //Get body content
     const {name, category, description} = req.body;
     //convert amount to cents
     const amount = convertToCents(req.body.amount);
 
     //Checks if user making patch matches user id of the transaction
-    if (req.auth_id !== req.userId) {
+    if (req.auth_id !== userId) {
       return res
         .status(401)
         .json({
@@ -278,7 +269,7 @@ transactionsRouter
       type,
       id,
       req.userId,
-      transObject
+      serializePatch(transObject, type)
     )
       .then(() => res.status(204).end())
       .catch(next);
@@ -317,9 +308,9 @@ transactionsRouter
       .then(res.status(204).end())
       .catch(next);
 
-  })
+  });
 
-  //this should be moved to middleware
+//this should be moved to middleware
 //Checks if transaction exists
 async function checkIfTransactionExists(req,res,next) {
   try {
@@ -340,9 +331,6 @@ async function checkIfTransactionExists(req,res,next) {
     next(error);
   }
 }
-
-//Creates new transaction of either income or expenses type
-transactionsRouter.route('/')
 
 module.exports = transactionsRouter;
 
