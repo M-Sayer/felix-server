@@ -1,3 +1,5 @@
+var Fraction = require('fraction.js');
+
 const { selectUserAllowance } = require("../automationHelpers");
 
 const selectUserBalance = async id => {
@@ -7,6 +9,22 @@ const selectUserBalance = async id => {
     .first();
   
   return result.balance;
+};
+
+const updateBalance = async (db, id, amount) => {
+  await db('users')
+    .where({ id })
+    .update({ balance: db.raw(`?? + ${amount}`, ['balance'])});
+};
+
+const selectTotalSaved = async (db, id) => {
+  const res = await db('users').where({ id }).select('total_saved').first();
+  return res.total_saved;
+};
+
+const updateTotalSaved = async (db, id, amount) => {
+  await db('users').where({ id })
+    .update({ total_saved: db.raw(`?? + ${amount}`, ['total_saved'])});
 };
 
 const selectTransactionAmount = async (db, type, id) => {
@@ -37,17 +55,11 @@ const getDifference = (oldAmt, newAmt) => {
   return (oldAmt - newAmt) * -1;
 };
 
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-};
-
 /**
  * Allocates funds based on ratios provided
  * Returns array of allocation amounts for each ratio
- * @param {Array} ratios 
- * @param {Number} amount
+ * @param {Array} ratios - each index represents the part of a part:whole ratio
+ * @param {Number} amount - total amount to be allocated
  * @returns {Array}
  */
 const allocate = (ratios, amount) => {
@@ -74,33 +86,29 @@ const allocate = (ratios, amount) => {
   return results;
 };
 
-const updateTotalSaved = async (db, id, amount) => {
-  await db('users').where({ id })
-    .update({ total_saved: db.raw(`?? + ${amount}`, ['total_saved'])});
-};
-
 /**
  *  Gets total number of user goals
  *  determines deallocation amount for each goal based on amount provided
  *  subtracts deallocation amount from each goal
- * @param {Number} user_id - userId 
+ * @param {Function} trx - knex transaction connection
+ * @param {Number} user_id
  * @param {Number} amount - total amount to deallocate from user's goals 
  */
-
 const deallocateGoals = async (trx, user_id, amount) => {
-  try { 
-    const result = await trx('goals').select().where({ user_id });
-    const goals = result.filter(goal => goal.current_amount > 0)
-    console.log(goals);
+  try {
+    //only deallocate from goals that have money 
+    const goals = await trx('goals').select().where({ user_id }).andWhere('current_amount', '>', 0);
+    const totalSaved = await selectTotalSaved(trx, user_id);
     let ratios = [];
-    goals.forEach(() => ratios.push(1));
-    console.log('ratios: ', ratios);
-    console.log(amount);
+    
+    goals.forEach(goal => {
+      const ratio = new Fraction(goal.current_amount / totalSaved);
+      ratios.push(ratio.n); //numerator of fraction
+    });
+
     const deallocateAmt = allocate(ratios, amount);
-    console.log('deallocate amt: ', deallocateAmt);
   
     for (let i = 0; i < goals.length; i++) {
-      console.log(goals[i].id)
       const goal = goals[i];
       await trx('goals').where({ id: goal.id })
         .update({ current_amount: trx.raw(`?? - ${deallocateAmt[i]}`, ['current_amount'])}); 
@@ -113,50 +121,37 @@ const deallocateGoals = async (trx, user_id, amount) => {
   }
 };
 
-const selectTotalSaved = async (db, id) => {
-  const res = await db('users').where({ id }).select('total_saved').first();
-  return res.total_saved;
-}
-
-
+/**
+ * 
+ * @param {Function} trx - knex transaction connection 
+ * @param {Number} id - userId
+ * @param {Number} amount - total amount to add to allowance. To subtract, add a negative number.
+ */
 const updateAllowance = async (trx, id, amount) => {
   try {
     const allowance = await selectUserAllowance(id);
-      const difference = allowance + amount;
-      console.log('allowance: ', allowance)
-      console.log('amount: ', amount)
-      console.log('diff: ', allowance + amount)
-      
-      const totalSaved = await selectTotalSaved(trx, id);
-      console.log(totalSaved)
-      let deallocateAmt
-      // if adding expense (-)amount to allowance will leave negative allowance:
-      // subtract allowance from itself to leave allowance at 0
-      // deallocate allowance + (-)amount from goals 
-      if (difference < 0) {
-        amount = allowance * -1;
-        (totalSaved + difference <= 0) 
-          ? deallocateAmt = totalSaved
-          : deallocateAmt -= difference;
-        console.log('d amt: ', deallocateAmt); 
-        await deallocateGoals(trx, id, deallocateAmt);
-      } else amount -= totalSaved;
+    const totalSaved = await selectTotalSaved(trx, id);
+    const difference = allowance + amount;
+    let deallocateAmt;
 
-      //update amount = goals
-      await trx('users')
-        .where({ id })
-        .update({ allowance: trx.raw(`?? + ${amount}`, ['allowance'])});
+    if (difference < 0) {
+      amount = allowance * -1; // subtract allowance from itself. prevents negative allowance
+      
+      (totalSaved + difference <= 0) 
+        ? deallocateAmt = totalSaved // deallocate totalSaved, prevents negative goals
+        : deallocateAmt -= difference;
+
+      await deallocateGoals(trx, id, deallocateAmt);
+    } else amount -= totalSaved;
+
+    //update amount = goals
+    await trx('users')
+      .where({ id })
+      .update({ allowance: trx.raw(`?? + ${amount}`, ['allowance'])});
   } catch (error) {
     console.log(error);
   }
 };
-
-const updateBalance = async (db, id, amount) => {
-  await db('users')
-    .where({ id })
-    .update({ balance: db.raw(`?? + ${amount}`, ['balance'])});
-};
-
 
 module.exports = {
   selectTransactionAmount,
