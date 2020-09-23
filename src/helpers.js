@@ -38,7 +38,6 @@ const getDifference = (oldAmt, newAmt) => {
 };
 
 const updateAllowance = async (db, id, amount) => {
-  console.log(amount);
   const allowance = await selectUserAllowance(id);
   //if subtracting amount from allowance will leave negative allowance
   //subtract allowance from itself to leave allowance at 0

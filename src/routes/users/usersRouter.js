@@ -114,7 +114,6 @@ usersRouter.post('/login', async (req, res, next) => {
   try {
     // Get user object to check against POSTed username and password
     const hasUser = await getUserWithUsername(db, username);
-    console.log('USER === ',hasUser);
 
     // If hasUser is undefined (username does not exist in db), return error
     if (!hasUser) {

@@ -8,6 +8,10 @@ const {
   getSingleTransaction,
   createTransaction,
   patchSingleTransaction,
+  serializeIncoming,
+  serializeOutgoingTransaction,
+  serializeAllPackage,
+  serializePatch
 } = require('./TransactionsService');
 const TransactionsService = require('./TransactionsService');
 
@@ -32,8 +36,10 @@ transactionsRouter
       //convert expense_amount to dollars
       expenses = convertTransactionsToDollars(expenses, 'expense');
 
+      
 
-      return res.json({ income, expenses });
+
+      return res.json(serializeAllPackage(income,expenses));
     } catch (error) {
       next(error);
     }
@@ -117,7 +123,7 @@ transactionsRouter
       await createTransaction(
         req.app.get('db'),
         type,
-        newTransaction);
+        serializeIncoming(newTransaction, type));
     
       //Respond with object {type: "income"/"expenses"}
       return res.status(201).end();
@@ -192,7 +198,7 @@ transactionsRouter
 
       return res
         .status(200)
-        .json(transactionDetails);
+        .json(serializeOutgoingTransaction(transactionDetails));
     } catch (e) {
       next(e);
     }
@@ -265,7 +271,7 @@ transactionsRouter
       type,
       id,
       req.userId,
-      transObject
+      serializePatch(transObject, type)
     )
       .then(() => res.status(204).end())
       .catch(next);

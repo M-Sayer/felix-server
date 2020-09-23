@@ -2,8 +2,6 @@
 const app = require('../src/app');
 const helper = require('./testHelpers');
 const supertest = require('supertest');
-const { get } = require('../src/routes/users/usersRouter');
-const { expect } = require('chai');
 
 
 describe.only('Transaction Endpoint', ()=> {
