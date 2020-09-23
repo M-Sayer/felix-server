@@ -1,27 +1,45 @@
-// const app = require('../src/app');
-// const helpers = require('./testHelpers');
+const app = require('../src/app');
 
-// describe('Users Endpoints', () => {
-//   let db;
+const {
+  makeKnexInstance,
+  makeAuthHeader,
+  makeAllFixtures,
+  seedUsersTable,
+  seedGoalsTable,
+  clearAllTables,
+  convertTestGoal,
+  convertTestGoals,
+} = require('./testHelpers');
 
-//   const {
-//     testUsers,
-//     testIncome,
-//     testExpenses,
-//     testGoals,
-//   } = helpers.makeAllFixtures();
+describe.only('Users Endpoints', () => {
+  let db;
 
-//   before('Connect to db', () => {
-//     db = helpers.makeKnexInstance();
-//     app.set('db', db);
-//   });
+  const { testUsers } = makeAllFixtures();
 
-//   after('Disconnect from db', () => db.destroy());
+  before('Connect to db', () => {
+    db = helpers.makeKnexInstance();
+    app.set('db', db);
+  });
 
-//   before('Clean up tables', () => helpers.clearTables(db));
+  after('Disconnect from db', () => db.destroy());
 
-//   afterEach('Clean up tables', () => helpers.clearTables(db));
+  before('Clean up tables', () => clearAllTables(db));
 
-//   describe('POST /login endpoint')
+  afterEach('Clean up tables', () => clearAllTables(db));
+
+  describe('POST /login endpoint', () => {
+		context('with valid user data', () => {
+			it('should create a new user', () => {
+				return supertest(app)
+						.post(`/api/users/login/`)
+						.set('Authorization', makeAuthHeader(testUsers[0]))
+						.expect(200);
+			});
+
+		});
+		context('with valid user data', () => {
+			
+		});
+	});
  
-// });
+});
