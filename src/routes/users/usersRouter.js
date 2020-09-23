@@ -7,6 +7,7 @@ const usersRouter = express.Router();
 const {
   createUser,
   validatePassword,
+  validateUsername,
   getUserWithUsername,
   getUserWithEmail,
   hashPassword,
@@ -48,6 +49,16 @@ usersRouter.post('/register', async (req, res, next) => {
         error: passwordError,
       });
     }
+
+      // Check that username matches requirements
+      const usernameError = validateUsername(username);
+  
+      // If username does not meet requirements, return error
+      if (usernameError) {
+        return res.status(400).json({
+          error: usernameError,
+        });
+      }
 
     // Check if username already exists in db
     const hasUsername = await getUserWithUsername(db, username);
@@ -150,6 +161,7 @@ usersRouter.route('/').get(requireAuth, async (req, res, next) => {
     const user = await getUserWithId(db, user_id); // Returns an array of user details obj
     user.allowance = convertToDollars(user.allowance);
     user.balance = convertToDollars(user.balance);
+    user.total_saved = convertToDollars(user.total_saved);
     return res.json(user); // Returns a user obj
   } catch (error) {
     next(error);

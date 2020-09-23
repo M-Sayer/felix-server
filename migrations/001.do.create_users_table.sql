@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS "users" (
   "date_created" TIMESTAMPTZ DEFAULT now() NOT NULL,
   "password" TEXT NOT NULL,
   "email" TEXT NOT NULL,
-  "allowance" BIGINT CHECK(allowance >= 0) DEFAULT 0 NOT NULL ,
-  "balance" BIGINT DEFAULT 0 NOT NULL 
+  "allowance" BIGINT CHECK(allowance >= 0) DEFAULT 0 NOT NULL,
+  "balance" BIGINT DEFAULT 0 NOT NULL,
+  "total_saved" BIGINT DEFAULT 0 NOT NULL 
 );
