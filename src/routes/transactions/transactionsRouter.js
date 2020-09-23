@@ -97,11 +97,6 @@ transactionsRouter
   //If type is expenses, transaction object has expense_amount and expense_category properties
   else if (type === 'expenses') {
 
-    //If the amount if greater than or equal to 0 reject it
-    if (amount >= 0) {
-      return res.status(400).json({error: 'Expense amount must be less than 0'});
-    }
-
     //If the category type doesn't match expenses table enums reject it
     if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
       return res.status(400).json({error: 'category does not exist for expenses'});
