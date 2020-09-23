@@ -1,6 +1,6 @@
 var Fraction = require('fraction.js');
 
-const { selectUserAllowance } = require("../automationHelpers");
+const { selectUserAllowance } = require('../automationHelpers');
 
 const updateBalance = async (db, id, amount) => {
   await db('users')
@@ -73,7 +73,7 @@ const allocate = (ratios, amount) => {
   for (let i = 0; remainder > 0; i++) {
     results[i] = results[i] + 1;
     remainder --;
-  };
+  }
 
   return results;
 };
@@ -107,10 +107,10 @@ const deallocateGoals = async (trx, user_id, amount) => {
         .update({ current_amount: trx.raw(`?? - ${deallocateAmt[i]}`, ['current_amount'])}); 
 
       await updateTotalSaved(trx, goal.user_id, deallocateAmt[i] * -1);
-    };
+    }
 
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 

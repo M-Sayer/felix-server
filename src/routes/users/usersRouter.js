@@ -113,6 +113,7 @@ usersRouter.post('/login', async (req, res, next) => {
 
   const { username, password } = req.body;
 
+  console.log(req.body)
   // Check that fields exist
   for (const field of ['username', 'password']) {
     if (!req.body[field]) {

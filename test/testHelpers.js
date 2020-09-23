@@ -198,6 +198,78 @@ const makeIncomeAndExpensesArray = () => {
   return {testIncome, testExpenses}; 
 }
 
+const makeMaliciousIncome = (user_id) =>{
+  const maliciousIncome = {
+      id: 9,
+      name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      income_amount: 11113,
+      income_category : 'other',
+      date_created:new Date ( )    
+  }
+  const expectedIncome = {
+      id: 9,
+      name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      income_amount: 11113,
+      income_category : 'other',
+      date_created:new Date ( )
+  }
+  return {maliciousIncome, expectedIncome}
+}
+
+const makeMaliciousExpenses = (user_id) => {
+  const maliciousExpenses = {
+      id: 9,
+      name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      expense_amount: -1212,
+      expense_category: 'other',
+      date_created: new Date ( ) 
+  }
+  const expectedExpenses = {
+      id: 9,
+      name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      expense_amount: -1212,
+      expense_category: 'other',
+      date_created:new Date ( )
+  }
+  return {maliciousExpenses, expectedExpenses}
+}
+
+const makeMaliciousUser = () => {
+  const maliciousUser = {
+      id: 9,
+      username: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      first_name: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      last_name: 'BADBADNOTGOOD',
+      email: 'test-user-email-1@email.com',
+      password: 'i don\'t want to be mr.pink',
+      date_created:new Date ( ),
+      allowance: 3333,
+      balance: 9999,
+  }
+  const expectedUser = {
+      id: 9,
+      username: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      first_name: 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      last_name: 'BADBADNOTGOOD',
+      email: 'test-user-email-1@email.com',
+      password: 'i don\'t want to be mr.pink',
+      date_created:new Date ( ),
+      allowance: 3333,
+      balance: 9999,
+
+  }
+
+  return {maliciousUser, expectedUser}
+}
+
 const makeTransactionReply = (type, tran) => {
     tran.description = !tran.description ? null : tran.description ; 
     
@@ -334,6 +406,16 @@ const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
   })
 }
 
+const seedMaliciousTransaction = (db, user, transaction = [], type ) =>{
+  return seedUsersTable(db,[user])
+  .then(()=>
+    db
+      .into(type)
+      .insert([transaction]))
+}
+
+const seedMaliciousUser = (db, user =[]) =>  seedUsersTable(db, [user])
+
 const clearAllTables = (db) => {
   return db.transaction(trx =>
     trx.raw(
@@ -432,18 +514,23 @@ const convertTestGoals = (goals) =>
 
 module.exports = {
   clearAllTables,
-  makeAuthHeader,
+  convertTestGoals,
+  convertTestGoal,
   makeAllFixtures,
+  makeAuthHeader,
   makeExpectedIncomeExpensesArray,
+  makeGoalsArray,
   makeIncomeAndExpensesArray,
   makeKnexInstance,
+  makeMaliciousExpenses,
+  makeMaliciousIncome,
+  makeMaliciousUser,
   makeTransactionReply,
   makeUsersArray,
-  makeGoalsArray,
-  seedUsersTable,
-  seedIncomeAndExpensesTables,
-  seedGoalsTable,
   seedAllTables,
-  convertTestGoal,
-  convertTestGoals
+  seedGoalsTable,
+  seedIncomeAndExpensesTables,
+  seedMaliciousTransaction,
+  seedMaliciousUser,
+  seedUsersTable
 };
