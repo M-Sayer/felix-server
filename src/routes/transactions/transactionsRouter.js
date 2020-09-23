@@ -18,20 +18,6 @@ const { convertToCents, convertTransactionsToDollars, convertToDollars } = requi
  * if added, .route('/') is needed
  **/
 
-/**
- * @todo GAGE- might need to add error handling if the said user don't have 
- * any content to send
- */
-
-/**
-  * 
-  * @note GAGE- getting 400 ERROR on http://...../dashbored of client since it can't call 
-  * "http://...../api/transactions/users"
-  * users is not an endpoint here. 
-  * 
-  * 
-  */
-
 transactionsRouter
   .route('/')
   .all( requireAuth)
@@ -54,11 +40,12 @@ transactionsRouter
   })
   .post( async (req, res, next) => {
     
+    
     //Get all body values, type must be a string of either 'income' or 'expenses'.
     //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
     const { name, description, category, type } = req.body;
     const amount = convertToCents(req.body.amount);
-
+    
     //Get user id from jwt
     const user_id = req.userId;
 
@@ -145,9 +132,6 @@ transactionsRouter
   .route('/:type/:id')
   .all(checkIfTransactionExists, requireAuth)
   .get( async (req, res, next) => {
-
-    console.log('C A L L E D');
-
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {

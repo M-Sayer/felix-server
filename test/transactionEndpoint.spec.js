@@ -2,6 +2,8 @@
 const app = require('../src/app');
 const helper = require('./testHelpers');
 const supertest = require('supertest');
+const { get } = require('../src/routes/users/usersRouter');
+const { expect } = require('chai');
 
 
 describe.only('Transaction Endpoint', ()=> {
@@ -39,23 +41,96 @@ describe.only('Transaction Endpoint', ()=> {
           );
         });
 
-      it.only(`send back a 201, and a object with array of income, and expenses`, () => {
+      it(`send back a 201, and a object with array of income, and expenses`, () => {
 
         const expectedObject = helper.makeExpectedIncomeExpensesArray(testIncome, testExpenses, testUsers[0].id) 
 
         return supertest(app)
         .get('/api/transactions')
         .set('Authorization', helper.makeAuthHeader(testUsers[0]))
-        .expect(200,expectedObject)
+        .expect(200, expectedObject)
 
       });
     });
   });
-  describe(`POST '/' endpoint` , () =>{
-    context(`if do`, ()=>{
-      it(`then this should`, () => {
 
+  describe(`POST '/' endpoint` , () =>{
+
+    context(`if user has auth, and is sending the correct content for _income_`, ()=>{
+        
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const type = 'income';
+
+      it(`should send back a 201, and have that content in the __income__ database`, () => {
+
+        const newIncome = {
+            name: 'NEW Test Income',
+            description : 'NEW test',
+            amount: 11113,
+            category : 'other',
+            type, 
+        }
+
+    
+        return supertest(app)
+        .post('/api/transactions')
+        .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+        .send(newIncome)
+        .expect(201)
+        .expect( () =>
+          supertest(app)
+          .get(`/api/transactions/${type}/${testIncome.length}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .expect(200, newIncome)
+        )
       });
+    });
+
+    context(`if user has auth, and is sending the correct content for _expenses_`, ()=>{
+        
+      beforeEach('insert transactions into tables', () =>{
+
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const type = 'expenses'
+
+        it(`should send back a 201, and have that content in the __income__ database`, () => {
+
+          const newExpense = {
+              name: 'NEW Test Income',
+              description : 'NEW test',
+              amount: -13,
+              category : 'other',
+              type, 
+          }
+  
+      
+          return supertest(app)
+          .post('/api/transactions')
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .send(newExpense)
+          .expect(201)
+          .expect( () =>
+            supertest(app)
+            .get(`/api/transactions/${type}/${testExpenses.length}`)
+            .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+            .expect(200, newExpense)
+          )
+        });
     });
   });
 
