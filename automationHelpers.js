@@ -1,13 +1,13 @@
 const knex = require("knex");
 const { DATABASE_URL } = require('./src/config');
-const { importTotalSaved } = require('./src/helpers');
+const { updateTotalSaved } = require('./src/helpers');
 
 //  pg returns numeric values as strings
 //  this converts all numeric types to floats (decimal)
 var types = require('pg').types
 types.setTypeParser(1700, function(val) {
   return parseFloat(val)
-})
+});
 
 const db = knex({
   client: 'pg',
@@ -18,7 +18,7 @@ const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
-}
+};
 
 const selectGoals = async params => {
   return await db('goals')
@@ -36,7 +36,7 @@ const selectGoals = async params => {
     )
     .where(params)
     .join('users', {'goals.user_id': 'users.id'});
-}
+};
 
 const selectUserAllowance = async id => {
   const result = await db('users')
@@ -45,14 +45,7 @@ const selectUserAllowance = async id => {
     .first();
 
   return result.allowance;
-}
-
-const selectGoal = async id => {
-  return await db('goals')
-    .select()
-    .where({ id })
-    .first();
-}
+};
 
 const updateGoal = async (id, params) => {
   await db('goals')
@@ -67,8 +60,16 @@ const createAlert = async (user_id, complete, name) => {
       'title': complete ? 'Goal Complete!' : 'Insufficient Allowance.',
       'message': complete ? `You completed your goal, ${name}` : `Looks like you don't have enough allowance to fund your goal, ${name}`,
     });
-}
+};
 
+/**
+ * Subtracts contribution amount from allowance, and adds to goal
+ * Updates goal, allowance, and total saved
+ * 
+ * @param {Object} goal - goal object from goals table 
+ * @param {Number} allowance - allowance from users table 
+ * @param {Boolean} adjusted - adjusts value of contribution amount if true
+ */
 const moveContribution = async (goal, allowance, adjusted) => {
   // calculate the difference if the contibution amt needs to be adjusted
   const difference = goal.goal_amount - goal.current_amount;
@@ -96,15 +97,22 @@ const moveContribution = async (goal, allowance, adjusted) => {
     // update current amount in goals table
     await updateGoal(goal.user_id, { 'current_amount': goal.current_amount });
   });
-}
+};
 
+/**
+ * Sets user goal as completed 
+ * 
+ * @param {Object} goal - goal object from goals table 
+ * @param {Number} allowance - allowance from users table
+ * @param {Boolean} adjusted - adjusts value of contribution amount if true
+ */
 const completeGoal = async (goal, allowance, adjusted,) => {
   await db.transaction(async trx => {
     await moveContribution(goal, allowance, adjusted);
     await updateGoal(goal.id, { 'completed': true });
     await createAlert(goal.user_id, complete = true, goal.name);
   });
-}
+};
 
 module.exports = {
   asyncForEach,
@@ -114,4 +122,4 @@ module.exports = {
   selectUserAllowance,
   moveContribution,
   completeGoal,
-}
+};

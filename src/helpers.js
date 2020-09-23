@@ -2,15 +2,6 @@ var Fraction = require('fraction.js');
 
 const { selectUserAllowance } = require("../automationHelpers");
 
-const selectUserBalance = async id => {
-  const result = await db('users')
-    .select('balance')
-    .where({ id })
-    .first();
-  
-  return result.balance;
-};
-
 const updateBalance = async (db, id, amount) => {
   await db('users')
     .where({ id })
@@ -58,6 +49,7 @@ const getDifference = (oldAmt, newAmt) => {
 /**
  * Allocates funds based on ratios provided
  * Returns array of allocation amounts for each ratio
+ * 
  * @param {Array} ratios - each index represents the part of a part:whole ratio
  * @param {Number} amount - total amount to be allocated
  * @returns {Array}
@@ -90,6 +82,7 @@ const allocate = (ratios, amount) => {
  *  Gets total number of user goals
  *  determines deallocation amount for each goal based on amount provided
  *  subtracts deallocation amount from each goal
+ * 
  * @param {Function} trx - knex transaction connection
  * @param {Number} user_id
  * @param {Number} amount - total amount to deallocate from user's goals 
