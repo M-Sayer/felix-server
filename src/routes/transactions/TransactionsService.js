@@ -57,7 +57,6 @@ const TransactionsService = {
       await updateAllowance(db, userId, difference);
       await updateBalance(db, userId, difference);
     });
-
   },
   async deleteTransaction(db, type, id, userId){
     // get transaction amount before delete

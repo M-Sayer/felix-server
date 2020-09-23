@@ -14,8 +14,8 @@ const {
   convertTestGoals,
 } = require('./testHelpers');
 
-describe.only('Goals Endpoints', function () {
-  this.retries(3);
+describe('Goals Endpoints', function () {
+  this.retries(5);
   let db;
 
   const {

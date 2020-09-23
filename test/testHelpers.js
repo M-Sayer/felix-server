@@ -345,15 +345,6 @@ const clearAllTables = (db) => {
   );
 }
 
-const convertTestGoal = (goal) => ({
-  ...goal,
-  goal_amount: convertToDollars(goal.goal_amount),
-  current_amount: convertToDollars(goal.current_amount),
-  contribution_amount: convertToDollars(goal.contribution_amount),
-  end_date: moment(goal.end_date).format(),
-  date_created: new Date().toLocaleString(),
-});
-
 const makeExpectedIncomeExpensesArray = (inc, exp, match_id) =>{
   
   let income = [];
@@ -424,6 +415,15 @@ const makeExpectedIncomeExpensesArray = (inc, exp, match_id) =>{
 
     return {income, expenses}
 };
+
+const convertTestGoal = (goal) => ({
+  ...goal,
+  goal_amount: convertToDollars(goal.goal_amount),
+  current_amount: convertToDollars(goal.current_amount),
+  contribution_amount: convertToDollars(goal.contribution_amount),
+  end_date: moment(goal.end_date).format(),
+  date_created: new Date().toLocaleString(),
+});
 
 const convertTestGoals = (goals) =>
   goals.map(goal => convertTestGoal(goal));
