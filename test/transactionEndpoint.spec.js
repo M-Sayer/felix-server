@@ -4,7 +4,7 @@ const helper = require('./testHelpers');
 const supertest = require('supertest');
 
 
-describe.only('Transaction Endpoint', ()=> {
+describe('Transaction Endpoint', ()=> {
   let db;
 
   const {
