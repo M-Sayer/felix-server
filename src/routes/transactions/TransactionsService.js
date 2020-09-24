@@ -77,24 +77,24 @@ const TransactionsService = {
       name: xss(transaction.name),
       description : xss(transaction.description),
       date_created: transaction.date_created,
-      amount: Number(xss(transaction.amount)),
+      amount: transaction.amount,
       category: xss(transaction.category),   
     };
   },
   serializeIncoming(content, type) {
     return type === 'income'
       ?{
-        user_id : content.user_id,
+        user_id : Number(content.user_id),
         name : xss(content.name),
         description : xss(content.description),
-        income_amount : xss(content.income_amount),
+        income_amount : content.income_amount,
         income_category : xss(content.income_category),
       }
       :{
-        user_id : content.user_id,
+        user_id : Number(content.user_id),
         name : xss(content.name),
         description : xss(content.description),
-        expense_amount : xss(content.expense_amount),
+        expense_amount : content.expense_amount,
         expense_category : xss(content.expense_category),
       }
     ;

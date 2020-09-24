@@ -2,6 +2,7 @@
 const app = require('../src/app');
 const helper = require('./testHelpers');
 const supertest = require('supertest');
+const { expect } = require('chai');
 
 
 describe.only('Transaction Endpoint', ()=> {
@@ -186,6 +187,66 @@ describe.only('Transaction Endpoint', ()=> {
       }); 
     });
 
+    context(`if there are xss attacks being installed for _income_ `, ()=>{
+      
+      const testUser = helper.makeUsersArray()[1]
+
+      const {maliciousIncome, expectedIncome} = helper.makeMaliciousIncome(testUser.id)
+
+      const type = 'income';
+
+      beforeEach('insert malicious transactions into tables', () =>{
+       return helper.seedMaliciousTransaction(
+          db,
+          testUser,
+          maliciousIncome,
+          type
+          );
+        });
+        
+      it(`it should serializes the out going message`, () => {
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${maliciousIncome.id}`)
+          .set('Authorization', helper.makeAuthHeader(testUser))
+          .expect(200)
+          .expect(res => {
+            expect(res.body.name).to.eql(expectedIncome.name)
+            expect(res.body.description).to.eql(expectedIncome.description)
+          })
+      });
+    });
+
+    context(`if there are xss attacks being installed for _expenses_ `, ()=>{
+      
+      const testUser = helper.makeUsersArray()[1]
+
+      const {maliciousExpenses, expectedExpenses} = helper.makeMaliciousExpenses(testUser.id)
+
+      const type = 'expenses';
+
+      beforeEach('insert malicious transactions into tables', () =>{
+       return helper.seedMaliciousTransaction(
+          db,
+          testUser,
+          maliciousExpenses,
+          type
+          );
+        });
+        
+      it(`it should serializes the out going message`, () => {
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${maliciousExpenses.id}`)
+          .set('Authorization', helper.makeAuthHeader(testUser))
+          .expect(200)
+          .expect(res => {
+            expect(res.body.name).to.eql(expectedExpenses.name)
+            expect(res.body.description).to.eql(expectedExpenses.description)
+          })
+      });
+    });
+    
     
   });
 

@@ -32,6 +32,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-01-22T16:28:32.615Z'),
       allowance: 3333,
       balance: 9999,
+      total_saved : 20
     },
     {
       id: 2,
@@ -43,6 +44,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-02-22T16:28:32.615Z'),
       allowance: 4444,
       balance: 8888,
+      total_saved : 20
     },
     {
       id: 3,
@@ -54,6 +56,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-03-22T16:28:32.615Z'),
       allowance: 5555,
       balance: 7777,
+      total_saved : 20
     },
     {
       id: 4,
@@ -65,6 +68,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-04-22T16:28:32.615Z'),
       allowance: 6666,
       balance: 6666,
+      total_saved : 20
     },
     {
       id: 5,
@@ -76,6 +80,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-05-22T16:28:32.615Z'),
       allowance: 7777,
       balance: 5555,
+      total_saved : 20
     },
     {
       id: 6,
@@ -87,6 +92,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-06-22T16:28:32.615Z'),
       allowance: 8888,
       balance: 4444,
+      total_saved : 20
     },
   ];
 }
