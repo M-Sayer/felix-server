@@ -17,7 +17,7 @@ describe.only('Users Endpoints', () => {
   const { testUsers } = makeAllFixtures();
 
   before('Connect to db', () => {
-    db = helpers.makeKnexInstance();
+    db = makeKnexInstance();
     app.set('db', db);
   });
 
@@ -27,17 +27,32 @@ describe.only('Users Endpoints', () => {
 
   afterEach('Clean up tables', () => clearAllTables(db));
 
-  describe('POST /login endpoint', () => {
+  describe('POST /register endpoint', () => {
 		context('with valid user data', () => {
 			it('should create a new user', () => {
+				const newUser = {
+					first_name: 'Test First Name 1',
+					last_name: 'Test Last Name 1',
+					username: 'test-user-1',
+					email: 'test-user-email-1@email.com',
+					password: 'password',
+				}
 				return supertest(app)
-						.post(`/api/users/login/`)
-						.set('Authorization', makeAuthHeader(testUsers[0]))
-						.expect(200);
+						.post(`/api/users/register/`)
+						.send({newUser})
+						.expect(() =>
+							db
+								.from('users')
+								.select('*')
+								.where( 'email', 'test-user-email-1@email.com' )
+								.first()
+								.then((row) => {
+									expect(row.username).to.eql('test-user-1');
+								})
+          );
 			});
-
 		});
-		context('with valid user data', () => {
+		context('with invalid user data', () => {
 			
 		});
 	});

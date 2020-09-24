@@ -55,7 +55,7 @@ const UsersService = {
   },
 
   validateUsername(username) {
-    if (!REGEX_UPPER_LOWER_NUMBER_DASH_HYPHEN.test(username)) {
+    if (REGEX_UPPER_LOWER_NUMBER_DASH_HYPHEN.test(username)) {
       return 'Username cannot contain special characters except - and _'
     };
     return null;
