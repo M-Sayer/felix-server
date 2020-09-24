@@ -266,7 +266,7 @@ transactionsRouter
       }
       ;
     //Insert the new transaction object into db
-    await patchSingleTransaction(
+   patchSingleTransaction(
       res.app.get('db'),
       type,
       id,
