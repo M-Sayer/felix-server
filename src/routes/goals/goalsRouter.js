@@ -126,10 +126,7 @@ goalsRouter
         contribution_amount: convertToDollars(goal.contribution_amount),
         end_date: moment(goal.end_date).format(),
       }
-
-      const sanitizedGoal = sanitizeGoal(goal);
-
-      return res.json(sanitizedGoal);
+      return res.json(sanitizeGoal(goal));
     }
     catch(error) {
       next(error);
