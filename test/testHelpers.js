@@ -295,9 +295,7 @@ const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) =>
 }
 
 const seedGoalsTable = (db, goals = []) => {
-  return db.transaction(async trx => {
-    await trx('goals').insert(goals);
-  });
+  return db('goals').insert(goals);
 }
 
 const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
@@ -346,15 +344,6 @@ const clearAllTables = (db) => {
     )
   );
 }
-
-const convertTestGoal = (goal) => ({
-  ...goal,
-  goal_amount: convertToDollars(goal.goal_amount),
-  current_amount: convertToDollars(goal.current_amount),
-  contribution_amount: convertToDollars(goal.contribution_amount),
-  end_date: moment(goal.end_date).format(),
-  date_created: new Date().toLocaleString(),
-});
 
 const makeExpectedIncomeExpensesArray = (inc, exp, match_id) =>{
   
@@ -426,6 +415,15 @@ const makeExpectedIncomeExpensesArray = (inc, exp, match_id) =>{
 
     return {income, expenses}
 };
+
+const convertTestGoal = (goal) => ({
+  ...goal,
+  goal_amount: convertToDollars(goal.goal_amount),
+  current_amount: convertToDollars(goal.current_amount),
+  contribution_amount: convertToDollars(goal.contribution_amount),
+  end_date: moment(goal.end_date).format(),
+  date_created: new Date().toLocaleString(),
+});
 
 const convertTestGoals = (goals) =>
   goals.map(goal => convertTestGoal(goal));

@@ -1,4 +1,5 @@
 const express = require('express');
+const xss = require('xss');
 const { requireAuth } = require('../../middleware/jwtAuth');
 const goalsRouter = express.Router();
 
@@ -8,6 +9,7 @@ const {
   createGoal,
   updateGoal,
   deleteGoal,
+  sanitizeGoal,
 } = require('./GoalsService');
 
 const { 
@@ -31,6 +33,7 @@ goalsRouter
     if(goals.length) {
       const convertedGoals = goals.map(goal => ({
           ...goal,
+          name: xss(goal.name),
           goal_amount: convertToDollars(goal.goal_amount),
           current_amount: convertToDollars(goal.current_amount),
           contribution_amount: convertToDollars(goal.contribution_amount),
@@ -123,8 +126,7 @@ goalsRouter
         contribution_amount: convertToDollars(goal.contribution_amount),
         end_date: moment(goal.end_date).format(),
       }
-
-      return res.json(goal);
+      return res.json(sanitizeGoal(goal));
     }
     catch(error) {
       next(error);
