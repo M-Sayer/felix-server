@@ -11,7 +11,7 @@ const {
   convertTestGoals,
 } = require('./testHelpers');
 
-describe.skip('Users Endpoints', () => {
+describe.only('Users Endpoints', () => {
   let db;
 
   const { testUsers } = makeAllFixtures();
@@ -75,5 +75,13 @@ describe.skip('Users Endpoints', () => {
 			});
 		});
 	});
+	})
+	describe.skip('POST /login endpoint', () => {
+		context('given valid login data', () => {
+			it('should return a 200 and redirect to dashboard')
+		})
+		context('given invalid login data', () => {
+			it('should return 401 unauthorized')
+		})
 	})
 });
