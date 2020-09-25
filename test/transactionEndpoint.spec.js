@@ -2,7 +2,7 @@
 const app = require('../src/app');
 const helper = require('./testHelpers');
 const supertest = require('supertest');
-const { expect } = require('chai');
+
 
 
 describe.only('Transaction Endpoint', ()=> {
@@ -100,11 +100,12 @@ describe.only('Transaction Endpoint', ()=> {
           db,
           testUsers,
           testIncome,
-          []
           );
         });
 
       it(`send back a 201, and income and expense array witch would be empty`, () => {
+
+        console.log(testUsers[0].id)
 
         const expectedObject = helper.makeExpectedIncomeExpensesArray(testIncome, [], testUsers[0].id) 
 
@@ -426,7 +427,7 @@ describe.only('Transaction Endpoint', ()=> {
 
     });
 
-    context.only('if trying to visit as transaction, that isn\'t there ', ()=> {
+    context('if trying to visit as transaction, that isn\'t there ', ()=> {
 
       const transaction_id = 99;
       const type = 'income';
@@ -497,10 +498,8 @@ describe.only('Transaction Endpoint', ()=> {
           )
       });
     });
-    /**
-     * @note waiting on allowance change algorithms to working before fulling testing Gage -> Muji
-     */
-    context.skip(`if given a valid auth token, and all conditions( valid, target_id, at less one field ) are met, FOR _expenses_`, ()=>{
+
+    context(`if given a valid auth token, and all conditions( valid, target_id, at less one field ) are met, FOR _expenses_`, ()=>{
 
       beforeEach('insert transactions into tables', () =>{
         return helper.seedIncomeAndExpensesTables(
@@ -517,32 +516,6 @@ describe.only('Transaction Endpoint', ()=> {
       
       it(`it should update the new info into the DB and send back a 204`, () => {
 
-        /*
-        user Info =    {
-      id: 1,
-      username: 'test-user-1',
-      first_name: 'Test First Name 1',
-      last_name: 'Test Last Name 1',
-      email: 'test-user-email-1@email.com',
-      password: 'password',
-      date_created: new Date('2029-01-22T16:28:32.615Z'),
-      allowance: 3333, ($33.33)
-      balance: 9999, ($99.99)
-    },
-
-
-        original_Expenses = {
-      id: 2,
-      name: 'Test Expense 2',
-      user_id: 1,
-      description : 'test',
-      expense_amount: -5011, (50.11)
-      expense_category: 'other',
-      date_created: '2029-01-22T16:28:32.615Z'  
-        }
-
-
-         */
 
         const updatedExpenses = {
           name: 'Updated Income 2',
@@ -568,8 +541,149 @@ describe.only('Transaction Endpoint', ()=> {
             .get(`/api/transactions/${type}/${transaction_id}`)
             .set('Authorization', helper.makeAuthHeader(testUsers[0]))
             .expect(expectedUpdatedExpenses)
-            .end()
           )
+      });
+    });
+
+    context(`if the user lacks Auth`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      const transaction_id = 2; 
+      const type = 'expenses';
+
+      
+      it(`it should send back a 401`, () => {
+
+        const updatedExpenses = {
+          name: 'Updated Income 2',
+          description : 'updated',
+          amount: -51, /* (9999) throwing error if grater then .. */
+          category : 'other',          
+        };
+
+
+        return supertest(app)
+          .patch(`/api/transactions/${type}/${transaction_id}`)
+          .send(updatedExpenses)
+          .expect(401)
+      });
+    });
+
+    context(`if the user is trying to update a transaction that's not there own`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      const transaction_id = 2; 
+      const type = 'expenses';
+
+      
+      it(`it should update the new info into the DB and send back a 204`, () => {
+
+
+        const updatedExpenses = {
+          name: 'Updated Income 2',
+          description : 'updated',
+          amount: -51, /* (9999) throwing error if grater then .. */
+          category : 'other',          
+        };
+
+
+        return supertest(app)
+          .patch(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[1]))
+          .send(updatedExpenses)
+          .expect(401)
+          });
+    });
+
+    context(`if there is no content being sent`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      const transaction_id = 2; 
+      const type = 'expenses';
+
+      
+      it(`should send back 400`, () => {
+
+        return supertest(app)
+          .patch(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .expect(400)
+      });
+    });
+
+    context(`if the user try to send an amount that is NaN`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      const transaction_id = 2; 
+      const type = 'expenses';
+
+      
+      it(`should send back 203, but only update that content that passes `, () => {
+
+        const updatedExpenses = {
+          name: 'Updated Income 2',
+          description : 'updated',
+          amount: 'oof',
+          category : 'other',          
+        };
+
+        const filteredExpensesReply =  helper.makeTransactionReply( type ,testExpenses[ transaction_id - 1 ]);
+
+
+
+        const expectedUpdatedExpenses = () => {
+          delete updatedExpenses.amount 
+          return {
+            ...filteredExpensesReply,
+            ...updatedExpenses
+          }
+        }
+        
+
+        return supertest(app)
+          .patch(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .send(updatedExpenses)
+          .expect(204)
+          .then(() => 
+           supertest(app)
+            .get(`/api/transactions/${type}/${transaction_id}`)
+            .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+            .expect(200, expectedUpdatedExpenses())          
+        )
+          
       });
     });
 
@@ -599,9 +713,81 @@ describe.only('Transaction Endpoint', ()=> {
           .delete(`/api/transactions/${type}/${transactionIdToRemove}`)
           .set('Authorization', helper.makeAuthHeader(testUsers[0]))
           .expect(204);
-        
       });
     });
+
+    context(`if user lacks Auth`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const transactionIdToRemove = 2;
+        const type = 'expenses';
+        
+      it(`it should send back a 401`, () => {
+
+        const expectedIncomeArray = testIncome.filter(tr => tr.id !== transactionIdToRemove)
+       
+        return supertest(app)
+          .delete(`/api/transactions/${type}/${transactionIdToRemove}`)
+          .expect(401);
+      });
+    });
+
+    context(`if the user try to delete an transaction that's not there own`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const transactionIdToRemove = 2;
+        const type = 'expenses';
+        
+      it(`should send back a 401`, () => {
+
+        const expectedIncomeArray = testIncome.filter(tr => tr.id !== transactionIdToRemove)
+       
+        return supertest(app)
+          .delete(`/api/transactions/${type}/${transactionIdToRemove}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[1]))
+          .expect(401);
+      });
+    });
+
+    context(`if user tries to delete a transaction that isn't there`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const transactionIdToRemove = 999;
+        const type = 'expenses';
+        
+      it(`should send back a 400`, () => {
+       
+        return supertest(app)
+          .delete(`/api/transactions/${type}/${transactionIdToRemove}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[1]))
+          .expect(400);
+      });
+    });
+    
   });
   
 

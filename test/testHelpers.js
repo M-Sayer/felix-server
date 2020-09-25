@@ -358,13 +358,13 @@ const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) =>
     await trx.into('income').insert(income);
     await trx.into('expenses').insert(expenses);
     
-    await trx
+    if(income.length) await trx
       .raw(
         `SELECT setval('income_id_seq', ?)`,
         income[income.length - 1].id
       );
-
-    await trx
+    
+    if(expenses.length) await trx
       .raw(
         `SELECT setval('expenses_id_seq', ?)`,
         expenses[expenses.length - 1].id

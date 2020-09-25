@@ -51,6 +51,11 @@ const TransactionsService = {
     const oldAmt = await selectTransactionAmount(db, type, id);
     //add the difference between the amounts to balance/allowance
     const difference = getDifference(oldAmt, content.income_amount || content.expense_amount);
+
+
+    if(isNaN(difference) && !content.income_amount && !content.expense_amount){
+      return db(type).where({ id }).update(content);
+    }
     
     await db.transaction(async trx => {
       await trx(type).where({ id }).update(content);
@@ -127,20 +132,36 @@ const TransactionsService = {
   },
   //... this is still dumb
   serializePatch(tran, type){
-    return type === 'income'
-      ? {
-        name : tran.name,
-        description : tran.description,
-        income_amount : tran.income_amount,
-        income_category : tran.income_category
-      }
-      : {
-        name:tran.name,
-        description:tran.description, 
-        expense_amount : tran.expense_amount,
-        expense_category : tran.expense_category
-      }
-    ;
+    if( tran.income_amount || tran.expense_amount){
+      return type === 'income'
+        ? {
+          name : xss(tran.name),
+          description : xss(tran.description),
+          income_amount : tran.income_amount,
+          income_category : tran.income_category
+        }
+        : {
+          name:xss(tran.name),
+          description:xss(tran.description), 
+          expense_amount : tran.expense_amount,
+          expense_category : tran.expense_category
+        }
+      ;
+    }
+    else{
+      return type === 'income'
+        ? {
+          name : xss(tran.name),
+          description : xss(tran.description),
+          income_category : tran.income_category
+        }
+        : {
+          name:xss(tran.name),
+          description:xss(tran.description), 
+          expense_category : tran.expense_category
+        }
+      ;
+    }
   }
 };
 

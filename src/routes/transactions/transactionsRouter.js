@@ -212,7 +212,7 @@ transactionsRouter
     const {name, category, description} = req.body;
     //convert amount to cents
     const amount = convertToCents(req.body.amount);
-
+    
     //Checks if user making patch matches user id of the transaction
     if (req.auth_id !== userId) {
       return res
@@ -241,16 +241,32 @@ transactionsRouter
     }
     //Checks if body content exists
     if(!name && !amount && !category){
-      res.status(400).json({error : 'no content to be updated'});
+      return res.status(400).json({error : 'no content to be updated'});
     }
+
 
     /**
      * @todo so when the amount is different from that amount on db
      *  update the balance along with it.
      */
-
-    //Create transaction object
-    const transObject  = 
+    let transObject;
+    if(isNaN(amount)){
+      transObject  = 
+    type === 'income'
+      ? {
+        name,
+        description,
+        income_category : category
+      }
+      : {
+        name,
+        description, 
+        expense_category : category
+      }
+      ; 
+    }
+    else{
+      transObject  = 
     type === 'income'
       ? {
         name,
@@ -264,7 +280,9 @@ transactionsRouter
         expense_amount : amount,
         expense_category : category
       }
-      ;
+      ; 
+    }
+    //Create transaction object
     //Insert the new transaction object into db
     patchSingleTransaction(
       res.app.get('db'),

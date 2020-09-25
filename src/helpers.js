@@ -27,11 +27,21 @@ const selectTransactionAmount = async (db, type, id) => {
 };
 
 const convertToCents = (dollars) => {
-  return dollars * 100;
+  if(isNaN(dollars)){
+    return NaN;
+  }
+  else{
+    return dollars * 100;
+  }
 };
 
 const convertToDollars = (cents) => {
-  return cents / 100;
+  if(isNaN(cents)){
+    return NaN;
+  }
+  else{
+    return cents / 100;
+  }
 };
 
 const convertTransactionsToDollars = (arr, type) => {
