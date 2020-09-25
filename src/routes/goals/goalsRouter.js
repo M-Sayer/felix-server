@@ -203,9 +203,6 @@ goalsRouter
       return res
         .status(200)
         .json({message: 'Goal succesfully deleted'});
-      // return res
-      //   .status(204)
-      //   .json({});
     }
     catch(error) {
       next(error)

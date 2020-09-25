@@ -28,13 +28,15 @@ const GoalsService = {
 
   async deleteGoal(db, id, userId) {
     const amount = await selectGoalCurrentAmount(db, id);
-    await db.transaction(async trx => {
-      await trx('goals').where({ id }).delete();
-      await trx('users').where({ id: userId }).update({
-        allowance: trx.raw(`?? + ${amount}`, ['allowance']),
-        total_saved: trx.raw(`?? - ${amount}`, ['total_saved'])
+    if (amount > 0) { 
+      return await db.transaction(async trx => {
+        await trx('goals').where({ id }).delete();
+        return await trx('users').where({ id: userId }).update({
+          allowance: trx.raw(`?? + ${amount}`, ['allowance']),
+          total_saved: trx.raw(`?? - ${amount}`, ['total_saved'])
+        });
       });
-    })
+    } return db('goals').where({ id }).delete();
   },
 
   sanitizeGoal(goal) {
