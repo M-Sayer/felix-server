@@ -21,9 +21,12 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
 app.use('/api/users', usersRouter);
 app.use('/api/goals', goalsRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/alerts', alertsRouter);
+
 app.use(errorHandler);
+
 module.exports = app;

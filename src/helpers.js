@@ -127,6 +127,10 @@ const updateAllowance = async (trx, id, amount) => {
     const difference = allowance + amount;
     let deallocateAmt;
 
+    console.log('amount: ', amount)
+    console.log('total saved: ', totalSaved)
+    console.log('diff', difference)
+
     if (difference < 0) {
       amount = allowance * -1; // subtract allowance from itself. prevents negative allowance
       
@@ -137,7 +141,8 @@ const updateAllowance = async (trx, id, amount) => {
       await deallocateGoals(trx, id, deallocateAmt);
     } else amount -= totalSaved;
 
-    //update amount = goals
+    console.log('amount: ', amount)
+    console.log('allowance: ', allowance)
     await trx('users')
       .where({ id })
       .update({ allowance: trx.raw(`?? + ${amount}`, ['allowance'])});

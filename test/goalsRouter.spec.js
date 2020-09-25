@@ -14,7 +14,8 @@ const {
   convertTestGoals,
 } = require('./testHelpers');
 
-describe('Goals Endpoints', () => {
+describe('Goals Endpoints', function () {
+  this.retries(5);
   let db;
 
   const {
@@ -64,7 +65,7 @@ describe('Goals Endpoints', () => {
           });
       });
 
-      it('Responds with 200 and an array of goals objects', () => {
+      it('Responds with 200 and a goal object', () => {
         const goalId = 1;
         return supertest(app)
           .get(`/api/goals/${goalId}`)
@@ -76,6 +77,42 @@ describe('Goals Endpoints', () => {
           });
       });
     });
+
+    context('Given malicious goal content', () => {
+      const maliciousTestGoal = {
+        id: 911,
+        name: `<script>alert('xss');</script>`,
+        user_id: 1,
+        goal_amount: 40000,
+        contribution_amount: 10000,
+        current_amount: 10000,
+        end_date: moment(new Date('2020-10-15T13:26:19.359Z')),
+        completed: false,
+      }
+      beforeEach('Insert malicious goal content into db', () =>
+        seedGoalsTable(db, [maliciousTestGoal])
+      );
+
+      it('Removes XSS attack content', () => {
+        return supertest(app)
+          .get('/api/goals')
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .expect(200)
+          .then(response => {
+            expect(response.body[response.body.length-1].name).to.eql(`&lt;script&gt;alert(\'xss\');&lt;/script&gt;`)
+          });
+      })
+
+      it('Removes XSS attack content', () => {
+        return supertest(app)
+          .get(`/api/goals/${maliciousTestGoal.id}`)
+          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .expect(200)
+          .then(response => {
+            expect(response.body.name).to.eql(`&lt;script&gt;alert(\'xss\');&lt;/script&gt;`)
+          });
+      })
+    })
   });
 
   describe('POST /goals endpoint', () => {

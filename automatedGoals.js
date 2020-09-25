@@ -51,7 +51,6 @@ async function automatedGoals () {
     await asyncForEach(goals, async goal => {
       //get allowance on each iteration to account for potential changes
       const allowance = await selectUserAllowance(goal.user_id);
-      console.log(allowance)
       
       // if there's enough allowance to make a contribution
       if (allowance > goal.contribution_amount) {
