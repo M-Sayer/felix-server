@@ -1,5 +1,10 @@
 var Fraction = require('fraction.js');
 
+const selectGoalCurrentAmount = async (db, id) => {
+  const res = await db('goals').where({ id }).select('current_amount').first();
+  return res.current_amount;
+};
+
 const selectBalance = async (db, id) => {
   const res = await db('users').where({ id }).select('balance').first();
   return res.balance;
@@ -147,7 +152,7 @@ const updateAllowance = async (trx, id, amount) => {
         : deallocateAmt -= difference;
 
       await deallocateGoals(trx, id, deallocateAmt);
-    } else amount -= totalSaved;
+    }
 
     const balance = await selectBalance(trx, id);
     allowance = balance - totalSaved;
@@ -163,6 +168,7 @@ const updateAllowance = async (trx, id, amount) => {
 };
 
 module.exports = {
+  selectGoalCurrentAmount,
   selectTransactionAmount,
   convertToCents,
   convertToDollars,

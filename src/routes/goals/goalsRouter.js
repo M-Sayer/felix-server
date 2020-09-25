@@ -190,7 +190,7 @@ goalsRouter
        * @argument {object} - Database meta
        * @argument {number} - Goal id
       */
-      const response = await deleteGoal(req.app.get('db'), req.params.id);
+      const response = await deleteGoal(req.app.get('db'), req.params.id, req.userId);
 
       if(!response) {
         return res

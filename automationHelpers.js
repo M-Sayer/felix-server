@@ -66,10 +66,9 @@ const moveContribution = async (db, goal, adjusted) => {
 
   await db.transaction(async trx => {
     // update allowance value on users table
-    await updateAllowance(trx, goal.user_id, deduction)
     await updateTotalSaved(trx, goal.user_id, amount);
+    await updateAllowance(trx, goal.user_id, deduction)
     // update current amount in goals table
-    console.log('current: ',goal.current_amount)
     await updateGoal(trx, goal.id, { 'current_amount': goal.current_amount });
   });
 };

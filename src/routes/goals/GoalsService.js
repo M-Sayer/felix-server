@@ -1,4 +1,5 @@
 const xss = require("xss");
+const { selectGoalCurrentAmount, updateAllowance } = require("../../helpers");
 
 const GoalsService = {
   getGoal(db, id) {
@@ -25,10 +26,15 @@ const GoalsService = {
       .update(updatedGoal);
   },
 
-  deleteGoal(db, id) {
-    return db('goals')
-      .where({id})
-      .del();
+  async deleteGoal(db, id, userId) {
+    const amount = await selectGoalCurrentAmount(db, id);
+    await db.transaction(async trx => {
+      await trx('goals').where({ id }).delete();
+      await trx('users').where({ id: userId }).update({
+        allowance: trx.raw(`?? + ${amount}`, ['allowance']),
+        total_saved: trx.raw(`?? - ${amount}`, ['total_saved'])
+      });
+    })
   },
 
   sanitizeGoal(goal) {
