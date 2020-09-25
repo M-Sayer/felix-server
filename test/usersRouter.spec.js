@@ -38,23 +38,42 @@ describe.only('Users Endpoints', () => {
 					password: 'password',
 				}
 				return supertest(app)
-						.post(`/api/users/register/`)
+						.post(`/api/users/register`)
+						.set('Accept', 'application/json')
+          	.set('Content-Type', 'application/json')
 						.send({newUser})
-						.expect(() =>
-							db
-								.from('users')
-								.select('*')
-								.where( 'email', 'test-user-email-1@email.com' )
-								.first()
-								.then((row) => {
-									expect(row.username).to.eql('test-user-1');
-								})
-          );
+						.expect(201)
+						.expect( () =>
+							supertest(app)
+							.get(`/api/users`)
+							.set('Authorization', helper.makeAuthHeader(testUsers[0]))
+							.expect(200, newUser)
+						)
 			});
 		});
 		context('with invalid user data', () => {
-			
+			const requiredFields = ['first_name', 'last_name', 'username', 'email', 'password'];
+
+			requiredFields.forEach((field) => {
+				const registerAttemptBody = {
+					first_name: 'Test First Name 1',
+					last_name: 'Test Last Name 1',
+					username: 'test-user-1',
+					email: 'test-user-email-1@email.com',
+					password: 'password',
+				}
+
+			it(`responds with 400 required error when '${field}' is missing`, () => {
+				delete registerAttemptBody[field];
+
+				return supertest(app)
+					.post('/api/users/register')
+					.send(registerAttemptBody)
+					.expect(400, {
+						error: `Missing ${field} in request body`,
+					});
+			});
 		});
 	});
- 
+	})
 });
