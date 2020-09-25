@@ -1,18 +1,4 @@
-const knex = require("knex");
-const { DATABASE_URL } = require('./src/config');
-const { updateTotalSaved } = require('./src/helpers');
-
-//  pg returns numeric values as strings
-//  this converts all numeric types to floats (decimal)
-var types = require('pg').types
-types.setTypeParser(1700, function(val) {
-  return parseFloat(val)
-});
-
-const db = knex({
-  client: 'pg',
-  connection: DATABASE_URL,
-});
+const { updateTotalSaved, updateAllowance } = require('./src/helpers');
 
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
@@ -20,7 +6,7 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
-const selectGoals = async params => {
+const selectGoals = async (db, params) => {
   return await db('goals')
     .select(
       'goals.id',
@@ -38,22 +24,13 @@ const selectGoals = async params => {
     .join('users', {'goals.user_id': 'users.id'});
 };
 
-const selectUserAllowance = async id => {
-  const result = await db('users')
-    .select('allowance')
-    .where({ id })
-    .first();
-
-  return result.allowance;
-};
-
-const updateGoal = async (id, params) => {
+const updateGoal = async (db, id, params) => {
   await db('goals')
     .where({ id })
     .update(params);
 };
 
-const createAlert = async (user_id, complete, name) => {
+const createAlert = async (db, user_id, complete, name) => {
   return await db('alerts')
     .insert({
       'user_id': user_id,
@@ -66,18 +43,19 @@ const createAlert = async (user_id, complete, name) => {
  * Subtracts contribution amount from allowance, and adds to goal
  * Updates goal, allowance, and total saved
  * 
+ * @param db - Knex
  * @param {Object} goal - goal object from goals table 
- * @param {Number} allowance - allowance from users table 
  * @param {Boolean} adjusted - adjusts value of contribution amount if true
  */
-const moveContribution = async (goal, allowance, adjusted) => {
+const moveContribution = async (db, goal, adjusted) => {
   // calculate the difference if the contibution amt needs to be adjusted
   const difference = goal.goal_amount - goal.current_amount;
   let amount = goal.contribution_amount;
-  // subtract contribution amount from allowance
+
+  let deduction;
   adjusted
-    ? allowance -= difference // if true, subtract difference from allowance 
-    : allowance -= goal.contribution_amount;  //if false, subtract contribution amount from allowance
+    ? deduction = difference * -1 // if true, deduct difference from allowance 
+    : deduction = goal.contribution_amount * -1;  //if false, deduct contribution amt from allowance
 
   // add contribution amount to goal's current amount
   adjusted
@@ -88,14 +66,11 @@ const moveContribution = async (goal, allowance, adjusted) => {
 
   await db.transaction(async trx => {
     // update allowance value on users table
-    await trx('users')
-      .where({ 'id': goal.user_id})
-      .update({ allowance: allowance });
-
+    await updateAllowance(trx, goal.user_id, deduction)
     await updateTotalSaved(trx, goal.user_id, amount);
-    
     // update current amount in goals table
-    await updateGoal(goal.user_id, { 'current_amount': goal.current_amount });
+    console.log('current: ',goal.current_amount)
+    await updateGoal(trx, goal.id, { 'current_amount': goal.current_amount });
   });
 };
 
@@ -106,11 +81,11 @@ const moveContribution = async (goal, allowance, adjusted) => {
  * @param {Number} allowance - allowance from users table
  * @param {Boolean} adjusted - adjusts value of contribution amount if true
  */
-const completeGoal = async (goal, allowance, adjusted,) => {
+const completeGoal = async (db, goal, adjusted) => {
   await db.transaction(async trx => {
-    await moveContribution(goal, allowance, adjusted);
-    await updateGoal(goal.id, { 'completed': true });
-    await createAlert(goal.user_id, complete = true, goal.name);
+    await moveContribution(db, goal, adjusted);
+    await updateGoal(db, goal.id, { 'completed': true });
+    await createAlert(db, goal.user_id, complete = true, goal.name);
   });
 };
 
@@ -119,7 +94,6 @@ module.exports = {
   selectGoals,
   updateGoal,
   createAlert,
-  selectUserAllowance,
   moveContribution,
   completeGoal,
 };

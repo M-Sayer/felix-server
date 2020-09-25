@@ -38,40 +38,59 @@ const {
   asyncForEach,
   selectGoals,
   createAlert,
-  selectUserAllowance,
   moveContribution,
   completeGoal,
 } = require('./automationHelpers');
 
+
+const { selectUserAllowance } = require('./src/helpers');
+const knex = require('knex');
+const { DATABASE_URL } = require('./src/config');
+
+
+//  pg returns numeric values as strings
+//  this converts all bigint (int8) types to int
+var types = require('pg').types
+types.setTypeParser(20, function(val) {
+  return parseInt(val)
+});
+
+const db = knex({
+  client: 'pg',
+  connection: DATABASE_URL,
+});
+
 async function automatedGoals () {
+  console.log('automation ran')
   try {
     // select all incomplete goals
-    const goals = await selectGoals({ 'completed': 'false' });
+    const goals = await selectGoals(db, { 'completed': 'false' });
 
     await asyncForEach(goals, async goal => {
       //get allowance on each iteration to account for potential changes
-      const allowance = await selectUserAllowance(goal.user_id);
-      
+      let allowance = await selectUserAllowance(db, goal.user_id);
+      console.log(allowance)
+      console.log(typeof allowance)
       // if there's enough allowance to make a contribution
       if (allowance > goal.contribution_amount) {
         // if the amount needed to compelete the goal is greater than the contribution
         if (goal.goal_amount - goal.current_amount > goal.contribution_amount) {
-          return moveContribution(goal, allowance, adjusted = false);
+          return moveContribution(db, goal, adjusted = false);
         }
         // if the amount needed to complete the goal is equal to the contribution
         if (goal.goal_amount - goal.current_amount === goal.contribution_amount) {
-          return completeGoal(goal, allowance, adjusted = false);
+          return completeGoal(db, goal, adjusted = false);
         }
         // if the amount needed to complete the goal is less than the contribution
         // the contribution amount needs to be adjusted
         // prevents the current amount from exceeding goal amount
         if (goal.goal_amount - goal.current_amount < goal.contribution_amount) {
-          return completeGoal(goal, allowance, adjusted = true);
+          return completeGoal(db, goal, adjusted = true);
         }
       } 
       // if there's not enough allowance to make a contribution 
       if (allowance < goal.contribution_amount) {
-        await createAlert(goal.user_id, complete = false, goal.name);
+        await createAlert(db, goal.user_id, complete = false, goal.name);
         return;
       }
     });
@@ -79,5 +98,7 @@ async function automatedGoals () {
     console.log(error);
   }
 };
+
+automatedGoals();
 
 module.exports = automatedGoals;

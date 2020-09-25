@@ -1,7 +1,5 @@
 var Fraction = require('fraction.js');
 
-const { selectUserAllowance } = require("../automationHelpers");
-
 const selectBalance = async (db, id) => {
   const res = await db('users').where({ id }).select('balance').first();
   return res.balance;
@@ -88,7 +86,7 @@ const allocate = (ratios, amount) => {
  *  determines deallocation amount for each goal based on amount provided
  *  subtracts deallocation amount from each goal
  * 
- * @param {Function} trx - knex transaction connection
+ * @param trx - Knex.Transaction
  * @param {Number} user_id
  * @param {Number} amount - total amount to deallocate from user's goals 
  */
@@ -119,15 +117,24 @@ const deallocateGoals = async (trx, user_id, amount) => {
   }
 };
 
+const selectUserAllowance = async (db, id) => {
+  const result = await db('users')
+    .select('allowance')
+    .where({ id })
+    .first();
+
+  return result.allowance;
+};
+
 /**
  * 
- * @param {Function} trx - knex transaction connection 
+ * @param trx - Knex.Transaction
  * @param {Number} id - userId
  * @param {Number} amount - total amount to add to allowance. To subtract, add a negative number.
  */
 const updateAllowance = async (trx, id, amount) => {
   try {
-    let allowance = await selectUserAllowance(id);
+    let allowance = await selectUserAllowance(trx, id);
     const totalSaved = await selectTotalSaved(trx, id);
     const difference = allowance + amount;
     let deallocateAmt;
@@ -161,6 +168,7 @@ module.exports = {
   convertToDollars,
   convertTransactionsToDollars,
   getDifference,
+  selectUserAllowance,
   updateAllowance,
   updateBalance,
   updateTotalSaved,
