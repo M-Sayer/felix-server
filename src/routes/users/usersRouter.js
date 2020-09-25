@@ -45,6 +45,7 @@ usersRouter.post('/register', async (req, res, next) => {
 
     // If password does not meet requirements, return error
     if (passwordError) {
+      console.log('password error!')
       return res.status(400).json({
         error: passwordError,
       });
