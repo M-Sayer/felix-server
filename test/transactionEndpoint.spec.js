@@ -51,6 +51,71 @@ describe.only('Transaction Endpoint', ()=> {
 
       });
     });
+
+    context(`If the user doesn't have auth`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+      it(`it should send back a 401`, () => {
+
+        return supertest(app)
+        .get('/api/transactions')
+        .expect(401)
+
+      });
+    });
+
+    context(`If the user Has No testIncome, or Expenses`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedUsersTable(
+          db,
+          testUsers,
+          );
+        });
+
+      it(`send back a 201, and 2 empty arrays `, () => {
+
+        const expectedObject = {income :[], expenses : []}; 
+
+        return supertest(app)
+        .get('/api/transactions')
+        .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+        .expect(200, expectedObject)
+
+      });
+    });
+    
+    context(`If the user only has Income`, ()=>{
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          []
+          );
+        });
+
+      it(`send back a 201, and income and expense array witch would be empty`, () => {
+
+        const expectedObject = helper.makeExpectedIncomeExpensesArray(testIncome, [], testUsers[0].id) 
+
+        return supertest(app)
+        .get('/api/transactions')
+        .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+        .expect(200, expectedObject)
+
+      });
+    });
+
   });
 
   describe(`POST '/' endpoint` , () =>{
@@ -131,6 +196,73 @@ describe.only('Transaction Endpoint', ()=> {
           )
         });
     });
+
+    context(`if the user lacks Auth`, ()=>{
+        
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const type = 'income';
+
+      it(`it should send back a 401`, () => {
+
+        const newIncome = {
+            name: 'NEW Test Income',
+            description : 'NEW test',
+            amount: 11113,
+            category : 'other',
+            type, 
+        }
+
+    
+        return supertest(app)
+        .post('/api/transactions')
+        .send(newIncome)
+        .expect(401)
+
+      });
+    });
+
+    context.skip(`if there is missing fields in the post body `, ()=>{
+        
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+          );
+        });
+
+        const type = 'income';
+
+        const fieldArry = ['name', 'amount', 'category', 'type']; 
+
+        const newIncome = {
+            name: 'NEW Test Income',
+            amount: 11113,
+            category : 'other',
+            type, 
+        }
+        for(let key of fieldArry){
+          it(`should send back a 400 stating ${key} is missing`, () => {
+            delete newIncome[key]
+        
+            return supertest(app)
+            .post('/api/transactions')
+            .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+            .send(newIncome)
+            .expect(400)
+          });
+        }
+    });
+
   });
 
   describe(`GET "/api/transaction/:type/:id" endpoint`, () => {
@@ -245,6 +377,77 @@ describe.only('Transaction Endpoint', ()=> {
             expect(res.body.description).to.eql(expectedExpenses.description)
           })
       });
+    });
+
+    context('if a user lacks auth', ()=> {
+
+      const transaction_id = 2;
+      const type = 'income';
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      it('should give a 401',()=>{
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${transaction_id}`)
+          .expect(401); 
+      });
+
+    });
+
+    context('if a user tries to view a transaction that\'s not there own', ()=> {
+
+      const transaction_id = 2;
+      const type = 'income';
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      it('should give a 401',()=>{
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[1]))
+          .expect(401); 
+      });
+
+    });
+
+    context.only('if trying to visit as transaction, that isn\'t there ', ()=> {
+
+      const transaction_id = 99;
+      const type = 'income';
+
+      beforeEach('insert transactions into tables', () =>{
+        return helper.seedIncomeAndExpensesTables(
+          db,
+          testUsers,
+          testIncome,
+          testExpenses
+        );
+      });
+
+      it('should give a 400',()=>{
+
+        return supertest(app)
+          .get(`/api/transactions/${type}/${transaction_id}`)
+          .set('Authorization', helper.makeAuthHeader(testUsers[0]))
+          .expect(400); 
+      });
+
     });
     
     
