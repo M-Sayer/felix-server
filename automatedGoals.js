@@ -61,7 +61,6 @@ const db = knex({
 });
 
 async function automatedGoals () {
-  console.log('automation ran')
   try {
     // select all incomplete goals
     const goals = await selectGoals(db, { 'completed': 'false' });
@@ -69,8 +68,6 @@ async function automatedGoals () {
     await asyncForEach(goals, async goal => {
       //get allowance on each iteration to account for potential changes
       let allowance = await selectUserAllowance(db, goal.user_id);
-      console.log(allowance)
-      console.log(typeof allowance)
       // if there's enough allowance to make a contribution
       if (allowance > goal.contribution_amount) {
         // if the amount needed to compelete the goal is greater than the contribution
