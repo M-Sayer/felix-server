@@ -11,7 +11,7 @@ const {
   convertTestGoals,
 } = require('./testHelpers');
 
-describe.only('Users Endpoints', () => {
+describe.skip('Users Endpoints', () => {
   let db;
 
   const { testUsers } = makeAllFixtures();
