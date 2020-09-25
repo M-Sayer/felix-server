@@ -41,8 +41,8 @@ const TransactionsService = {
         .catch(error => error);
 
       const t = newTransaction; 
-      await updateAllowance(trx, t.user_id, t.income_amount || t.expense_amount);
       await updateBalance(trx, t.user_id, t.income_amount || t.expense_amount);
+      await updateAllowance(trx, t.user_id, t.income_amount || t.expense_amount);
     });
   },
   
@@ -54,11 +54,11 @@ const TransactionsService = {
     
     await db.transaction(async trx => {
       await trx(type).where({ id }).update(content);
-      await updateAllowance(db, userId, difference);
       await updateBalance(db, userId, difference);
+      await updateAllowance(db, userId, difference);
     });
   },
-  async deleteTransaction(db, type, id, userId){
+  async deleteTransaction(db, type, id, userId) {
     // get transaction amount before delete
     const amount = await selectTransactionAmount(db, type, id);
     // add the negative of that amount to balance/allowance
@@ -66,8 +66,8 @@ const TransactionsService = {
 
     await db.transaction(async trx => {
       await trx(type).where({ id }).delete();
-      await updateAllowance(trx, userId, difference);
       await updateBalance(trx, userId, difference);
+      await updateAllowance(trx, userId, difference);
     });
   },
   serializeOutgoingTransaction(transaction){
