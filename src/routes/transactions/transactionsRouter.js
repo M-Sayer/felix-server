@@ -8,59 +8,33 @@ const {
   getSingleTransaction,
   createTransaction,
   patchSingleTransaction,
-  serializeIncoming,
   serializeOutgoingTransaction,
   serializeAllPackage,
-  serializePatch
 } = require('./TransactionsService');
 const TransactionsService = require('./TransactionsService');
-
 const { convertToCents, convertTransactionsToDollars, convertToDollars } = require('../../helpers');
-
-/**
- * @note might need a POST endpoint later
- * if added, .route('/') is needed
- **/
 
 transactionsRouter
   .route('/')
-  .all( requireAuth)
-  .get( async (req, res, next) => {
+  .all(requireAuth)
+  .get(async (req, res, next) => {
     const user_id = req.userId;
-
     try {
       let income = await getUserIncome(req.app.get('db'), user_id); // Array of income objects
-      //convert income_amount to dollars
       income = convertTransactionsToDollars(income, 'income');
       let expenses = await getUserExpenses(req.app.get('db'), user_id); // Array of expense objects
-      //convert expense_amount to dollars
       expenses = convertTransactionsToDollars(expenses, 'expense');
-
-      
-
 
       return res.json(serializeAllPackage(income,expenses));
     } catch (error) {
       next(error);
     }
   })
-  .post( async (req, res, next) => {
-    
-    
-    //Get all body values, type must be a string of either 'income' or 'expenses'.
-    //This should be sent from client-side ether by selecting from a type dropdown, or using two completely different views for transaction creation
+  .post(async (req, res, next) => {
     const { name, description, category, type } = req.body;
     const amount = convertToCents(req.body.amount);
-    
-    //Get user id from jwt
     const user_id = req.userId;
-
-    //Transaction object for inserting
     let newTransaction = {};
-
-    //Response to client
-    let response = {};
-
     //If type is income, transaction object has income_amount and income_category properties
     if (type === 'income') {
 
@@ -74,9 +48,6 @@ transactionsRouter
         return res.status(400).json({error: 'category does not exist for income'});
       }
 
-      //Build the response object
-      response = { type: 'income' };
-
       //Build the new transaction object
       newTransaction = {
         user_id: user_id,
@@ -86,31 +57,24 @@ transactionsRouter
         income_category: category,
       };
     }
-
     //If type is expenses, transaction object has expense_amount and expense_category properties
     else if (type === 'expenses') {
-
-      //If the amount if greater than or equal to 0 reject it
-      if (amount >= 0) {
-        return res.status(400).json({error: 'Expense amount must be less than 0'});
-      }
+      //If the expense amount is 0 respond with error. If the amount is above 0 the client will coerce it to a negative number before POSTing
+      if (amount === 0) {
+        return res.status(400).json({error: 'Amount must not be 0'});
+      };
 
       //If the category type doesn't match expenses table enums reject it
       if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
-        return res.status(400).json({error: 'category does not exist for expenses'});
+        return res.status(400).json({error: 'Category does not exist for expenses'});
       }
-
-      //Build the response object
-      response = { type: 'expenses' };
-
-      //Build the new transaction object
-      newTransaction = {
-        user_id: user_id,
-        name,
-        description,
-        expense_amount: amount,
-        expense_category: category,
-      };
+        newTransaction = {
+          user_id: user_id,
+          name,
+          description,
+          expense_amount: amount,
+          expense_category: category,
+        };
     }
 
     //If type is neither expenses or income reject it
@@ -123,21 +87,18 @@ transactionsRouter
       await createTransaction(
         req.app.get('db'),
         type,
-        serializeIncoming(newTransaction, type));
-    
-      //Respond with object {type: "income"/"expenses"}
-      return res.status(201).end();
+        newTransaction, type);
 
+      return res.status(201).end();
     } catch (e) {
       next(e);
     }
-
   });
 
 transactionsRouter
   .route('/:type/:id')
   .all(checkIfTransactionExists, requireAuth)
-  .get( async (req, res, next) => {
+  .get(async (req, res, next) => {
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -203,43 +164,38 @@ transactionsRouter
       next(e);
     }
   })
-  .patch( async (req,res,next) => {
-    //Get params
+  .patch(async (req,res,next) => {
     const { type, id } = req.params;
-
     const {userId} = req; 
-    //Get body content
     const {name, category, description} = req.body;
-    //convert amount to cents
     const amount = convertToCents(req.body.amount);
+<<<<<<< HEAD
     
+=======
+>>>>>>> master
     //Checks if user making patch matches user id of the transaction
     if (req.auth_id !== userId) {
-      return res
-        .status(401)
-        .json({
+      return res.status(401).json({
           error : 'user is unauthorized to view this transaction'
         });
     }
 
     //Checks if type is either income or expense
-    if(!['income','expenses'].includes(type)) {
-      return res
-        .status(400)
-        .json({
+    if (!['income','expenses'].includes(type)) {
+      return res.status(400).json({
           error : 'Invalid transaction type'
         });
     }
-    for(const [key, prop] of Object.entries({type, id})) {
-      if(!prop) {
-        return res
-          .status(400)
-          .json({
+
+    for (const [key, prop] of Object.entries({type, id})) {
+      if (!prop) {
+        return res.status(400).json({
             error : `${key} seems to be missing from query params`
           });
       }
     }
     //Checks if body content exists
+<<<<<<< HEAD
     if(!name && !amount && !category){
       return res.status(400).json({error : 'no content to be updated'});
     }
@@ -268,6 +224,13 @@ transactionsRouter
     else{
       transObject  = 
     type === 'income'
+=======
+    if (!name && !amount && !category) {
+      res.status(400).json({error : 'no content to be updated'});
+    }
+
+    const transObject = type === 'income'
+>>>>>>> master
       ? {
         name,
         description,
@@ -279,22 +242,26 @@ transactionsRouter
         description, 
         expense_amount : amount,
         expense_category : category
+<<<<<<< HEAD
       }
       ; 
     }
     //Create transaction object
+=======
+      };
+>>>>>>> master
     //Insert the new transaction object into db
-    patchSingleTransaction(
+   patchSingleTransaction(
       res.app.get('db'),
       type,
       id,
       req.userId,
-      serializePatch(transObject, type)
+      transObject, type
     )
-      .then(() => res.status(204).end())
-      .catch(next);
+    .then(() => res.status(204).end())
+    .catch(next);
   })
-  .delete( (req, res,next) =>{
+  .delete((req, res,next) =>{
     const { type, id } = req.params;
 
     if (!['income', 'expenses'].includes(type)) {
@@ -312,10 +279,8 @@ transactionsRouter
     }
 
     if (req.auth_id !== req.userId) {
-      return res
-        .status(401)
-        .json({
-          error : 'user is unauthorized to view this transaction'
+      return res.status(401).json({
+          error: 'user is unauthorized to view this transaction'
         });
     }
 
@@ -325,9 +290,8 @@ transactionsRouter
       id,
       req.userId
     )
-      .then(res.status(204).end())
-      .catch(next);
-
+    .then(() => res.status(204).end())
+    .catch(next);
   });
 
 //this should be moved to middleware
@@ -347,7 +311,7 @@ async function checkIfTransactionExists(req,res,next) {
     //should be === w/ req.userId from auth
     req.auth_id = ExistingTransaction.user_id;
     next();
-  }catch(error){
+  } catch(error){
     next(error);
   }
 }

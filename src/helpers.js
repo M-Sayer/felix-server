@@ -2,6 +2,11 @@ var Fraction = require('fraction.js');
 
 const { selectUserAllowance } = require('../automationHelpers');
 
+const selectBalance = async (db, id) => {
+  const res = await db('users').where({ id }).select('balance').first();
+  return res.balance;
+};
+
 const updateBalance = async (db, id, amount) => {
   await db('users')
     .where({ id })
@@ -132,7 +137,7 @@ const deallocateGoals = async (trx, user_id, amount) => {
  */
 const updateAllowance = async (trx, id, amount) => {
   try {
-    const allowance = await selectUserAllowance(id);
+    let allowance = await selectUserAllowance(id);
     const totalSaved = await selectTotalSaved(trx, id);
     const difference = allowance + amount;
     let deallocateAmt;
@@ -147,10 +152,14 @@ const updateAllowance = async (trx, id, amount) => {
       await deallocateGoals(trx, id, deallocateAmt);
     } else amount -= totalSaved;
 
-    //update amount = goals
+    const balance = await selectBalance(trx, id);
+    allowance = balance - totalSaved;
+    if (totalSaved === 0) allowance = balance;
+    if (balance <= 0) allowance = 0;
+    
     await trx('users')
       .where({ id })
-      .update({ allowance: trx.raw(`?? + ${amount}`, ['allowance'])});
+      .update({ allowance: allowance});
   } catch (error) {
     console.log(error);
   }

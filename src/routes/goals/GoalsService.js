@@ -1,3 +1,5 @@
+const xss = require("xss");
+
 const GoalsService = {
   getGoal(db, id) {
     return db('goals')
@@ -27,6 +29,13 @@ const GoalsService = {
     return db('goals')
       .where({id})
       .del();
+  },
+
+  sanitizeGoal(goal) {
+    return {
+      ...goal,
+      name: xss(goal.name)
+    }
   },
 }
 
