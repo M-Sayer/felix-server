@@ -4,12 +4,7 @@ const helper = require('./testHelpers');
 const supertest = require('supertest');
 
 
-<<<<<<< HEAD:test/transactionEndpoint.spec.js
-
-describe.only('Transaction Endpoint', ()=> {
-=======
 describe('Transaction Endpoint', ()=> {
->>>>>>> master:test/transactionsRouter.spec.js
   let db;
 
   const {
