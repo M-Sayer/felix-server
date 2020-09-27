@@ -32,6 +32,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-01-22T16:28:32.615Z'),
       allowance: 3333,
       balance: 9999,
+      total_saved : 20
     },
     {
       id: 2,
@@ -43,6 +44,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-02-22T16:28:32.615Z'),
       allowance: 4444,
       balance: 8888,
+      total_saved : 20
     },
     {
       id: 3,
@@ -54,6 +56,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-03-22T16:28:32.615Z'),
       allowance: 5555,
       balance: 7777,
+      total_saved : 20
     },
     {
       id: 4,
@@ -65,6 +68,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-04-22T16:28:32.615Z'),
       allowance: 6666,
       balance: 6666,
+      total_saved : 20
     },
     {
       id: 5,
@@ -76,6 +80,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-05-22T16:28:32.615Z'),
       allowance: 7777,
       balance: 5555,
+      total_saved : 20
     },
     {
       id: 6,
@@ -87,6 +92,7 @@ const makeUsersArray = () => {
       date_created: new Date('2029-06-22T16:28:32.615Z'),
       allowance: 8888,
       balance: 4444,
+      total_saved : 20
     },
   ];
 }
@@ -198,6 +204,78 @@ const makeIncomeAndExpensesArray = () => {
   return {testIncome, testExpenses}; 
 }
 
+const makeMaliciousIncome = (user_id) =>{
+  const maliciousIncome = {
+      id: 9,
+      name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      income_amount: 11113,
+      income_category : 'other',
+      date_created:new Date ( )    
+  }
+  const expectedIncome = {
+      id: 9,
+      name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      income_amount: 11113,
+      income_category : 'other',
+      date_created:new Date ( )
+  }
+  return {maliciousIncome, expectedIncome}
+}
+
+const makeMaliciousExpenses = (user_id) => {
+  const maliciousExpenses = {
+      id: 9,
+      name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      expense_amount: -1212,
+      expense_category: 'other',
+      date_created: new Date ( ) 
+  }
+  const expectedExpenses = {
+      id: 9,
+      name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      user_id: user_id,
+      description : 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      expense_amount: -1212,
+      expense_category: 'other',
+      date_created:new Date ( )
+  }
+  return {maliciousExpenses, expectedExpenses}
+}
+
+const makeMaliciousUser = () => {
+  const maliciousUser = {
+      id: 9,
+      username: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      first_name: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+      last_name: 'BADBADNOTGOOD',
+      email: 'test-user-email-1@email.com',
+      password: 'i don\'t want to be mr.pink',
+      date_created:new Date ( ),
+      allowance: 3333,
+      balance: 9999,
+  }
+  const expectedUser = {
+      id: 9,
+      username: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      first_name: 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.',
+      last_name: 'BADBADNOTGOOD',
+      email: 'test-user-email-1@email.com',
+      password: 'i don\'t want to be mr.pink',
+      date_created:new Date ( ),
+      allowance: 3333,
+      balance: 9999,
+
+  }
+
+  return {maliciousUser, expectedUser}
+}
+
 const makeTransactionReply = (type, tran) => {
     tran.description = !tran.description ? null : tran.description ; 
     
@@ -280,13 +358,13 @@ const seedIncomeAndExpensesTables = (db, users, income = [] , expenses = [] ) =>
     await trx.into('income').insert(income);
     await trx.into('expenses').insert(expenses);
     
-    await trx
+    if(income.length) await trx
       .raw(
         `SELECT setval('income_id_seq', ?)`,
         income[income.length - 1].id
       );
-
-    await trx
+    
+    if(expenses.length) await trx
       .raw(
         `SELECT setval('expenses_id_seq', ?)`,
         expenses[expenses.length - 1].id
@@ -331,6 +409,16 @@ const seedAllTables = (db, users, income = [], expenses = [], goals = []) => {
 
   })
 }
+
+const seedMaliciousTransaction = (db, user, transaction = [], type ) =>{
+  return seedUsersTable(db,[user])
+  .then(()=>
+    db
+      .into(type)
+      .insert([transaction]))
+}
+
+const seedMaliciousUser = (db, user =[]) =>  seedUsersTable(db, [user])
 
 const clearAllTables = (db) => {
   return db.transaction(trx =>
@@ -430,18 +518,23 @@ const convertTestGoals = (goals) =>
 
 module.exports = {
   clearAllTables,
-  makeAuthHeader,
+  convertTestGoals,
+  convertTestGoal,
   makeAllFixtures,
+  makeAuthHeader,
   makeExpectedIncomeExpensesArray,
+  makeGoalsArray,
   makeIncomeAndExpensesArray,
   makeKnexInstance,
+  makeMaliciousExpenses,
+  makeMaliciousIncome,
+  makeMaliciousUser,
   makeTransactionReply,
   makeUsersArray,
-  makeGoalsArray,
-  seedUsersTable,
-  seedIncomeAndExpensesTables,
-  seedGoalsTable,
   seedAllTables,
-  convertTestGoal,
-  convertTestGoals
+  seedGoalsTable,
+  seedIncomeAndExpensesTables,
+  seedMaliciousTransaction,
+  seedMaliciousUser,
+  seedUsersTable
 };

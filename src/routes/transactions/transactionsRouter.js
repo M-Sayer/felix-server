@@ -62,19 +62,19 @@ transactionsRouter
       //If the expense amount is 0 respond with error. If the amount is above 0 the client will coerce it to a negative number before POSTing
       if (amount === 0) {
         return res.status(400).json({error: 'Amount must not be 0'});
-      };
+      }
 
       //If the category type doesn't match expenses table enums reject it
       if (category !== 'bills' && category !== 'transportation' && category !== 'food' && category !== 'entertainment' && category !== 'other') {
         return res.status(400).json({error: 'Category does not exist for expenses'});
       }
-        newTransaction = {
-          user_id: user_id,
-          name,
-          description,
-          expense_amount: amount,
-          expense_category: category,
-        };
+      newTransaction = {
+        user_id: user_id,
+        name,
+        description,
+        expense_amount: amount,
+        expense_category: category,
+      };
     }
 
     //If type is neither expenses or income reject it
@@ -169,33 +169,57 @@ transactionsRouter
     const {userId} = req; 
     const {name, category, description} = req.body;
     const amount = convertToCents(req.body.amount);
+    
     //Checks if user making patch matches user id of the transaction
     if (req.auth_id !== userId) {
       return res.status(401).json({
-          error : 'user is unauthorized to view this transaction'
-        });
+        error : 'user is unauthorized to view this transaction'
+      });
     }
 
     //Checks if type is either income or expense
     if (!['income','expenses'].includes(type)) {
       return res.status(400).json({
-          error : 'Invalid transaction type'
-        });
+        error : 'Invalid transaction type'
+      });
     }
 
     for (const [key, prop] of Object.entries({type, id})) {
       if (!prop) {
         return res.status(400).json({
-            error : `${key} seems to be missing from query params`
-          });
+          error : `${key} seems to be missing from query params`
+        });
       }
     }
     //Checks if body content exists
-    if (!name && !amount && !category) {
-      res.status(400).json({error : 'no content to be updated'});
+    if(!name && !amount && !category){
+      return res.status(400).json({error : 'no content to be updated'});
     }
 
-    const transObject = type === 'income'
+
+    /**
+     * @todo so when the amount is different from that amount on db
+     *  update the balance along with it.
+     */
+    let transObject;
+    if(isNaN(amount)){
+      transObject  = 
+    type === 'income'
+      ? {
+        name,
+        description,
+        income_category : category
+      }
+      : {
+        name,
+        description, 
+        expense_category : category
+      }
+      ; 
+    }
+    else{
+      transObject  = 
+    type === 'income'
       ? {
         name,
         description,
@@ -207,17 +231,20 @@ transactionsRouter
         description, 
         expense_amount : amount,
         expense_category : category
-      };
+      }
+      ; 
+    }
+    //Create transaction object
     //Insert the new transaction object into db
-   patchSingleTransaction(
+    patchSingleTransaction(
       res.app.get('db'),
       type,
       id,
       req.userId,
       transObject, type
     )
-    .then(() => res.status(204).end())
-    .catch(next);
+      .then(() => res.status(204).end())
+      .catch(next);
   })
   .delete((req, res,next) =>{
     const { type, id } = req.params;
@@ -238,8 +265,8 @@ transactionsRouter
 
     if (req.auth_id !== req.userId) {
       return res.status(401).json({
-          error: 'user is unauthorized to view this transaction'
-        });
+        error: 'user is unauthorized to view this transaction'
+      });
     }
 
     TransactionsService.deleteTransaction(
@@ -248,8 +275,8 @@ transactionsRouter
       id,
       req.userId
     )
-    .then(() => res.status(204).end())
-    .catch(next);
+      .then(() => res.status(204).end())
+      .catch(next);
   });
 
 //this should be moved to middleware

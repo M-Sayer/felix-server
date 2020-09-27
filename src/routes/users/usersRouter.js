@@ -50,15 +50,15 @@ usersRouter.post('/register', async (req, res, next) => {
       });
     }
 
-      // Check that username matches requirements
-      const usernameError = validateUsername(username);
+    // Check that username matches requirements
+    const usernameError = validateUsername(username);
   
-      // If username does not meet requirements, return error
-      if (usernameError) {
-        return res.status(400).json({
-          error: usernameError,
-        });
-      }
+    // If username does not meet requirements, return error
+    if (usernameError) {
+      return res.status(400).json({
+        error: usernameError,
+      });
+    }
 
     // Check if username already exists in db
     const hasUsername = await getUserWithUsername(db, username);
